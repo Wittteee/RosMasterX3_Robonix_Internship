@@ -1,0 +1,32 @@
+# 本机联调默认配置（按实验室实际修改）
+robot:
+  # SSH 端口转发后保持 localhost；也可改成 Jetson IP 直连 9090
+  host: "127.0.0.1"
+  rosbridge_port: 9090
+
+topics:
+  # 只读状态
+  scan: "/scan"
+  odom: "/odom"
+  amcl_pose: "/amcl_pose"
+  move_base_status: "/move_base/status"
+  # 受限写入（禁止 cmd_vel）
+  move_base_goal: "/move_base_simple/goal"
+  move_base_cancel: "/move_base/cancel"
+
+safety:
+  # PPT：候选点约 0.80 m；物理距离约 1 m
+  candidate_distance_m: 0.80
+  physical_distance_hint_m: 1.0
+  # 安全取消示例触发位移（PPT 约 0.080 m）
+  preempt_trigger_displacement_m: 0.080
+  # 禁止发布的底层话题（红线，不可删除）
+  forbidden_publish:
+    - "/cmd_vel"
+
+mission:
+  frame_id: "map"
+  require_human_confirm: true
+  one_shot_token: true
+  token_ttl_sec: 60
+  default_timeout_sec: 120

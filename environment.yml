@@ -1,0 +1,16 @@
+# 推荐：先用下面命令创建（国内镜像更快），再 pip 装业务依赖
+# conda create -p .\conda_env python=3.10 pip -y -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r --override-channels
+# conda activate D:\RosMasterX3_Robonix_Internship\conda_env
+# python -m pip install -r requirements.txt
+#
+# 也可尝试：conda env create -f environment.yml -p .\conda_env
+name: x3-robonix
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - roslibpy>=1.5.0
+      - PyYAML>=6.0
+      - python-dotenv>=1.0.0

@@ -1,0 +1,4 @@
+# 本机联调依赖（conda 环境内用 pip 安装也可）
+roslibpy>=1.5.0
+PyYAML>=6.0
+python-dotenv>=1.0.0
