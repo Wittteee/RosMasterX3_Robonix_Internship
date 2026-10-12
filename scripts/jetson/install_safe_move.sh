@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export LC_ALL=C.UTF-8
+task_python="$HOME/miniforge3/envs/robonix/bin/python"
+task_src="$HOME/refs/robonix-rosmaster-x3-safe-move/jetson"
+task_pkg="$HOME/rosmaster_x3_deploy/primitives/rosmaster_x3_bridge"
+task_adapter="$HOME/x3_rosbridge_adapter/scripts"
+mkdir -p "$task_pkg/rosmaster_x3_bridge" "$task_pkg/scripts" "$HOME/rosmaster_x3_deploy/scripts" "$task_adapter"
+cp -n "$task_src/main.py" "$task_pkg/rosmaster_x3_bridge/main.py"
+cp -n "$task_src/x3_bridge.py" "$task_adapter/x3_bridge.py"
+cp -n "$task_src/package_manifest.yaml" "$task_pkg/package_manifest.yaml"
+cp -rn "$task_src/capabilities" "$task_pkg/"
+cp -n "$task_src/scripts/build.sh" "$task_pkg/scripts/build.sh"
+cp -n "$task_src/scripts/start.sh" "$task_pkg/scripts/start.sh"
+cp -n "$task_src/scripts/move_base" "$HOME/rosmaster_x3_deploy/scripts/move_base"
+cp -n "$task_src/scripts/move_base_cli.py" "$HOME/rosmaster_x3_deploy/scripts/move_base_cli.py"
+chmod +x "$HOME/rosmaster_x3_deploy/scripts/move_base"
+"$task_python" -m pip install --disable-pip-version-check roslibpy grpcio-tools "$HOME/refs/robonix/pylib/robonix-api"
+"$task_python" -m py_compile "$task_pkg/rosmaster_x3_bridge/main.py" "$task_adapter/x3_bridge.py"
+echo "Provider files and Python dependencies installed; code generation is the next step."

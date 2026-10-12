@@ -27,6 +27,8 @@ conda activate D:\RosMasterX3_Robonix_Internship\conda_env
 python scripts\check_bridge.py
 python scripts\check_topics.py
 python scripts\run_mission.py
+# 拓展课题：检测驱动短距导航（默认 Mock 干跑）
+python scripts\run_detect_nav.py --mock
 ```
 
 ## 文档
@@ -34,6 +36,8 @@ python scripts\run_mission.py
 - [总体实验与主题排序](docs/00_总体实验与主题排序.md)
 - [环境与 SSH（含 Conda 安装命令）](docs/01_环境与SSH说明.md)
 - [主实验验收清单](docs/02_主实验验收清单.md)
+- [目标检测驱动导航（拓展）](docs/03_目标检测驱动导航.md)
+- [safe_move 仓库部署与测试](docs/04_safe_move仓库部署与测试.md)
 
 ## 代码结构（基础能力已齐）
 
@@ -44,6 +48,7 @@ src/x3_nav/
   nav/         goal/cancel + status 监控
   validation/  话题频率/健康检查
   mission/     完整任务编排（主实验闭环）
+  vision/      检测→短距候选点（拓展课题）
 scripts/
   self_check.py      不连车自检
   check_bridge.py    连通性
@@ -51,6 +56,7 @@ scripts/
   run_preview.py     状态机干跑
   run_mission.py     完整任务
   run_cancel.py      安全取消
+  run_detect_nav.py  检测驱动导航（Mock/实车）
 ```
 
 ## 安全红线

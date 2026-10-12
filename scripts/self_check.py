@@ -12,6 +12,7 @@ from x3_nav.bridge import ForbiddenPublishError, RosBridge
 from x3_nav.config import load_config
 from x3_nav.mission.runner import MissionRunner
 from x3_nav.safety import CandidateGoal
+from x3_nav.vision.pipeline import DetectNavPipeline
 
 
 def main() -> int:
@@ -38,6 +39,14 @@ def main() -> int:
         print("FAIL: dry-run phase=", result.phase)
         return 1
     print("PASS: 安全状态机 dry-run ->", result.phase)
+
+    plan, det_result = DetectNavPipeline(cfg).dry_run_mock(human_confirm=False)
+    dist = plan.goal.distance_from(0.0, 0.0)
+    max_d = float(cfg["safety"]["candidate_distance_m"])
+    if not det_result.ok or dist > max_d + 1e-6:
+        print(f"FAIL: detect-nav dry-run dist={dist:.3f} phase={det_result.phase}")
+        return 1
+    print(f"PASS: detect-nav mock → goal dist={dist:.3f} m phase={det_result.phase}")
     return 0
 
 

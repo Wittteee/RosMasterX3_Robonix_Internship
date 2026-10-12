@@ -1,0 +1,253 @@
+===== ppt/slides/slide1.xml =====
+基于ROSMASTER X3小车部署Robonix
+并实现点位导航
+桥接通信 · ROS1 导航 · 安全控制
+本科生专业实习课程 | 从系统架构到功能验证
+东华大学专业实习教学材料
+
+===== ppt/slides/slide2.xml =====
+目录
+COURSE MAP
+01
+总体架构
+02
+系统模块
+03
+实现与实验
+04
+总结与实践课题
+
+===== ppt/slides/slide3.xml =====
+总体架构
+Overall Architecture
+
+===== ppt/slides/slide4.xml =====
+实现结果：短距离点位闭环与安全取消
+短距离闭环
+目标导航实车记录；SUCCEEDED；最终停止
+安全取消
+物理运动距离约 1 m
+PREEMPTED；不是导航成功
+边界声明
+当前配置：0.80 m 导航点距离，1m物理距离
+
+===== ppt/slides/slide5.xml =====
+04  专业实习 | Robonix × ROSMASTER X3
+整体框架
+红线 = 控制边界
+控制
+边界
+Robonix
+MCP / 高层任务
+Provider + X3Bridge
+Python 3.10
+受控能力与桥接
+ROS1 导航
+rosbridge / AMCL
+move_base / DWA
+ROSMASTER X3
+底盘驱动
+麦克纳姆执行
+← 状态回读：/odom /scan /amcl_pose /move_base/status
+关键约束：Provider 只发导航目标和取消信号、读取状态；不直接发布 /cmd_vel。
+Robonix提出意图，ROS1完成导航，X3执行运动
+
+===== ppt/slides/slide6.xml =====
+系统模块
+Overall Architecture
+
+===== ppt/slides/slide7.xml =====
+Robonix × ROSMASTER X3
+Robonix : 把用户意图变成可审查的导航任务
+项目中它负责什么
+对接 ROS1 导航栈的任务管理层
+- 承接用户导航意图，生成可审查的目标
+- 按安全流程分阶段释放执行权限
+- 全程监控导航状态，支持紧急中止
+- 不直接下发底层速度指令
+预览阶段
+生成候选导航点机器人保持静止
+准备阶段
+复核系统全状态生成一次性执行令牌
+确认执行
+人工明确授权后下发正式导航目标
+核心边界：Robonix 管意图与授权管控，ROS管实时导航与运动控制
+什么是Robonix
+上层任务调度与安全管控框架
+- 接收高层移动意图
+- 筛选导航候选点位
+- 管控任务全生命周期
+- 回传执行状态与结果
+
+===== ppt/slides/slide8.xml =====
+Robonix × ROSMASTER X3
+桥接层：隔离运行环境实现 ROS 消息安全互通
+Robonix业务端
+Python 3.10 运行环境
+MCP / Provider 服务
+通信桥接中间件roslibpy ↔ rosbridge
+WebSocket
+127.0.0.1:9090
+ROS1话题接口
+状态回读：/odom/scan /amcl_pose
+指令下发：/goal/cancel
+状态回读（单向订阅）
+Provider 仅订阅状态话题，不做写入操作：
+/odom、/scan、/amcl_pose、/move_base/status
+指令下发（受限控制）
+仅发布 PoseStamped 导航目标、/move_base/cancel 取消指令
+禁止直接下发 /cmd_vel 底层速度指令
+
+===== ppt/slides/slide9.xml =====
+Robonix × ROSMASTER X3
+传感器输入层/scan激光雷达
+/odom 里程计
+原始环境与运动数据输入
+全局定位模块
+AMCL 粒子滤波
+TF 坐标变换
+实时解算机器人全局位姿
+环境建模模块costmap 双层代价地图
+构建环境可通行性模型
+规划控制模块move_base 全局规划
+DWA 局部避障
+生成连续可行运动轨迹
+指令输出层`/cmd_vel` 速度指令
+向下游底盘下发控制量
+Robonix 解决“去哪里”；ROS导航栈负责“怎么走”和“发什么速度”。
+DWA：动态窗口法，用局部速度采样选择可执行轨迹。
+ROS 负责定位、规划和底盘速度控制
+
+===== ppt/slides/slide10.xml =====
+https://www.yahboom.com/study/ROSMASTER-X3提取密码：zsdf
+Robonix × ROSMASTER X3
+ROSMASTER X3：感知采集与底盘运动执行终端
+2D 激光雷达
+环境测距与建图数据采集
+输出话题：`/scan`
+IMU 惯性单元
+实时姿态与角速度采集
+输出：运动姿态数据
+轮速里程计
+轮速与位移数据采集
+输出话题：`/pub_odom`
+车载计算主控单元
+硬件平台：Jetson TX2 NX
+软件环境：Ubuntu 18.04.6 + ROS1 Melodic + Robonix
+核心作用：融合多源感知数据，运行导航算法，下发底盘控制指令
+麦克纳姆底盘执行单元
+订阅 `/cmd_vel` 上层速度指令
+调用 `set_car_motion(vx, vy, angular)` 实现全向运动控制
+
+===== ppt/slides/slide11.xml =====
+实现与实验
+Realization and Experimentation
+
+===== ppt/slides/slide12.xml =====
+Robonix × ROSMASTER X3
+环境部署：基线确认与运行栈分步搭建
+目标机环境基线（部署前置检查）
+- 硬件平台：Jetson TX2 NX
+- 操作系统：Ubuntu 18.04.6
+- ROS 环境：ROS1 Melodic
+- 上层运行时：Robonix + Python 3.10
+部署原则：
+先确认版本匹配
+再启动各功能节点。
+部署顺序（从底层到上层）：
+1. 启动基础通信：运行 `roscore` 主节点 + `rosbridge` 桥接服务
+2. 启动硬件驱动：执行底盘与传感器 `bringup` 启动脚本
+3. 启动导航功能栈：加载 `map_server`、AMCL 定位、`move_base` 规划模块
+4. 代码编译构建：执行 `build.sh` → 运行 `rbnx codegen --mcp` 生成服务代码
+5. 部署与连通校验：SSH 部署 Provider 服务，检查端口与话题可用性
+
+===== ppt/slides/slide13.xml =====
+Robonix × ROSMASTER X3
+模块验证：通信链路→数据质量→功能逻辑逐层校验
+通信连通性校验
+- 核心目标：打通桥接层双向通信链路
+- 操作：连接 rosbridge 9090 端口，通过 roslibpy 建立通信
+- 验收标准：确认 Provider 端具备话题完整读写权限
+数据有效性校验
+- 核心目标：确认传感器与定位数据稳定可信
+- 核查话题：`/scan`、`/odom`、`/amcl_pose`、`/tf`
+- 验收标准：检查发布频率正常、坐标系统一、数据无异常跳变
+功能完整性校验
+- 核心目标：验证导航流程的可控性与安全逻辑
+- 验证项：候选点预览（机器人保持静止）、目标状态可回读、取消指令可触发
+- 验收标准：全流程指令响应正常，安全限制机制生效
+验证核心原则：先确认消息可达，再确认状态可信，最终开放导航执行权限
+
+===== ppt/slides/slide14.xml =====
+Robonix × ROSMASTER X3
+点位导航试验：带安全管控的全流程功能验证
+预览阶段
+候选点位筛选
+机器人保持静止
+短距离导航闭环验证成功
+- 导航状态：`move_base` 返回 `SUCCEEDED`
+- AMCL 定位误差：0.067 m
+- 里程计净位移：0.063 m
+- 最终状态：到达目标点并稳定停止
+安全取消机制验证有效
+- 触发条件：累计位移约 0.080 m 时触发保护
+- 返回状态：`PREEMPTED`（保护性中止）
+- 核心说明：安全机制主动终止，非导航任务失败
+0.80 m 标准候选点位完成实车验证，所有实验结论均以运行日志数据为准
+准备阶段
+全系统状态复核
+生成一次性执行令牌
+确认执行
+人工明确授权
+服务端二次校验
+全程监控
+实时监测 `status`
+看门狗异常触发中止
+目标下发
+发布 `PoseStamped`
+导航目标单次触发执行
+
+===== ppt/slides/slide15.xml =====
+Robonix × ROSMASTER X3
+阶段进展：已完成成果・待补验证・优化方向
+已完成成果
+- 桥接通信链路稳定贯通
+- 候选点预览筛选机制落地
+- 人工授权一次性令牌安全流程跑通
+- 短距离导航闭环与安全取消验证通过
+待补充验证项
+-长距离标准点位实车验收
+- 长距离导航与重复稳定性测试
+- 多地图、多障碍场景适配验证
+- 完整现场安全流程记录归档
+后续优化方向
+- 优化低速起步平顺性与轮组运动一致性
+- 补充故障注入测试与异常恢复机制
+- 完善耗时、定位漂移等指标统计
+- 扩充多场景可复现实验数据集
+
+===== ppt/slides/slide16.xml =====
+总结与实践课题
+Summary and Practical Project
+
+===== ppt/slides/slide17.xml =====
+Robonix × ROSMASTER X3
+实践拓展课题：从单点导航向任务级系统能力延伸
+统一约束边界：ROS1 保留底层速度控制权限不变，继续聚焦上层任务逻辑、感知融合、验证方法的扩展开发
+多点巡航任务
+- 核心目标：实现多航点序列自主巡逻
+目标检测驱动导航
+- 核心目标：视觉识别目标后自动生成导航点
+视觉-激光融合导航
+- 核心目标：多传感器信息融合筛选候选导航点
+动态障碍与故障恢复
+- 核心目标：异常场景下的导航重规划与安全处置
+语音任务调度系统
+- 核心目标：将自然语言指令拆解为可执行导航任务
+
+===== ppt/slides/slide18.xml =====
+Robonix × ROSMASTER X3
+自然语言接入实现定点导航
+
+===== ppt/slides/slide19.xml =====
+THANK YOU

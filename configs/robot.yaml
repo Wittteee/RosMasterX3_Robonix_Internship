@@ -30,3 +30,12 @@ mission:
   one_shot_token: true
   token_ttl_sec: 60
   default_timeout_sec: 120
+
+# 拓展：目标检测驱动导航（先 Mock，再接真检测话题）
+vision:
+  target_label: "person"
+  min_confidence: 0.50
+  min_approach_m: 0.20
+  max_bearing_deg: 30.0
+  # 车上接 YOLO 时可改成实际话题（后续订阅用）
+  detections_topic: "/darknet_ros/bounding_boxes"
