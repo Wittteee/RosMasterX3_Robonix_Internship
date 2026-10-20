@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from x3_nav.mission.runner import MissionResult, MissionRunner
+from x3_nav.mission.runner import MissionResult
 from x3_nav.safety.controller import CandidateGoal, SafetyController
 from x3_nav.vision.detect import Detection, MockDetector, detection_to_goal
 
@@ -110,17 +110,5 @@ class DetectNavPipeline:
         auto_preempt: bool = False,
         timeout_sec: float | None = None,
     ) -> tuple[DetectNavPlan, MissionResult]:
-        """连车：把检测结果交给既有 MissionRunner（仍禁 /cmd_vel）。"""
-        plan = self.plan_from_detection(det)
-        runner = MissionRunner(self.config)
-        timeout = timeout_sec
-        if timeout is None:
-            timeout = float(self.config["mission"].get("default_timeout_sec", 120))
-        result = runner.run(
-            plan.goal,
-            human_confirm=human_confirm,
-            dispatch=dispatch,
-            auto_preempt=auto_preempt,
-            timeout_sec=timeout,
-        )
-        return plan, result
+        """Legacy coordinate injection is intentionally unavailable on hardware."""
+        raise RuntimeError("旧视觉坐标执行已禁用；请使用 run_visual_nav.py 的官方候选与令牌流程")

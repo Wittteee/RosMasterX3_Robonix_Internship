@@ -46,6 +46,10 @@ def target_bearing_deg(target: Target, fx: float, cx: float, camera_yaw_deg: flo
         raise ValueError("Camera calibration must be finite, with fx > 0")
     if not 0 <= cx < target.image_width:
         raise ValueError("cx must be inside the image")
+    if not (math.isfinite(target.center_x) and math.isfinite(target.center_y)
+            and 0 <= target.center_x < target.image_width
+            and 0 <= target.center_y < target.image_height):
+        raise ValueError("Target center must be inside the image")
     # Image x grows rightwards; ROS base yaw grows leftwards.
     return camera_yaw_deg + math.degrees(math.atan2(cx - target.center_x, fx))
 
@@ -64,17 +68,28 @@ def recommend_option(preview: dict[str, Any], bearing_deg: float,
         return dict(result, reason="provider_preview_unavailable")
     expiry = preview.get("expires_epoch")
     if expiry is not None:
-        expiry = float(expiry)
+        try:
+            expiry = float(expiry)
+        except (ValueError, TypeError, OverflowError):
+            return dict(result, reason="provider_session_expired")
         if not math.isfinite(expiry) or expiry <= time.time():
             return dict(result, reason="provider_session_expired")
     if abs(bearing_deg) > 30:
         return dict(result, reason="target_outside_forward_sector")
     candidates = []
-    for option in preview.get("options", []):
+    options = preview.get("options")
+    if not isinstance(options, list):
+        return dict(result, reason="no_matching_provider_option")
+    ids = [o.get("option_id") for o in options if isinstance(o, dict)]
+    for option in options:
+        if not isinstance(option, dict):
+            continue
         try:
             angle = float(option["relative_angle_deg"])
             radius = float(option["radius_m"])
-            option_id = int(option["option_id"])
+            option_id = option["option_id"]
+            if type(option_id) is not int or ids.count(option_id) != 1:
+                continue
         except (KeyError, ValueError, TypeError, OverflowError):
             continue
         if (not all(math.isfinite(v) for v in (angle, radius)) or

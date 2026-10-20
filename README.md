@@ -1,5 +1,27 @@
 # ROSMASTER X3 × Robonix 安全导航（本机开发仓库）
 
+## 当前入口（2026-10-20）
+
+按阶段汇报补充了二维码驱动的官方安全导航流程：
+**底盘回读检查 → 相机识别 → 服务端候选推荐 → 服务端令牌 → 人工确认 → 再检查 → 执行结果 / 取消请求**。
+默认只预览；所有模拟输出标记为 `simulation`。实车底盘、当前地图、相机标定和到点结果尚待现场验收。
+
+Windows 本机快速运行（在本仓库目录）：
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -X utf8 -m pip install -r requirements-vision.txt
+.\.venv\Scripts\python.exe -X utf8 -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -X utf8 scripts\run_visual_nav.py --demo
+# 完整模拟交互：输入“确认执行”，只调用模拟 Provider，不连接机器人
+.\.venv\Scripts\python.exe -X utf8 scripts\run_visual_nav.py --demo --execute
+```
+
+真实相机和官方 Provider 的启动方式、异常处理、验收表见
+[06_视觉导航运行与验收.md](docs/06_视觉导航运行与验收.md)。
+新入口是 `scripts/run_visual_nav.py`；旧 `run_detect_nav.py` 仅保留离线演示，禁止 `--dispatch`。
+下文和 `00`–`05` 文档保留早期开发记录，其中旧的本地坐标/令牌方案不是最终视觉课题入口。
+
 东华大学专业实习：本机用 **Conda** 写代码，SSH 连 Jetson，经 rosbridge 完成带安全管控的点位导航联调。
 
 ## 安装环境（Conda）
@@ -39,7 +61,7 @@ python scripts\run_detect_nav.py --mock
 - [目标检测驱动导航（拓展）](docs/03_目标检测驱动导航.md)
 - [safe_move 仓库部署与测试](docs/04_safe_move仓库部署与测试.md)
 
-## 代码结构（基础能力已齐）
+## 早期代码结构
 
 ```text
 src/x3_nav/
