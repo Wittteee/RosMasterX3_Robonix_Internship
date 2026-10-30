@@ -1,0 +1,13 @@
+{
+  "status": "pending_physical_measurement",
+  "velocity_mapping": "metric_identity_with_limits",
+  "max_linear_mps": 0.1,
+  "max_angular_rps": 0.2,
+  "navigation_max_linear_mps": 0.09,
+  "minimum_stable_linear_mps": null,
+  "heading_sign_verified": false,
+  "odometry_scale_verified": false,
+  "measured_position_error_m": null,
+  "xy_goal_tolerance_m": null,
+  "notes": "Do not infer physical calibration from wheel odometry alone. Charge battery before movement calibration."
+}

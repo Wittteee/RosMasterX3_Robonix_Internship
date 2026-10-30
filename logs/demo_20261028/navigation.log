@@ -1,0 +1,1023 @@
+... logging to /home/jetson/.ros/log/055db1b4-d29e-11f1-a14e-e8f408fd4b1b/roslaunch-jetson-YAHBOOM-23246.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/jetson/rosmaster_x3_deploy/live_test/demo_navigation.launch
+[1mstarted roslaunch server http://127.0.0.1:34051/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /amcl/base_frame_id: base_footprint
+ * /amcl/global_frame_id: map
+ * /amcl/gui_publish_rate: 10.0
+ * /amcl/initial_pose_a: 0.0
+ * /amcl/initial_pose_x: 0.0
+ * /amcl/initial_pose_y: 0.0
+ * /amcl/kld_err: 0.05
+ * /amcl/kld_z: 0.99
+ * /amcl/laser_lambda_short: 0.1
+ * /amcl/laser_likelihood_max_dist: 2.0
+ * /amcl/laser_max_beams: 60
+ * /amcl/laser_max_range: 12.0
+ * /amcl/laser_model_type: likelihood_field
+ * /amcl/laser_sigma_hit: 0.2
+ * /amcl/laser_z_hit: 0.5
+ * /amcl/laser_z_max: 0.05
+ * /amcl/laser_z_rand: 0.5
+ * /amcl/laser_z_short: 0.05
+ * /amcl/max_particles: 5000
+ * /amcl/min_particles: 2000
+ * /amcl/odom_alpha1: 0.2
+ * /amcl/odom_alpha2: 0.2
+ * /amcl/odom_alpha3: 0.8
+ * /amcl/odom_alpha4: 0.2
+ * /amcl/odom_alpha5: 0.1
+ * /amcl/odom_frame_id: odom
+ * /amcl/odom_model_type: omni
+ * /amcl/recovery_alpha_fast: 0.0
+ * /amcl/recovery_alpha_slow: 0.0
+ * /amcl/resample_interval: 0.5
+ * /amcl/transform_tolerance: 1.0
+ * /amcl/update_min_a: 0.2
+ * /amcl/update_min_d: 0.25
+ * /amcl/use_map_topic: True
+ * /move_base/DWAPlannerROS/acc_lim_theta: 20.0
+ * /move_base/DWAPlannerROS/acc_lim_x: 10.0
+ * /move_base/DWAPlannerROS/acc_lim_y: 10.0
+ * /move_base/DWAPlannerROS/controller_frequency: 10.0
+ * /move_base/DWAPlannerROS/forward_point_distance: 0.325
+ * /move_base/DWAPlannerROS/global_frame_id: /map
+ * /move_base/DWAPlannerROS/goal_distance_bias: 20.0
+ * /move_base/DWAPlannerROS/latch_xy_goal_tolerance: False
+ * /move_base/DWAPlannerROS/max_rot_vel: 5.0
+ * /move_base/DWAPlannerROS/max_scaling_factor: 0.2
+ * /move_base/DWAPlannerROS/max_vel_theta: 0.2
+ * /move_base/DWAPlannerROS/max_vel_trans: 0.05
+ * /move_base/DWAPlannerROS/max_vel_x: 0.05
+ * /move_base/DWAPlannerROS/max_vel_y: 0.0
+ * /move_base/DWAPlannerROS/min_rot_vel: 5.0
+ * /move_base/DWAPlannerROS/min_vel_theta: 0.0
+ * /move_base/DWAPlannerROS/min_vel_trans: 0.0
+ * /move_base/DWAPlannerROS/min_vel_x: 0.0
+ * /move_base/DWAPlannerROS/min_vel_y: 0.0
+ * /move_base/DWAPlannerROS/occdist_scale: 0.5
+ * /move_base/DWAPlannerROS/oscillation_reset_angle: 0.05
+ * /move_base/DWAPlannerROS/oscillation_reset_dist: 0.05
+ * /move_base/DWAPlannerROS/path_distance_bias: 10.0
+ * /move_base/DWAPlannerROS/publish_cost_grid_pc: True
+ * /move_base/DWAPlannerROS/publish_traj_pc: True
+ * /move_base/DWAPlannerROS/scaling_speed: 0.25
+ * /move_base/DWAPlannerROS/sim_time: 1.0
+ * /move_base/DWAPlannerROS/stop_time_buffer: 0.1
+ * /move_base/DWAPlannerROS/theta_stopped_vel: 0.4
+ * /move_base/DWAPlannerROS/trans_stopped_vel: 0.1
+ * /move_base/DWAPlannerROS/vtheta_samples: 10
+ * /move_base/DWAPlannerROS/vx_samples: 10
+ * /move_base/DWAPlannerROS/vy_samples: 0
+ * /move_base/DWAPlannerROS/xy_goal_tolerance: 0.02
+ * /move_base/DWAPlannerROS/yaw_goal_tolerance: 0.1
+ * /move_base/aggressive_reset/layer_names: ['obstacle_layer']
+ * /move_base/aggressive_reset/reset_distance: 3.0
+ * /move_base/base_local_planner: dwa_local_planner...
+ * /move_base/clearing_rotation_allowed: False
+ * /move_base/conservative_reset/layer_names: ['obstacle_layer']
+ * /move_base/conservative_reset/reset_distance: 1.0
+ * /move_base/conservative_reset_dist: 5.0
+ * /move_base/controller_frequency: 10.0
+ * /move_base/controller_patience: 5.0
+ * /move_base/global_costmap/cost_scaling_factor: 3.0
+ * /move_base/global_costmap/footprint: [[-0.117, -0.1], ...
+ * /move_base/global_costmap/global_frame: map
+ * /move_base/global_costmap/inflation_layer/cost_scaling_factor: 1.0
+ * /move_base/global_costmap/inflation_layer/enabled: True
+ * /move_base/global_costmap/inflation_radius: 0.3
+ * /move_base/global_costmap/map_type: costmap
+ * /move_base/global_costmap/obstacle_layer/combination_method: 1
+ * /move_base/global_costmap/obstacle_layer/enabled: True
+ * /move_base/global_costmap/obstacle_layer/max_obstacle_height: 2.0
+ * /move_base/global_costmap/obstacle_layer/min_obstacle_height: 0.0
+ * /move_base/global_costmap/obstacle_layer/observation_sources: scan
+ * /move_base/global_costmap/obstacle_layer/obstacle_range: 3.0
+ * /move_base/global_costmap/obstacle_layer/publish_voxel_map: False
+ * /move_base/global_costmap/obstacle_layer/raytrace_range: 3.5
+ * /move_base/global_costmap/obstacle_layer/scan/clearing: True
+ * /move_base/global_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /move_base/global_costmap/obstacle_layer/scan/expected_update_rate: 0
+ * /move_base/global_costmap/obstacle_layer/scan/marking: True
+ * /move_base/global_costmap/obstacle_layer/scan/sensor_frame: laser
+ * /move_base/global_costmap/obstacle_layer/scan/topic: scan
+ * /move_base/global_costmap/obstacle_layer/track_unknown_space: True
+ * /move_base/global_costmap/obstacle_range: 3.0
+ * /move_base/global_costmap/publish_frequency: 10.0
+ * /move_base/global_costmap/raytrace_range: 3.5
+ * /move_base/global_costmap/resolution: 0.05
+ * /move_base/global_costmap/robot_base_frame: base_footprint
+ * /move_base/global_costmap/static_layer/enabled: True
+ * /move_base/global_costmap/static_layer/map_topic: /map
+ * /move_base/global_costmap/static_map: True
+ * /move_base/global_costmap/transform_tolerance: 0.5
+ * /move_base/global_costmap/update_frequency: 10.0
+ * /move_base/local_costmap/cost_scaling_factor: 3.0
+ * /move_base/local_costmap/footprint: [[-0.117, -0.1], ...
+ * /move_base/local_costmap/global_frame: odom
+ * /move_base/local_costmap/height: 2.5
+ * /move_base/local_costmap/inflation_layer/cost_scaling_factor: 1.0
+ * /move_base/local_costmap/inflation_layer/enabled: True
+ * /move_base/local_costmap/inflation_radius: 0.3
+ * /move_base/local_costmap/map_type: costmap
+ * /move_base/local_costmap/obstacle_layer/combination_method: 1
+ * /move_base/local_costmap/obstacle_layer/enabled: True
+ * /move_base/local_costmap/obstacle_layer/max_obstacle_height: 2.0
+ * /move_base/local_costmap/obstacle_layer/min_obstacle_height: 0.0
+ * /move_base/local_costmap/obstacle_layer/observation_sources: scan
+ * /move_base/local_costmap/obstacle_layer/obstacle_range: 3.0
+ * /move_base/local_costmap/obstacle_layer/publish_voxel_map: False
+ * /move_base/local_costmap/obstacle_layer/raytrace_range: 3.5
+ * /move_base/local_costmap/obstacle_layer/scan/clearing: True
+ * /move_base/local_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /move_base/local_costmap/obstacle_layer/scan/expected_update_rate: 0
+ * /move_base/local_costmap/obstacle_layer/scan/marking: True
+ * /move_base/local_costmap/obstacle_layer/scan/sensor_frame: laser
+ * /move_base/local_costmap/obstacle_layer/scan/topic: scan
+ * /move_base/local_costmap/obstacle_layer/track_unknown_space: True
+ * /move_base/local_costmap/obstacle_range: 3.0
+ * /move_base/local_costmap/publish_frequency: 10.0
+ * /move_base/local_costmap/raytrace_range: 3.5
+ * /move_base/local_costmap/resolution: 0.05
+ * /move_base/local_costmap/robot_base_frame: base_footprint
+ * /move_base/local_costmap/rolling_window: True
+ * /move_base/local_costmap/static_layer/enabled: True
+ * /move_base/local_costmap/static_layer/map_topic: /map
+ * /move_base/local_costmap/static_map: False
+ * /move_base/local_costmap/transform_tolerance: 0.5
+ * /move_base/local_costmap/update_frequency: 10.0
+ * /move_base/local_costmap/width: 2.5
+ * /move_base/max_planning_retries: -1.0
+ * /move_base/move_slow_and_clear/clearing_distance: 0.1
+ * /move_base/move_slow_and_clear/limited_distance: 0.3
+ * /move_base/move_slow_and_clear/limited_rot_speed: 0.4
+ * /move_base/move_slow_and_clear/limited_trans_speed: 0.1
+ * /move_base/oscillation_distance: 0.3
+ * /move_base/oscillation_timeout: 10.0
+ * /move_base/planner_frequency: 10.0
+ * /move_base/planner_patience: 5.0
+ * /move_base/recovery_behavior_enabled: False
+ * /move_base/recovery_behaviors: [{'type': 'clear_...
+ * /move_base/shutdown_costmaps: False
+ * /move_base/super_reset/layer_names: ['obstacle_layer']
+ * /move_base/super_reset/reset_distance: 5.0
+ * /rosdis[33m[ WARN] [1793171639.183510071]: global_costmap: Parameter "plugins" not provided, loading pre-Hydro parameters[0m
+[33m[ WARN] [1793171639.855246897]: local_costmap: Parameter "plugins" not provided, loading pre-Hydro parameters[0m
+[33m[ WARN] [1793171640.154759703]: Parameter max_rot_vel is deprecated (and will not load properly). Use max_vel_theta instead.[0m
+[33m[ WARN] [1793171640.158667454]: Parameter min_rot_vel is deprecated (and will not load properly). Use min_vel_theta instead.[0m
+[31m[ERROR] [1793172299.640963841]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172299.738697328]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172299.838740972]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172299.938747913]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.038782982]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.138632485]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.238619586]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.338620032]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.438615165]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.538612731]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.638618712]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.738592725]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.838962832]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172300.938587888]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.038560302]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.138633291]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.238605289]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.338579975]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.438597413]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.538601570]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.638778751]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.738609822]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.838651291]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172301.938602521]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.038599479]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.138993138]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.238604051]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.338701872]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.438684751]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.538630477]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.638692043]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.738660457]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.838642951]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172302.938571398]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.038601828]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.138665602]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.238663872]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.338644959]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.438748444]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.538670107]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.638728217]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.738692856]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.838961012]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172303.938639573]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.038812242]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.138714450]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.238804176]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.338706255]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.438859693]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.538727949]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.638769995]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.738729514]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.838840552]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172304.938723688]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.038624807]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.138631814]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[0m[ INFO] [1793171639.235504459]: global_costmap: Using plugin "static_layer"[0m
+[0m[ INFO] [1793171639.284904879]: Requesting the map...[0m
+[0m[ INFO] [1793171639.494952016]: Resizing costmap to 800 X 800 at 0.050000 m/pix[0m
+[0m[ INFO] [1793171639.593799640]: Received a 800 X 800 map at 0.050000 m/pix[0m
+[0m[ INFO] [1793171639.607599552]: global_costmap: Using plugin "obstacle_layer"[0m
+[0m[ INFO] [1793171639.621914469]:     Subscribed to Topics: scan[0m
+[0m[ INFO] [1793171639.693845241]: global_costmap: Using plugin "inflation_layer"[0m
+[0m[ INFO] [1793171639.893518844]: local_costmap: Using plugin "obstacle_layer"[0m
+[0m[ INFO] [1793171639.906586697]:     Subscribed to Topics: scan[0m
+[0m[ INFO] [1793171639.966393738]: local_costmap: Using plugin "inflation_layer"[0m
+[0m[ INFO] [1793171640.114782646]: Created local_planner dwa_local_planner/DWAPlannerROS[0m
+[0m[ INFO] [1793171640.125373938]: Sim period is set to 0.10[0m
+[0m[ INFO] [1793171640.499682587]: Recovery behavior will clear layer 'obstacle_layer'[0m
+[0m[ INFO] [1793171640.641666576]: odom received![0m
+[0m[ INFO] [1793172299.639319118]: Got new plan[0m
+[0m[ INFO] [1793172299.738306387]: Got new plan[0m
+[0m[ INFO] [1793172299.838288592]: Got new plan[0m
+[0m[ INFO] [1793172299.938284973]: Got new plan[0m
+[0m[ INFO] [1793172300.038287210]: Got new plan[0m
+[0m[ INFO] [1793172300.138281544]: Got new plan[0m
+[0m[ INFO] [1793172300.238287141]: Got new plan[0m
+[0m[ INFO] [1793172300.338289666]: Got new plan[0m
+[0m[ INFO] [1793172300.438291552]: Got new plan[0m
+[0m[ INFO] [1793172300.538287485]: Got new plan[0m
+[0m[ INFO] [1793172300.638270427]: Got new plan[0m
+[0m[ INFO] [1793172300.738270072]: Got new plan[0m
+[0m[ INFO] [1793172300.838415924]: Got new plan[0m
+[0m[ INFO] [1793172300.938268179]: Got new plan[0m
+[0m[ INFO] [1793172301.038254736]: Got new plan[0m
+[0m[ INFO] [1793172301.138280430]: Got new plan[0m
+[0m[ INFO] [1793172301.238275116]: Got new plan[0m
+[0m[ INFO] [1793172301.338264041]: Got new plan[0m
+[0m[ INFO] [1793172301.438287207]: Got new plan[0m
+[0m[ INFO] [1793172301.538287237]: Got new plan[0m
+[0m[ INFO] [1793172301.638431969]: Got new plan[0m
+[0m[ INFO] [1793172301.738284128]: Got new plan[0m
+[0m[ INFO] [1793172301.838284382]: Got new plan[0m
+[0m[ INFO] [1793172301.938287771]: Got new plan[0m
+[0m[ INFO] [1793172302.038282489]: Got new plan[0m
+[0m[ INFO] [1793172302.138680468]: Got new plan[0m
+[0m[ INFO] [1793172302.238290389]: Got new plan[0m
+[0m[ INFO] [1793172302.338286292]: Got new plan[0m
+[0m[ INFO] [1793172302.438310129]: Got new plan[0m
+[0m[ INFO] [1793172302.538299280]: Got new plan[0m
+[0m[ INFO] [1793172302.638272334]: Got new plan[0m
+[0m[ INFO] [1793172302.738284460]: Got new plan[0m
+[0m[ INFO] [1793172302.838296970]: Got new plan[0m
+[0m[ INFO] [1793172302.938266120]: Got new plan[0m
+[0m[ INFO] [1793172303.038273990]: Got new plan[0m
+[0m[ INFO] [1793172303.138294532]: Got new plan[0m
+[0m[ INFO] [1793172303.238268067]: Got new plan[0m
+[0m[ INFO] [1793172303.338282881]: Got new plan[0m
+[0m[ INFO] [1793172303.438290080]: Got new plan[0m
+[0m[ INFO] [1793172303.538266334]: Got new plan[0m
+[0m[ INFO] [1793172303.638287292]: Got new plan[0m
+[0m[ INFO] [1793172303.738293179]: Got new plan[0m
+[0m[ INFO] [1793172303.838299801]: Got new plan[0m
+[0m[ INFO] [1793172303.938284120]: Got new plan[0m
+[0m[ INFO] [1793172304.038310198]: Got new plan[0m
+[0m[ INFO] [1793172304.138295157]: Got new plan[0m
+[0m[ INFO] [1793172304.238310164]: Got new plan[0m
+[0m[ INFO] [1793172304.338295154]: Got new plan[0m
+[0m[ INFO] [1793172304.438316977]: Got new plan[0m
+[0m[ INFO] [1793172304.538303760]: Got new plan[0m
+[0m[ INFO] [1793172304.638310927]: Got new plan[0m
+[0m[ INFO] [1793172304.738294957]: Got new plan[0m
+[0m[ INFO] [1793172304.838319692]: Got new plan[0m
+[0m[ INFO] [1793172304.938340235]: Got new plan[0m
+[0m[ INFO] [1793172305.038274826]: Got new plan[0m
+[0m[ INFO] [1793172305.138270601]: Got new plan[0m
+[0m[ INFO] [17931[31m[ERROR] [1793172305.238713285]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.338645092]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.438805986]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.538706082]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.638700865]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.738707104]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.838826398]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172305.938814173]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.038736957]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.138660157]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.238728572]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.338848955]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.438752155]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.538669947]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.638892633]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.738771833]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.839085046]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172306.938853239]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.038982678]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.138705912]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.238836054]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.338663607]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.438633655]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.538628823]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.638610359]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.738672214]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.838744150]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172307.938794101]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.038648246]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.138783765]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.238873236]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.338701078]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.438742806]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.538786773]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.638767638]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.738772182]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.838643095]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172308.938658519]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.038771798]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.138788598]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.238615896]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.338743704]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.438796184]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.538790136]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.638657338]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.738865240]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.838649083]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172309.938930073]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.038795706]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.138880219]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.238947259]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.339138298]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.438885213]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.538730175]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.638884094]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.738743456]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.838914304]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172310.938702562]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.038920161]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.138787747]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.239340512]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.338844997]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.438826566]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.538827176]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.638674282]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.738673259]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.838741420]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172311.938924043]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.038789453]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.138861550]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.239017103]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.339118351]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.438778867]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.538833012]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.638733975]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.738821431]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172312.838773209]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+72305.238283464]: Got new plan[0m
+[0m[ INFO] [1793172305.338298727]: Got new plan[0m
+[0m[ INFO] [1793172305.438277958]: Got new plan[0m
+[0m[ INFO] [1793172305.538303845]: Got new plan[0m
+[0m[ INFO] [1793172305.638281540]: Got new plan[0m
+[0m[ INFO] [1793172305.738265860]: Got new plan[0m
+[0m[ INFO] [1793172305.838357794]: Got new plan[0m
+[0m[ INFO] [1793172305.938285954]: Got new plan[0m
+[0m[ INFO] [1793172306.038281473]: Got new plan[0m
+[0m[ INFO] [1793172306.138289888]: Got new plan[0m
+[0m[ INFO] [1793172306.238305439]: Got new plan[0m
+[0m[ INFO] [1793172306.338332415]: Got new plan[0m
+[0m[ INFO] [1793172306.438303230]: Got new plan[0m
+[0m[ INFO] [1793172306.538302270]: Got new plan[0m
+[0m[ INFO] [1793172306.638321117]: Got new plan[0m
+[0m[ INFO] [1793172306.738304157]: Got new plan[0m
+[0m[ INFO] [1793172306.838317980]: Got new plan[0m
+[0m[ INFO] [1793172306.938317371]: Got new plan[0m
+[0m[ INFO] [1793172307.038318747]: Got new plan[0m
+[0m[ INFO] [1793172307.138284411]: Got new plan[0m
+[0m[ INFO] [1793172307.238313850]: Got new plan[0m
+[0m[ INFO] [1793172307.338271514]: Got new plan[0m
+[0m[ INFO] [1793172307.438267354]: Got new plan[0m
+[0m[ INFO] [1793172307.538277370]: Got new plan[0m
+[0m[ INFO] [1793172307.638268090]: Got new plan[0m
+[0m[ INFO] [1793172307.738286105]: Got new plan[0m
+[0m[ INFO] [1793172307.838294713]: Got new plan[0m
+[0m[ INFO] [1793172307.938296761]: Got new plan[0m
+[0m[ INFO] [1793172308.038283481]: Got new plan[0m
+[0m[ INFO] [1793172308.138317529]: Got new plan[0m
+[0m[ INFO] [1793172308.238295321]: Got new plan[0m
+[0m[ INFO] [1793172308.338300121]: Got new plan[0m
+[0m[ INFO] [1793172308.438301401]: Got new plan[0m
+[0m[ INFO] [1793172308.538301497]: Got new plan[0m
+[0m[ INFO] [1793172308.638307641]: Got new plan[0m
+[0m[ INFO] [1793172308.738303705]: Got new plan[0m
+[0m[ INFO] [1793172308.838293977]: Got new plan[0m
+[0m[ INFO] [1793172308.938289146]: Got new plan[0m
+[0m[ INFO] [1793172309.038300282]: Got new plan[0m
+[0m[ INFO] [1793172309.138310298]: Got new plan[0m
+[0m[ INFO] [1793172309.238269691]: Got new plan[0m
+[0m[ INFO] [1793172309.338296571]: Got new plan[0m
+[0m[ INFO] [1793172309.438305851]: Got new plan[0m
+[0m[ INFO] [1793172309.538341980]: Got new plan[0m
+[0m[ INFO] [1793172309.638280317]: Got new plan[0m
+[0m[ INFO] [1793172309.738313469]: Got new plan[0m
+[0m[ INFO] [1793172309.838283453]: Got new plan[0m
+[0m[ INFO] [1793172309.938408061]: Got new plan[0m
+[0m[ INFO] [1793172310.038306014]: Got new plan[0m
+[0m[ INFO] [1793172310.138324159]: Got new plan[0m
+[0m[ INFO] [1793172310.238317984]: Got new plan[0m
+[0m[ INFO] [1793172310.338305152]: Got new plan[0m
+[0m[ INFO] [1793172310.438316097]: Got new plan[0m
+[0m[ INFO] [1793172310.538300866]: Got new plan[0m
+[0m[ INFO] [1793172310.638310275]: Got new plan[0m
+[0m[ INFO] [1793172310.738295652]: Got new plan[0m
+[0m[ INFO] [1793172310.838293892]: Got new plan[0m
+[0m[ INFO] [1793172310.938298213]: Got new plan[0m
+[0m[ INFO] [1793172311.038317350]: Got new plan[0m
+[0m[ INFO] [1793172311.138345383]: Got new plan[0m
+[0m[ INFO] [1793172311.238329320]: Got new plan[0m
+[0m[ INFO] [1793172311.338310921]: Got new plan[0m
+[0m[ INFO] [1793172311.438304938]: Got new plan[0m
+[0m[ INFO] [1793172311.538304460]: Got new plan[0m
+[0m[ INFO] [1793172311.638293165]: Got new plan[0m
+[0m[ INFO] [1793172311.738273134]: Got new plan[0m
+[0m[ INFO] [1793172311.838284335]: Got new plan[0m
+[0m[ INFO] [1793172311.938288528]: Got new plan[0m
+[0m[ INFO] [1793172312.038273329]: Got new plan[0m
+[0m[ INFO] [1793172312.138328658]: Got new plan[0m
+[0m[ INFO] [1793172312.238303860]: Got new plan[0m
+[0m[ INFO] [1793172312.338305334]: Got new plan[0m
+[0m[ INFO] [1793172312.438294583]: Got new plan[0m
+[0m[ INFO] [1793172312.538308024]: Got new plan[0m
+[0m[ INFO] [1793172312.638292762]: Got new plan[0m
+[0m[ INFO] [1793172312.738293659]: Got new plan[0m
+[0m[ INFO] [1793172312.838296637]: Got new plan[0m
+[0m[ INFO] [1793172312.938330814[31m[ERROR] [1793172312.938947161]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.038676349]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.138691775]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.238880319]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.338730786]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.438844867]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.538655878]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.639018533]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.738689289]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.838804746]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172313.938828812]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.038674447]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.138655889]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.238648691]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.338606902]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.438631672]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.538630618]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.638710363]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.738765629]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.838844542]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172314.938693410]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.039045313]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.138755590]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.238835976]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.338698283]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.438875596]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.540165573]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.638916721]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.738834164]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.839455954]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172315.938906616]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.040789900]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.139050044]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.238796321]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.338871587]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.438943046]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.538814729]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.638865548]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.739191660]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.839248686]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172316.940634950]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.038884631]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.138662556]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.239003708]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.338679970]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.438911075]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.538848551]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.638834922]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.738712750]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.838664657]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172317.938958738]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.039666960]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.138821786]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.238836285]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.338858208]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.438829636]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.538790952]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.638830443]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.738953870]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.839252655]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172318.938870933]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.038709178]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.138971996]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.238879904]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.338637286]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.438840360]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.538686029]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.638847599]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.738689908]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.838785943]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172319.939175256]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.038659168]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.138639396]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.238921094]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.338785355]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.438786991]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.538694996]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+]: Got new plan[0m
+[0m[ INFO] [1793172313.038291712]: Got new plan[0m
+[0m[ INFO] [1793172313.138273986]: Got new plan[0m
+[0m[ INFO] [1793172313.238302531]: Got new plan[0m
+[0m[ INFO] [1793172313.338279077]: Got new plan[0m
+[0m[ INFO] [1793172313.438316711]: Got new plan[0m
+[0m[ INFO] [1793172313.538287849]: Got new plan[0m
+[0m[ INFO] [1793172313.638285995]: Got new plan[0m
+[0m[ INFO] [1793172313.738317996]: Got new plan[0m
+[0m[ INFO] [1793172313.838304206]: Got new plan[0m
+[0m[ INFO] [1793172313.938293040]: Got new plan[0m
+[0m[ INFO] [1793172314.038272786]: Got new plan[0m
+[0m[ INFO] [1793172314.138272308]: Got new plan[0m
+[0m[ INFO] [1793172314.238271350]: Got new plan[0m
+[0m[ INFO] [1793172314.338251064]: Got new plan[0m
+[0m[ INFO] [1793172314.438266362]: Got new plan[0m
+[0m[ INFO] [1793172314.538267900]: Got new plan[0m
+[0m[ INFO] [1793172314.638276478]: Got new plan[0m
+[0m[ INFO] [1793172314.738300256]: Got new plan[0m
+[0m[ INFO] [1793172314.838335938]: Got new plan[0m
+[0m[ INFO] [1793172314.938309253]: Got new plan[0m
+[0m[ INFO] [1793172315.038307175]: Got new plan[0m
+[0m[ INFO] [1793172315.138291817]: Got new plan[0m
+[0m[ INFO] [1793172315.238314348]: Got new plan[0m
+[0m[ INFO] [1793172315.338278382]: Got new plan[0m
+[0m[ INFO] [1793172315.438308017]: Got new plan[0m
+[0m[ INFO] [1793172315.538285939]: Got new plan[0m
+[0m[ INFO] [1793172315.638299894]: Got new plan[0m
+[0m[ INFO] [1793172315.738310936]: Got new plan[0m
+[0m[ INFO] [1793172315.838279387]: Got new plan[0m
+[0m[ INFO] [1793172315.938327517]: Got new plan[0m
+[0m[ INFO] [1793172316.038284064]: Got new plan[0m
+[0m[ INFO] [1793172316.138465793]: Got new plan[0m
+[0m[ INFO] [1793172316.238291589]: Got new plan[0m
+[0m[ INFO] [1793172316.338372007]: Got new plan[0m
+[0m[ INFO] [1793172316.438310506]: Got new plan[0m
+[0m[ INFO] [1793172316.538290285]: Got new plan[0m
+[0m[ INFO] [1793172316.638320688]: Got new plan[0m
+[0m[ INFO] [1793172316.738310931]: Got new plan[0m
+[0m[ INFO] [1793172316.838765746]: Got new plan[0m
+[0m[ INFO] [1793172316.939951980]: Got new plan[0m
+[0m[ INFO] [1793172317.038327547]: Got new plan[0m
+[0m[ INFO] [1793172317.138274719]: Got new plan[0m
+[0m[ INFO] [1793172317.238340225]: Got new plan[0m
+[0m[ INFO] [1793172317.338290981]: Got new plan[0m
+[0m[ INFO] [1793172317.438304712]: Got new plan[0m
+[0m[ INFO] [1793172317.538333611]: Got new plan[0m
+[0m[ INFO] [1793172317.638311374]: Got new plan[0m
+[0m[ INFO] [1793172317.738302705]: Got new plan[0m
+[0m[ INFO] [1793172317.838283668]: Got new plan[0m
+[0m[ INFO] [1793172317.938579221]: Got new plan[0m
+[0m[ INFO] [1793172318.039267059]: Got new plan[0m
+[0m[ INFO] [1793172318.138339486]: Got new plan[0m
+[0m[ INFO] [1793172318.238340673]: Got new plan[0m
+[0m[ INFO] [1793172318.338321221]: Got new plan[0m
+[0m[ INFO] [1793172318.438309256]: Got new plan[0m
+[0m[ INFO] [1793172318.538309452]: Got new plan[0m
+[0m[ INFO] [1793172318.638390478]: Got new plan[0m
+[0m[ INFO] [1793172318.738312818]: Got new plan[0m
+[0m[ INFO] [1793172318.838713587]: Got new plan[0m
+[0m[ INFO] [1793172318.938345817]: Got new plan[0m
+[0m[ INFO] [1793172319.038298909]: Got new plan[0m
+[0m[ INFO] [1793172319.138322785]: Got new plan[0m
+[0m[ INFO] [1793172319.238322692]: Got new plan[0m
+[0m[ INFO] [1793172319.338287368]: Got new plan[0m
+[0m[ INFO] [1793172319.438312428]: Got new plan[0m
+[0m[ INFO] [1793172319.538286800]: Got new plan[0m
+[0m[ INFO] [1793172319.638299156]: Got new plan[0m
+[0m[ INFO] [1793172319.738299639]: Got new plan[0m
+[0m[ INFO] [1793172319.838301691]: Got new plan[0m
+[0m[ INFO] [1793172319.938297695]: Got new plan[0m
+[0m[ INFO] [1793172320.038302627]: Got new plan[0m
+[0m[ INFO] [1793172320.138284231]: Got new plan[0m
+[0m[ INFO] [1793172320.238311243]: Got new plan[0m
+[0m[ INFO] [1793172320.338300591]: Got new plan[0m
+[0m[ INFO] [1793172320.438302451]: Got new plan[0m
+[0m[ INFO] [1793172320.538295959]: Got new plan[0m
+[0m[ INFO] [1793172320.638350555]: Got new plan[31m[ERROR] [1793172320.638884791]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.738649853]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.838645185]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172320.938712228]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.038728265]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.138729581]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.238609586]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.339817070]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.438663035]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.538645983]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.639769275]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.738692488]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.840067458]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172321.938859023]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.038884820]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.138861017]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.239186907]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.338774339]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.438649289]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.538781644]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.638659762]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.738695478]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.838699835]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172322.938639008]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.039297088]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.139191430]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.239020429]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.338680628]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.438887352]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.538737982]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.638694531]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.738628233]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.838786829]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172323.938876881]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.038944118]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.138753405]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.239450205]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.338868167]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.438849228]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.538802194]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.638989686]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.738740797]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.838594628]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172324.938634665]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.039037579]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.138674260]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.238644090]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.338900126]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.438734757]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.538717515]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.638652785]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.739071379]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.839074009]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172325.938784385]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.038830055]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.138788525]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.238638740]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.338846809]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.439074237]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.538833029]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.638963178]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.738798417]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.838759064]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172326.938693854]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.038734660]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.139015528]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.238662289]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.338771863]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.439112507]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.539026370]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.638721674]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.738661201]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.838768823]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172327.939282553]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.038782340]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.138671211]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.238707282]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.338766712]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[0m
+[0m[ INFO] [1793172320.738308831]: Got new plan[0m
+[0m[ INFO] [1793172320.838282756]: Got new plan[0m
+[0m[ INFO] [1793172320.938295976]: Got new plan[0m
+[0m[ INFO] [1793172321.038324044]: Got new plan[0m
+[0m[ INFO] [1793172321.138328304]: Got new plan[0m
+[0m[ INFO] [1793172321.238256949]: Got new plan[0m
+[0m[ INFO] [1793172321.338286489]: Got new plan[0m
+[0m[ INFO] [1793172321.438291646]: Got new plan[0m
+[0m[ INFO] [1793172321.538249762]: Got new plan[0m
+[0m[ INFO] [1793172321.638315590]: Got new plan[0m
+[0m[ INFO] [1793172321.738329675]: Got new plan[0m
+[0m[ INFO] [1793172321.838296655]: Got new plan[0m
+[0m[ INFO] [1793172321.938296276]: Got new plan[0m
+[0m[ INFO] [1793172322.038315608]: Got new plan[0m
+[0m[ INFO] [1793172322.138299901]: Got new plan[0m
+[0m[ INFO] [1793172322.238304290]: Got new plan[0m
+[0m[ INFO] [1793172322.338309606]: Got new plan[0m
+[0m[ INFO] [1793172322.438282571]: Got new plan[0m
+[0m[ INFO] [1793172322.538406095]: Got new plan[0m
+[0m[ INFO] [1793172322.638287893]: Got new plan[0m
+[0m[ INFO] [1793172322.738316921]: Got new plan[0m
+[0m[ INFO] [1793172322.838285598]: Got new plan[0m
+[0m[ INFO] [1793172322.938293635]: Got new plan[0m
+[0m[ INFO] [1793172323.038278536]: Got new plan[0m
+[0m[ INFO] [1793172323.138277133]: Got new plan[0m
+[0m[ INFO] [1793172323.238293394]: Got new plan[0m
+[0m[ INFO] [1793172323.338289751]: Got new plan[0m
+[0m[ INFO] [1793172323.438277532]: Got new plan[0m
+[0m[ INFO] [1793172323.538286913]: Got new plan[0m
+[0m[ INFO] [1793172323.638295174]: Got new plan[0m
+[0m[ INFO] [1793172323.738274700]: Got new plan[0m
+[0m[ INFO] [1793172323.838301393]: Got new plan[0m
+[0m[ INFO] [1793172323.938290326]: Got new plan[0m
+[0m[ INFO] [1793172324.038297883]: Got new plan[0m
+[0m[ INFO] [1793172324.138285056]: Got new plan[0m
+[0m[ INFO] [1793172324.238293350]: Got new plan[0m
+[0m[ INFO] [1793172324.338341835]: Got new plan[0m
+[0m[ INFO] [1793172324.438460079]: Got new plan[0m
+[0m[ INFO] [1793172324.538347286]: Got new plan[0m
+[0m[ INFO] [1793172324.638439066]: Got new plan[0m
+[0m[ INFO] [1793172324.738287233]: Got new plan[0m
+[0m[ INFO] [1793172324.838257478]: Got new plan[0m
+[0m[ INFO] [1793172324.938287180]: Got new plan[0m
+[0m[ INFO] [1793172325.038272529]: Got new plan[0m
+[0m[ INFO] [1793172325.138310839]: Got new plan[0m
+[0m[ INFO] [1793172325.238284509]: Got new plan[0m
+[0m[ INFO] [1793172325.338279778]: Got new plan[0m
+[0m[ INFO] [1793172325.438307880]: Got new plan[0m
+[0m[ INFO] [1793172325.538285742]: Got new plan[0m
+[0m[ INFO] [1793172325.638292692]: Got new plan[0m
+[0m[ INFO] [1793172325.738289689]: Got new plan[0m
+[0m[ INFO] [1793172325.838308927]: Got new plan[0m
+[0m[ INFO] [1793172325.938295877]: Got new plan[0m
+[0m[ INFO] [1793172326.038308394]: Got new plan[0m
+[0m[ INFO] [1793172326.138269681]: Got new plan[0m
+[0m[ INFO] [1793172326.238279927]: Got new plan[0m
+[0m[ INFO] [1793172326.338288413]: Got new plan[0m
+[0m[ INFO] [1793172326.438296067]: Got new plan[0m
+[0m[ INFO] [1793172326.538391048]: Got new plan[0m
+[0m[ INFO] [1793172326.638350575]: Got new plan[0m
+[0m[ INFO] [1793172326.738302933]: Got new plan[0m
+[0m[ INFO] [1793172326.838299195]: Got new plan[0m
+[0m[ INFO] [1793172326.938281729]: Got new plan[0m
+[0m[ INFO] [1793172327.038283207]: Got new plan[0m
+[0m[ INFO] [1793172327.138287310]: Got new plan[0m
+[0m[ INFO] [1793172327.238294004]: Got new plan[0m
+[0m[ INFO] [1793172327.338358874]: Got new plan[0m
+[0m[ INFO] [1793172327.438299489]: Got new plan[0m
+[0m[ INFO] [1793172327.538295079]: Got new plan[0m
+[0m[ INFO] [1793172327.638287726]: Got new plan[0m
+[0m[ INFO] [1793172327.738281428]: Got new plan[0m
+[0m[ INFO] [1793172327.838300346]: Got new plan[0m
+[0m[ INFO] [1793172327.938403040]: Got new plan[0m
+[0m[ INFO] [1793172328.038316487]: Got new plan[0m
+[0m[ INFO] [1793172328.138286286]: Got new plan[0m
+[0m[ INFO] [1793172328.238264981]: Got new plan[0m
+[0m[ INFO] [1793172328.338335867]: Got new plan[0m
+[0m[ INFO[31m[ERROR] [1793172328.438880638]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.538859493]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.639010346]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.738717107]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.840447277]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172328.939308444]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.038816103]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.138820750]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.238881204]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.338770844]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.439025633]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.538754154]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.638698354]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.738819896]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.838924286]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172329.938646759]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.038674926]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.138745909]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.238791484]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.338653732]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.438715019]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.538763474]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.638788345]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.738877120]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.838864040]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172330.938637745]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.038693144]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.138671712]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.240031805]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.338672751]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.438933013]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.538738110]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.638647590]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.738660398]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.838623830]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172331.938657373]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.038876867]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.138693997]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.238980499]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.338700925]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.438927395]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.538978475]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.638658389]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.738653213]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.839796572]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172332.938765676]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.038689077]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.138961723]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.238759845]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.338789165]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.438809621]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.538775294]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.638799398]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.738704943]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.838768727]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172333.938754111]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.038762280]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.138705233]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.238726041]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.338863521]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.439081320]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.538617588]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.638633565]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.738743236]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.838684750]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172334.938737622]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.038796702]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.138677928]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.238674673]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.338612506]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.438824546]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.538841579]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.638724724]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.738666110]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.838722822]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172335.938681968]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.038607929]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+] [1793172328.438277474]: Got new plan[0m
+[0m[ INFO] [1793172328.538274857]: Got new plan[0m
+[0m[ INFO] [1793172328.638348367]: Got new plan[0m
+[0m[ INFO] [1793172328.738301686]: Got new plan[0m
+[0m[ INFO] [1793172328.838267261]: Got new plan[0m
+[0m[ INFO] [1793172328.938437187]: Got new plan[0m
+[0m[ INFO] [1793172329.038290187]: Got new plan[0m
+[0m[ INFO] [1793172329.138314737]: Got new plan[0m
+[0m[ INFO] [1793172329.238297241]: Got new plan[0m
+[0m[ INFO] [1793172329.338313280]: Got new plan[0m
+[0m[ INFO] [1793172329.438531205]: Got new plan[0m
+[0m[ INFO] [1793172329.538298670]: Got new plan[0m
+[0m[ INFO] [1793172329.638299381]: Got new plan[0m
+[0m[ INFO] [1793172329.738308892]: Got new plan[0m
+[0m[ INFO] [1793172329.838300931]: Got new plan[0m
+[0m[ INFO] [1793172329.938285162]: Got new plan[0m
+[0m[ INFO] [1793172330.038294769]: Got new plan[0m
+[0m[ INFO] [1793172330.138299064]: Got new plan[0m
+[0m[ INFO] [1793172330.238304384]: Got new plan[0m
+[0m[ INFO] [1793172330.338280391]: Got new plan[0m
+[0m[ INFO] [1793172330.438268527]: Got new plan[0m
+[0m[ INFO] [1793172330.538284918]: Got new plan[0m
+[0m[ INFO] [1793172330.638316285]: Got new plan[0m
+[0m[ INFO] [1793172330.738382852]: Got new plan[0m
+[0m[ INFO] [1793172330.838305580]: Got new plan[0m
+[0m[ INFO] [1793172330.938279603]: Got new plan[0m
+[0m[ INFO] [1793172331.038352410]: Got new plan[0m
+[0m[ INFO] [1793172331.138271555]: Got new plan[0m
+[0m[ INFO] [1793172331.238271402]: Got new plan[0m
+[0m[ INFO] [1793172331.338279442]: Got new plan[0m
+[0m[ INFO] [1793172331.438276762]: Got new plan[0m
+[0m[ INFO] [1793172331.538279777]: Got new plan[0m
+[0m[ INFO] [1793172331.638278761]: Got new plan[0m
+[0m[ INFO] [1793172331.738280209]: Got new plan[0m
+[0m[ INFO] [1793172331.838263864]: Got new plan[0m
+[0m[ INFO] [1793172331.938282176]: Got new plan[0m
+[0m[ INFO] [1793172332.038318120]: Got new plan[0m
+[0m[ INFO] [1793172332.138290064]: Got new plan[0m
+[0m[ INFO] [1793172332.238433751]: Got new plan[0m
+[0m[ INFO] [1793172332.338304256]: Got new plan[0m
+[0m[ INFO] [1793172332.438291912]: Got new plan[0m
+[0m[ INFO] [1793172332.538294960]: Got new plan[0m
+[0m[ INFO] [1793172332.638262456]: Got new plan[0m
+[0m[ INFO] [1793172332.738273792]: Got new plan[0m
+[0m[ INFO] [1793172332.838281640]: Got new plan[0m
+[0m[ INFO] [1793172332.938269968]: Got new plan[0m
+[0m[ INFO] [1793172333.038274136]: Got new plan[0m
+[0m[ INFO] [1793172333.138490271]: Got new plan[0m
+[0m[ INFO] [1793172333.238280329]: Got new plan[0m
+[0m[ INFO] [1793172333.338337329]: Got new plan[0m
+[0m[ INFO] [1793172333.438344313]: Got new plan[0m
+[0m[ INFO] [1793172333.538357153]: Got new plan[0m
+[0m[ INFO] [1793172333.638288778]: Got new plan[0m
+[0m[ INFO] [1793172333.738289938]: Got new plan[0m
+[0m[ INFO] [1793172333.838285947]: Got new plan[0m
+[0m[ INFO] [1793172333.938279107]: Got new plan[0m
+[0m[ INFO] [1793172334.038290123]: Got new plan[0m
+[0m[ INFO] [1793172334.138292276]: Got new plan[0m
+[0m[ INFO] [1793172334.238271517]: Got new plan[0m
+[0m[ INFO] [1793172334.338302277]: Got new plan[0m
+[0m[ INFO] [1793172334.438540876]: Got new plan[0m
+[0m[ INFO] [1793172334.538268727]: Got new plan[0m
+[0m[ INFO] [1793172334.638272447]: Got new plan[0m
+[0m[ INFO] [1793172334.738305032]: Got new plan[0m
+[0m[ INFO] [1793172334.838269489]: Got new plan[0m
+[0m[ INFO] [1793172334.938292601]: Got new plan[0m
+[0m[ INFO] [1793172335.038285090]: Got new plan[0m
+[0m[ INFO] [1793172335.138259755]: Got new plan[0m
+[0m[ INFO] [1793172335.238294452]: Got new plan[0m
+[0m[ INFO] [1793172335.338271453]: Got new plan[0m
+[0m[ INFO] [1793172335.438361829]: Got new plan[0m
+[0m[ INFO] [1793172335.538292751]: Got new plan[0m
+[0m[ INFO] [1793172335.638286616]: Got new plan[0m
+[0m[ INFO] [1793172335.738277153]: Got new plan[0m
+[0m[ INFO] [1793172335.838284138]: Got new plan[0m
+[0m[ INFO] [1793172335.938279667]: Got new plan[0m
+[0m[ INFO] [1793172336.038267004]: Got new plan[0m
+[0m[ INFO] [1793172336.1[31m[ERROR] [1793172336.138911744]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.238626604]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.338636053]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.438679326]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.538780614]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.638694224]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.738700666]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.838742339]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172336.938871275]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.038837493]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.138805150]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.238721897]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.338802642]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.438814587]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.538840229]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.638983949]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.738858392]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.841551661]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172337.938755628]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.040893829]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.138702336]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.240368701]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.339115440]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.438673726]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.538696327]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.638794193]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.740225264]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.841025300]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172338.938704591]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.038936951]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.139412606]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.238660622]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.338676408]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.438669986]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.538845803]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.638827734]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.739430523]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.838665611]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172339.938751509]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172340.038666464]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172340.138795178]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172340.239252049]: None of the 0 first of 0 (0) points of the global plan were in the local costmap and free[0m
+[31m[ERROR] [1793172340.338339426]: Aborting because the robot appears to be oscillating over and over. Even after executing all recovery behaviors[0m
+38283045]: Got new plan[0m
+[0m[ INFO] [1793172336.238274926]: Got new plan[0m
+[0m[ INFO] [1793172336.338295064]: Got new plan[0m
+[0m[ INFO] [1793172336.438277601]: Got new plan[0m
+[0m[ INFO] [1793172336.538275978]: Got new plan[0m
+[0m[ INFO] [1793172336.638285395]: Got new plan[0m
+[0m[ INFO] [1793172336.738283837]: Got new plan[0m
+[0m[ INFO] [1793172336.838283750]: Got new plan[0m
+[0m[ INFO] [1793172336.938285167]: Got new plan[0m
+[0m[ INFO] [1793172337.038303257]: Got new plan[0m
+[0m[ INFO] [1793172337.138334626]: Got new plan[0m
+[0m[ INFO] [1793172337.238311404]: Got new plan[0m
+[0m[ INFO] [1793172337.338325045]: Got new plan[0m
+[0m[ INFO] [1793172337.438298239]: Got new plan[0m
+[0m[ INFO] [1793172337.538277161]: Got new plan[0m
+[0m[ INFO] [1793172337.638308690]: Got new plan[0m
+[0m[ INFO] [1793172337.738316252]: Got new plan[0m
+[0m[ INFO] [1793172337.838328901]: Got new plan[0m
+[0m[ INFO] [1793172337.938295247]: Got new plan[0m
+[0m[ INFO] [1793172338.038282041]: Got new plan[0m
+[0m[ INFO] [1793172338.138278819]: Got new plan[0m
+[0m[ INFO] [1793172338.238290573]: Got new plan[0m
+[0m[ INFO] [1793172338.338275959]: Got new plan[0m
+[0m[ INFO] [1793172338.438289473]: Got new plan[0m
+[0m[ INFO] [1793172338.538287947]: Got new plan[0m
+[0m[ INFO] [1793172338.638315732]: Got new plan[0m
+[0m[ INFO] [1793172338.738288542]: Got new plan[0m
+[0m[ INFO] [1793172338.838305320]: Got new plan[0m
+[0m[ INFO] [1793172338.938296594]: Got new plan[0m
+[0m[ INFO] [1793172339.038321084]: Got new plan[0m
+[0m[ INFO] [1793172339.138276199]: Got new plan[0m
+[0m[ INFO] [1793172339.238279921]: Got new plan[0m
+[0m[ INFO] [1793172339.338268987]: Got new plan[0m
+[0m[ INFO] [1793172339.438292773]: Got new plan[0m
+[0m[ INFO] [1793172339.538360399]: Got new plan[0m
+[0m[ INFO] [1793172339.638459416]: Got new plan[0m
+[0m[ INFO] [1793172339.738319492]: Got new plan[0m
+[0m[ INFO] [1793172339.838285390]: Got new plan[0m
+[0m[ INFO] [1793172339.938338904]: Got new plan[0m
+[0m[ INFO] [1793172340.038281059]: Got new plan[0m
+[0m[ INFO] [1793172340.138386861]: Got new plan[0m
+[0m[ INFO] [1793172340.238283096]: Got new plan[0m
+tro: melodic
+ * /rosversion: 1.14.13
+
+NODES
+  /
+    amcl (amcl/amcl)
+    map_server (map_server/map_server)
+    move_base (move_base/move_base)
+
+[1mROS_MASTER_URI=http://127.0.0.1:11311[0m
+]2;/home/jetson/rosmaster_x3_deploy/live_test/demo_navigation.launch http://127.0.0.1:11311
+[1mprocess[move_base-1]: started with pid [23371][0m
+[1mprocess[map_server-2]: started with pid [23380][0m
+[1mprocess[amcl-3]: started with pid [23381][0m
+[amcl-3] killing on exit
+[map_server-2] killing on exit
+[move_base-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

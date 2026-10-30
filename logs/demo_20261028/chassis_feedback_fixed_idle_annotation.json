@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "source_file": "chassis_feedback_fixed_idle.jsonl",
+  "user_observation": "搬动或转过小车",
+  "manual_body_motion_during_recording": true,
+  "valid_stationary_baseline": false,
+  "imu_fault_established": false,
+  "heading_calibration_verified": false,
+  "next_step": "Collect a new untouched stationary baseline after battery charging."
+}

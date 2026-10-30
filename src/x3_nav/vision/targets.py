@@ -5,8 +5,9 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any
 
-import cv2
-import numpy as np
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    import numpy as np
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,7 @@ class Target:
 
 
 def detect_qr_targets(frame: np.ndarray, expected_label: str) -> list[Target]:
+    import cv2
     if frame is None or frame.size == 0:
         raise ValueError("Empty image")
     if not expected_label.strip():
@@ -106,6 +108,8 @@ def recommend_option(preview: dict[str, Any], bearing_deg: float,
 
 
 def annotate_targets(frame: np.ndarray, targets: list[Target]) -> np.ndarray:
+    import cv2
+    import numpy as np
     image = frame.copy()
     for target in targets:
         corners = np.asarray(target.corners, dtype=np.int32)

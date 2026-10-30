@@ -10,6 +10,8 @@ tree = ET.parse(str(source))
 for node in list(tree.getroot()):
     if node.tag == "include" and "yahboomcar_ctrl" in node.get("file", ""):
         tree.getroot().remove(node)
+    if node.tag == 'node' and node.get('type') == 'Mcnamu_driver.py':
+        node.set('launch-prefix','python '+str(Path.home()/'rosmaster_x3_deploy/scripts/pinned_chassis_driver.py'))
 tree.write(str(root / "bringup_no_joy.launch"), encoding="utf-8", xml_declaration=True)
 launch = ET.Element("launch")
 ET.SubElement(launch, "include", file=str(root / "bringup_no_joy.launch"))

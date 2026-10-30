@@ -1,0 +1,978 @@
+{
+  "authorized_distance_m": 0.1,
+  "goal_sent": true,
+  "preview": {
+    "ok": true,
+    "reason": "session_created",
+    "preview_only": true,
+    "session_created": true,
+    "session_id": "8YAuyg4qVLTOvhp9lq3KfkjvSoN-jIUo",
+    "session_ttl_sec": 60.0,
+    "expires_epoch": 1793172340.5850024,
+    "option_count": 3,
+    "max_options": 5,
+    "navigation_goal_sent": false,
+    "direct_cmd_vel_published": false,
+    "waypoint_file_modified": false,
+    "direction_description_reliable": false,
+    "current_pose": {
+      "frame_id": "map",
+      "x": -0.036965498835862365,
+      "y": 0.010377141880694279,
+      "yaw_deg": 12.861631087636736,
+      "yaw_rad": 0.22447780965612038,
+      "quaternion_norm_input": 0.9999999999999999,
+      "quality": {
+        "freshness_verified": true,
+        "stamp_sec": 1793172276.072886,
+        "message_age_sec": 0.08587265014648438,
+        "position_variance_max": 0.0011843888774108124,
+        "yaw_variance": 0.00035205272304866147,
+        "max_message_age_sec": 2.0,
+        "max_position_variance_m2": 0.01,
+        "max_yaw_variance_rad2": 0.1
+      },
+      "orientation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.11200339694213879,
+        "w": 0.99370782379602
+      }
+    },
+    "search": {
+      "min_radius_m": 0.1,
+      "max_radius_m": 0.1,
+      "radius_step_m": 0.1,
+      "angle_step_deg": 15,
+      "max_options": 5,
+      "session_ttl_sec": 60.0,
+      "min_angle_separation_deg": 30.0,
+      "origin_translation_limit_m": 0.03,
+      "window_m": 0.05,
+      "goal_cost_limit": 80,
+      "plan_tolerance_m": 0.02,
+      "plan_timeout_sec": 2.0,
+      "max_plan_checks": 45,
+      "preview_time_budget_sec": 45.0,
+      "strict_high_cost": true,
+      "max_prepare_distance_m": 0.93,
+      "radii_m": [
+        0.1
+      ],
+      "relative_angles_deg": [
+        0.0,
+        15.0,
+        30.0,
+        -30.0,
+        -15.0
+      ],
+      "candidate_total": 5,
+      "requested_max_options": 5,
+      "effective_max_options": 5
+    },
+    "candidate_stats": {
+      "candidate_total": 5,
+      "strict_passed": 5,
+      "geometry_candidate_total": 5,
+      "geometry_processed": 5,
+      "costmap_passed": 5,
+      "plan_checked": 5,
+      "plan_passed": 5,
+      "plan_check_limit": 45,
+      "plan_check_limit_reached": false,
+      "selected_after_diversity": 3,
+      "farthest_safe_radius_m": 0.1,
+      "failures": {
+        "target_frame_invalid": 0,
+        "target_non_finite": 0,
+        "target_too_far": 0,
+        "costmap_check_failed": 0,
+        "make_plan_failed": 0
+      }
+    },
+    "options": [
+      {
+        "frame_id": "map",
+        "x": 0.06052554897882198,
+        "y": 0.03263687224732119,
+        "yaw_deg": 12.861631087636736,
+        "radius_m": 0.1,
+        "relative_angle_deg": 0.0,
+        "direction_label": "正前方",
+        "direction_description_reliable": false,
+        "goal_cost": 0,
+        "window_max_cost": 0,
+        "unknown_count": 0,
+        "lethal_count": 0,
+        "high_cost_count": 0,
+        "make_plan_ok": true,
+        "path_pose_count": 4,
+        "plan_terminal_error_m": 0.0,
+        "obstacle_margin_proxy": 79,
+        "score": 7.040000000000001,
+        "validation_digest": "c7fc32a7554d2695fa47b567ff1955bcb4311bcec9a6dad3b9d054a7cfd79fbb",
+        "option_id": 1
+      },
+      {
+        "frame_id": "map",
+        "x": 0.058594090396531115,
+        "y": -0.019090890047757082,
+        "yaw_deg": 12.861631087636736,
+        "radius_m": 0.1,
+        "relative_angle_deg": -30.0,
+        "direction_label": "右前方",
+        "direction_description_reliable": false,
+        "goal_cost": 0,
+        "window_max_cost": 0,
+        "unknown_count": 0,
+        "lethal_count": 0,
+        "high_cost_count": 0,
+        "make_plan_ok": true,
+        "path_pose_count": 4,
+        "plan_terminal_error_m": 0.0,
+        "obstacle_margin_proxy": 79,
+        "score": 7.043000000000001,
+        "validation_digest": "a5e58f93d1017c4c10ffd159f27e97506c93b26d051c6c3b6edfc3a1cf94f14d",
+        "option_id": 2
+      },
+      {
+        "frame_id": "map",
+        "x": 0.0363343600299042,
+        "y": 0.07840015776692724,
+        "yaw_deg": 12.861631087636736,
+        "radius_m": 0.1,
+        "relative_angle_deg": 30.0,
+        "direction_label": "左前方",
+        "direction_description_reliable": false,
+        "goal_cost": 0,
+        "window_max_cost": 0,
+        "unknown_count": 0,
+        "lethal_count": 0,
+        "high_cost_count": 0,
+        "make_plan_ok": true,
+        "path_pose_count": 3,
+        "plan_terminal_error_m": 0.0,
+        "obstacle_margin_proxy": 79,
+        "score": 7.033000000000001,
+        "validation_digest": "435ae11e34b37819975e5a5cd7b29949fd7336b1884faafe6628cf8c13008148",
+        "option_id": 3
+      }
+    ],
+    "preview_elapsed_sec": 15.420526960999723,
+    "preview_time_budget_sec": 45.0,
+    "preview_time_budget_reached": false,
+    "message": "safe move options are ready for numbered selection; no navigation goal was sent",
+    "navigation_readiness": {
+      "ok": true,
+      "ready": true,
+      "checks": {
+        "rosbridge": {
+          "ok": true,
+          "connected": true
+        },
+        "odom": {
+          "ok": true,
+          "data": {
+            "x": 0.0,
+            "y": 0.0,
+            "orientation_z": 0.260195880154716,
+            "orientation_w": 0.9655558523205753,
+            "linear_x": 0.0,
+            "linear_y": 0.0,
+            "angular_z": -2.887562879014407e-07
+          }
+        },
+        "scan": {
+          "ok": true,
+          "data": {
+            "frame_id": "laser",
+            "range_min": 0.15000000596046448,
+            "range_max": 12.0,
+            "ranges_length": 1147,
+            "valid_ranges": 823,
+            "first_10_ranges": [
+              1.5720000267028809,
+              1.5759999752044678,
+              1.5800000429153442,
+              1.5839999914169312,
+              1.5839999914169312,
+              1.5880000591278076,
+              1.5920000076293945,
+              1.5959999561309814,
+              1.6019999980926514,
+              1.6080000400543213
+            ]
+          }
+        },
+        "amcl": {
+          "ok": true,
+          "data": {
+            "frame_id": "map",
+            "x": -0.03790128806370982,
+            "y": 0.012620109432850789,
+            "orientation_z": 0.0754746723577118,
+            "orientation_w": 0.9971477191632622,
+            "raw_pose": {
+              "position": {
+                "y": 0.012620109432850789,
+                "x": -0.03790128806370982,
+                "z": 0.0
+              },
+              "orientation": {
+                "y": 0.0,
+                "x": 0.0,
+                "z": 0.0754746723577118,
+                "w": 0.9971477191632622
+              }
+            },
+            "stamp_sec": 1793172135.99484,
+            "received_epoch": 1793172266.2398448,
+            "message_age_sec": 130.24500489234924,
+            "covariance": [
+              0.0005270505843746613,
+              -0.0005062961010255266,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0005062961010255266,
+              0.0011299537177540523,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0003385879182367146
+            ],
+            "position_variance_max": 0.0011299537177540523,
+            "yaw_variance": 0.0003385879182367146
+          }
+        },
+        "move_base_status": {
+          "ok": true,
+          "data": {
+            "has_status": false,
+            "status": null,
+            "status_name": null,
+            "text": "no active or recent navigation goal",
+            "goal_id": null,
+            "active": false
+          }
+        },
+        "cmd_vel_idle": {
+          "ok": true,
+          "data": {
+            "received": false,
+            "idle": true,
+            "command_active": false,
+            "reason": "no /cmd_vel message observed during timeout",
+            "timeout_sec": 1.5,
+            "linear_threshold": 0.02,
+            "angular_threshold": 0.05
+          }
+        },
+        "costmap_status": {
+          "ok": true,
+          "data": {
+            "ok": true,
+            "global_costmap": {
+              "ok": true,
+              "topic": "/move_base/global_costmap/costmap",
+              "frame_id": "map",
+              "resolution": 0.05000000074505806,
+              "width": 800,
+              "height": 800,
+              "width_m": 40.00000059604645,
+              "height_m": 40.00000059604645,
+              "origin_x": -20.0,
+              "origin_y": -20.0,
+              "expected_cells": 640000,
+              "data_length": 640000,
+              "size_match": true,
+              "unknown_cells": 631041,
+              "free_cells": 4253,
+              "nonzero_cells": 4706,
+              "high_ge80": 3368,
+              "occupied_ge100": 764
+            },
+            "local_costmap": {
+              "ok": true,
+              "topic": "/move_base/local_costmap/costmap",
+              "frame_id": "odom",
+              "resolution": 0.05000000074505806,
+              "width": 60,
+              "height": 60,
+              "width_m": 3.0000000447034836,
+              "height_m": 3.0000000447034836,
+              "origin_x": -1.4500000000000002,
+              "origin_y": -1.4500000000000002,
+              "expected_cells": 3600,
+              "data_length": 3600,
+              "size_match": true,
+              "unknown_cells": 0,
+              "free_cells": 2829,
+              "nonzero_cells": 771,
+              "high_ge80": 464,
+              "occupied_ge100": 131
+            },
+            "read_only": true,
+            "navigation_goal_sent": false,
+            "cmd_vel_published": false
+          }
+        },
+        "tf_chain_status": {
+          "ok": true,
+          "data": {
+            "fixed_frame": "map",
+            "target_frame": "base_footprint",
+            "message_counts": {
+              "/tf": 279,
+              "/tf_static": 1
+            },
+            "frame_count": 11,
+            "related_frames": {
+              "odom": {
+                "parent": "map",
+                "translation": {
+                  "y": 0.01262010943285079,
+                  "x": -0.03790128806370981,
+                  "z": 0.0
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": -0.1521884238552703,
+                  "w": 0.988351498023071
+                },
+                "source_topic": "/tf"
+              },
+              "base_footprint": {
+                "parent": "odom",
+                "translation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.26218730546179575,
+                  "w": 0.9650170034018484
+                },
+                "source_topic": "/tf"
+              },
+              "base_link": {
+                "parent": "base_footprint",
+                "translation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0815
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0,
+                  "w": 1.0
+                },
+                "source_topic": "/tf_static"
+              },
+              "laser": {
+                "parent": "base_link",
+                "translation": {
+                  "y": 5.258e-05,
+                  "x": 0.0435,
+                  "z": 0.11
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.9999999999932538,
+                  "w": -3.6732051033465744e-06
+                },
+                "source_topic": "/tf"
+              },
+              "laser_link": {
+                "parent": "base_link",
+                "translation": {
+                  "y": 5.25826986680105e-05,
+                  "x": 0.0435,
+                  "z": 0.11
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0,
+                  "w": 1.0
+                },
+                "source_topic": "/tf_static"
+              }
+            },
+            "chain_ok": true,
+            "chain": [
+              "map",
+              "odom",
+              "base_footprint"
+            ],
+            "reason": null,
+            "read_only": true,
+            "navigation_goal_sent": false,
+            "cmd_vel_published": false
+          }
+        },
+        "make_plan_status": {
+          "ok": true,
+          "data": {
+            "service_name": "/move_base/make_plan",
+            "service_present": true,
+            "expected_type": "nav_msgs/GetPlan",
+            "navigation_goal_sent": false,
+            "cmd_vel_published": false,
+            "actual_type": "nav_msgs/GetPlan",
+            "type_match": true,
+            "call_ok": true,
+            "test_distance_m": 0.05,
+            "tolerance_m": 0.05,
+            "start_x": -0.03790128806370982,
+            "start_y": 0.012620109432850789,
+            "goal_x": 0.011529069319539786,
+            "goal_y": 0.020146049172459473,
+            "plan_frame_id": "",
+            "plan_pose_count": 3,
+            "path_available": true
+          }
+        }
+      },
+      "safety": {
+        "read_only": true,
+        "raw_cmd_vel": "not used",
+        "navigation_goal": "not sent"
+      },
+      "limitations": [
+        "costmap structure is checked, but current robot-footprint clearance is not yet evaluated"
+      ],
+      "message": "ROS navigation prerequisites are ready"
+    }
+  },
+  "prepare_ok": true,
+  "watchdog_cancel": true,
+  "result": {
+    "ok": false,
+    "reason": "navigation_aborted",
+    "execution_requested": true,
+    "execution_gate_open": true,
+    "token_found": true,
+    "token_execution_authorized": true,
+    "token_claimed": true,
+    "token_consumed": true,
+    "one_time": true,
+    "confirmation_matched": true,
+    "third_validation_passed": true,
+    "navigation_goal_sent": true,
+    "navigation_goal_sent_known": true,
+    "goal_publish_attempted": true,
+    "goal_publish_completed": true,
+    "goal_publish_call_returned": true,
+    "goal_publish_outcome_unknown": false,
+    "goal_publish_error_type": null,
+    "goal_topic_cleanup_attempted": false,
+    "goal_topic_cleanup_completed": false,
+    "goal_topic_cleanup_error_type": null,
+    "execution_started": true,
+    "execution_elapsed_sec": 55.68593201500016,
+    "execution_validation_elapsed_sec": 14.26030549699999,
+    "execution_time_budget_sec": 20.0,
+    "execution_time_budget_reached": false,
+    "navigation_wait_elapsed_sec": 41.425632501999644,
+    "navigation_acceptance_timeout_sec": 5.0,
+    "navigation_result_timeout_sec": 45.0,
+    "move_base_acceptance_known": true,
+    "move_base_goal_id": "/move_base-1-1793172299.537747613",
+    "move_base_status": 4,
+    "move_base_status_name": "ABORTED",
+    "move_base_status_text": "Robot is oscillating. Even after executing recovery behaviors.",
+    "terminal_status_known": true,
+    "arrival_known": true,
+    "arrived": false,
+    "navigation_outcome": "failed",
+    "cmd_vel_observation": {
+      "messages": 717,
+      "nonzero_messages": 407,
+      "max_linear_mps": 0.05000000074505806,
+      "max_angular_rps": 0.20000000298023227
+    },
+    "amcl_observation": {
+      "messages": 1,
+      "first_pose": {
+        "x": -0.03615741902703947,
+        "y": 0.007631211592498201
+      },
+      "last_pose": {
+        "x": 0.0026935986613494827,
+        "y": 0.025285279028825037
+      },
+      "observer_displacement_m": 0.04267396949511361,
+      "displacement_from_validation_m": 0.04267396949511361
+    },
+    "odom_observation": {
+      "messages": 821,
+      "first_pose": {
+        "x": 0.0,
+        "y": 0.0,
+        "yaw": 0.5426126761646309
+      },
+      "last_pose": {
+        "x": 0.035144648009405886,
+        "y": 0.028788488677082148,
+        "yaw": 0.3104874230827328
+      },
+      "displacement_m": 0.0454304233307981,
+      "path_length_m": 0.05525538040101
+    },
+    "safety_watchdog_triggered": false,
+    "safety_watchdog_reason": null,
+    "safety_cancel_attempted": false,
+    "safety_cancel_terminal_observed": false,
+    "motion_evidence_confirmed": false,
+    "motion_evidence_min_displacement_m": 0.05,
+    "direct_cmd_vel_published": false,
+    "target": {
+      "frame_id": "map",
+      "x": 0.06052554897882198,
+      "y": 0.03263687224732119,
+      "yaw_deg": 12.861631087636738
+    },
+    "current_pose": {
+      "frame_id": "map",
+      "x": -0.03615741902703947,
+      "y": 0.007631211592498201,
+      "yaw_deg": 13.253032881903849,
+      "yaw_rad": 0.23130905966429496,
+      "quaternion_norm_input": 1.0,
+      "quality": {
+        "freshness_verified": true,
+        "stamp_sec": 1793172295.392732,
+        "message_age_sec": 0.06737589836120605,
+        "position_variance_max": 0.0013450877225319922,
+        "yaw_variance": 0.00038321842456335025,
+        "max_message_age_sec": 2.0,
+        "max_position_variance_m2": 0.01,
+        "max_yaw_variance_rad2": 0.1
+      },
+      "orientation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.11539687028939802,
+        "w": 0.9933194663991096
+      }
+    },
+    "prepared_pose": {
+      "frame_id": "map",
+      "x": -0.03618737717196144,
+      "y": 0.008665678559232429,
+      "yaw_deg": 12.955413360601824,
+      "yaw_rad": 0.22611461909936525,
+      "quaternion_norm_input": 1.0,
+      "quality": {
+        "freshness_verified": true,
+        "stamp_sec": 1793172280.740297,
+        "message_age_sec": 0.06670093536376953,
+        "position_variance_max": 0.0012462190046010268,
+        "yaw_variance": 0.0003728585926308078,
+        "max_message_age_sec": 2.0,
+        "max_position_variance_m2": 0.01,
+        "max_yaw_variance_rad2": 0.1
+      },
+      "orientation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.11281661451709443,
+        "w": 0.9936158269114383
+      }
+    },
+    "pose_translation_m": 0.001034900669490304,
+    "pose_translation_limit_m": 0.03,
+    "pose_yaw_change_deg": 0.2976195213020105,
+    "pose_yaw_gate_applied": false,
+    "costmap": {
+      "topic": "/move_base/global_costmap/costmap",
+      "frame_id": "map",
+      "resolution": 0.05000000074505806,
+      "width": 800,
+      "height": 800,
+      "origin_x": -20.0,
+      "origin_y": -20.0,
+      "timeout_sec": 8.0,
+      "distance_m": 0.09986430477005581,
+      "stats": {
+        "inside": true,
+        "goal_cost": 0,
+        "unknown": 0,
+        "lethal_ge100": 0,
+        "high_ge80": 0,
+        "max_cost": 0,
+        "map_x": 401,
+        "map_y": 400,
+        "window_radius_cells": 1
+      }
+    },
+    "plan": {
+      "service_name": "/move_base/make_plan",
+      "call_ok": true,
+      "path_available": true,
+      "plan_pose_count": 4,
+      "plan_last_x": 0.06052554897882198,
+      "plan_last_y": 0.03263687224732119,
+      "terminal_error_m": 0.0,
+      "terminal_error_limit_m": 0.10000000149011612,
+      "timeout_sec": 3.0
+    },
+    "validation_digest": "57cc23b42c35ccaac7ec3ca36b9b3c4224a84246c4b71e69c58e38162dea2fcc",
+    "message": "move_base finished with ABORTED: Robot is oscillating. Even after executing recovery behaviors.",
+    "navigation_readiness": {
+      "ok": true,
+      "ready": true,
+      "checks": {
+        "rosbridge": {
+          "ok": true,
+          "connected": true
+        },
+        "odom": {
+          "ok": true,
+          "data": {
+            "x": 0.0,
+            "y": 0.0,
+            "orientation_z": 0.26425251853584425,
+            "orientation_w": 0.9644535273653486,
+            "linear_x": 0.0,
+            "linear_y": 0.0,
+            "angular_z": -0.0007700190691308649
+          }
+        },
+        "scan": {
+          "ok": true,
+          "data": {
+            "frame_id": "laser",
+            "range_min": 0.15000000596046448,
+            "range_max": 12.0,
+            "ranges_length": 1147,
+            "valid_ranges": 820,
+            "first_10_ranges": [
+              1.5700000524520874,
+              1.5740000009536743,
+              1.5779999494552612,
+              1.5820000171661377,
+              1.5859999656677246,
+              1.590000033378601,
+              1.593999981880188,
+              1.5980000495910645,
+              1.5980000495910645,
+              1.6039999723434448
+            ]
+          }
+        },
+        "amcl": {
+          "ok": true,
+          "data": {
+            "frame_id": "map",
+            "x": -0.0359528524737124,
+            "y": 0.007458676062268722,
+            "orientation_z": 0.11252526267378268,
+            "orientation_w": 0.9936488641669129,
+            "raw_pose": {
+              "position": {
+                "y": 0.007458676062268722,
+                "x": -0.0359528524737124,
+                "z": 0.0
+              },
+              "orientation": {
+                "y": 0.0,
+                "x": 0.0,
+                "z": 0.11252526267378268,
+                "w": 0.9936488641669129
+              }
+            },
+            "stamp_sec": 1793172280.875256,
+            "received_epoch": 1793172285.3141057,
+            "message_age_sec": 4.438849687576294,
+            "covariance": [
+              0.0005472546811067715,
+              -0.000602583902644788,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.000602583902644788,
+              0.0012867707800145922,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.00037691915425066907
+            ],
+            "position_variance_max": 0.0012867707800145922,
+            "yaw_variance": 0.00037691915425066907
+          }
+        },
+        "move_base_status": {
+          "ok": true,
+          "data": {
+            "has_status": false,
+            "status": null,
+            "status_name": null,
+            "text": "no active or recent navigation goal",
+            "goal_id": null,
+            "active": false
+          }
+        },
+        "cmd_vel_idle": {
+          "ok": true,
+          "data": {
+            "received": false,
+            "idle": true,
+            "command_active": false,
+            "reason": "no /cmd_vel message observed during timeout",
+            "timeout_sec": 1.5,
+            "linear_threshold": 0.02,
+            "angular_threshold": 0.05
+          }
+        },
+        "costmap_status": {
+          "ok": true,
+          "data": {
+            "ok": true,
+            "global_costmap": {
+              "ok": true,
+              "topic": "/move_base/global_costmap/costmap",
+              "frame_id": "map",
+              "resolution": 0.05000000074505806,
+              "width": 800,
+              "height": 800,
+              "width_m": 40.00000059604645,
+              "height_m": 40.00000059604645,
+              "origin_x": -20.0,
+              "origin_y": -20.0,
+              "expected_cells": 640000,
+              "data_length": 640000,
+              "size_match": true,
+              "unknown_cells": 631021,
+              "free_cells": 4192,
+              "nonzero_cells": 4787,
+              "high_ge80": 3448,
+              "occupied_ge100": 775
+            },
+            "local_costmap": {
+              "ok": true,
+              "topic": "/move_base/local_costmap/costmap",
+              "frame_id": "odom",
+              "resolution": 0.05000000074505806,
+              "width": 60,
+              "height": 60,
+              "width_m": 3.0000000447034836,
+              "height_m": 3.0000000447034836,
+              "origin_x": -1.4500000000000002,
+              "origin_y": -1.4500000000000002,
+              "expected_cells": 3600,
+              "data_length": 3600,
+              "size_match": true,
+              "unknown_cells": 0,
+              "free_cells": 2748,
+              "nonzero_cells": 852,
+              "high_ge80": 499,
+              "occupied_ge100": 135
+            },
+            "read_only": true,
+            "navigation_goal_sent": false,
+            "cmd_vel_published": false
+          }
+        },
+        "tf_chain_status": {
+          "ok": true,
+          "data": {
+            "fixed_frame": "map",
+            "target_frame": "base_footprint",
+            "message_counts": {
+              "/tf": 279,
+              "/tf_static": 1
+            },
+            "frame_count": 11,
+            "related_frames": {
+              "odom": {
+                "parent": "map",
+                "translation": {
+                  "y": 0.007458676062268724,
+                  "x": -0.0359528524737124,
+                  "z": -0.0
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": -0.15323460876912373,
+                  "w": 0.9881898373669775
+                },
+                "source_topic": "/tf"
+              },
+              "base_footprint": {
+                "parent": "odom",
+                "translation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.26673307952192576,
+                  "w": 0.9637704416969582
+                },
+                "source_topic": "/tf"
+              },
+              "base_link": {
+                "parent": "base_footprint",
+                "translation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0815
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0,
+                  "w": 1.0
+                },
+                "source_topic": "/tf_static"
+              },
+              "laser": {
+                "parent": "base_link",
+                "translation": {
+                  "y": 5.258e-05,
+                  "x": 0.0435,
+                  "z": 0.11
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.9999999999932538,
+                  "w": -3.6732051033465744e-06
+                },
+                "source_topic": "/tf"
+              },
+              "laser_link": {
+                "parent": "base_link",
+                "translation": {
+                  "y": 5.25826986680105e-05,
+                  "x": 0.0435,
+                  "z": 0.11
+                },
+                "rotation": {
+                  "y": 0.0,
+                  "x": 0.0,
+                  "z": 0.0,
+                  "w": 1.0
+                },
+                "source_topic": "/tf_static"
+              }
+            },
+            "chain_ok": true,
+            "chain": [
+              "map",
+              "odom",
+              "base_footprint"
+            ],
+            "reason": null,
+            "read_only": true,
+            "navigation_goal_sent": false,
+            "cmd_vel_published": false
+          }
+        },
+        "make_plan_status": {
+          "ok": true,
+          "data": {
+            "service_name": "/move_base/make_plan",
+            "service_present": true,
+            "expected_type": "nav_msgs/GetPlan",
+            "navigation_goal_sent": false,
+            "cmd_vel_published": false,
+            "actual_type": "nav_msgs/GetPlan",
+            "type_match": true,
+            "call_ok": true,
+            "test_distance_m": 0.05,
+            "tolerance_m": 0.05,
+            "start_x": -0.0359528524737124,
+            "start_y": 0.007458676062268722,
+            "goal_x": 0.012780954052307218,
+            "goal_y": 0.01863973600685749,
+            "plan_frame_id": "",
+            "plan_pose_count": 3,
+            "path_available": true
+          }
+        }
+      },
+      "safety": {
+        "read_only": true,
+        "raw_cmd_vel": "not used",
+        "navigation_goal": "not sent"
+      },
+      "limitations": [
+        "costmap structure is checked, but current robot-footprint clearance is not yet evaluated"
+      ],
+      "message": "ROS navigation prerequisites are ready"
+    }
+  },
+  "odom_displacement_m": 0.0,
+  "physical_arrival_verified": false,
+  "cancel_after_test": {
+    "ok": true,
+    "canceled": true,
+    "topic": "/move_base/cancel",
+    "safety": {
+      "raw_cmd_vel": "not used",
+      "new_nav_goal": "not sent"
+    },
+    "message": "cancel message sent to /move_base/cancel"
+  }
+}

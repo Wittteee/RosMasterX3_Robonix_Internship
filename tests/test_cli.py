@@ -37,3 +37,25 @@ def test_qr_demo_does_not_load_live_provider(tmp_path, capsys):
 def test_demo_and_live_provider_cannot_mix():
     with pytest.raises(SystemExit):
         run_visual_nav.main(['--demo', '--provider-dir', 'dummy'])
+
+
+@pytest.mark.parametrize('age,expected_code', [(0, 0), (10, 2)])
+def test_observation_file_uses_merged_provider_workflow(tmp_path, age, expected_code):
+    import time
+    from unittest.mock import Mock
+    from x3_nav.bridge.simulation_provider import SimulationProvider
+    observation = tmp_path / 'observation.json'
+    observation.write_text(json.dumps({
+        'timestamp': time.time() - age, 'source': 'real_camera', 'frame_ok': True,
+        'targets': [{'label': 'X3_TARGET_A', 'center_x': 320, 'image_width': 640}],
+    }), encoding='utf-8')
+    api = Mock(wraps=SimulationProvider())
+    with patch('x3_nav.bridge.robonix_navigation.RobonixNavigation', return_value=api):
+        assert run_visual_nav.main(['--observation-file', str(observation),
+                                    '--provider-dir', 'test-provider',
+                                    '--output-dir', str(tmp_path / 'out')]) == expected_code
+    api.execute.assert_not_called()
+    if age:
+        api.prepare.assert_not_called()
+    else:
+        api.prepare.assert_called_once_with('simulation', 2)

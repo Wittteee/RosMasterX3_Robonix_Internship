@@ -1,0 +1,9 @@
+{
+  "mode": "bounded_direct_base_movement",
+  "port": "/dev/ttyUSB1",
+  "requested_forward_mps": 0.12,
+  "duration_sec": 4.0,
+  "stop_commands_sent": true,
+  "elapsed_sec": 4.0449811369999225,
+  "independent_stop_exit": 0
+}

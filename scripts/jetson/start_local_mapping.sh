@@ -10,7 +10,10 @@ task_root="$HOME/rosmaster_x3_deploy/live_test"
 mkdir -p "$task_root"
 python3 "$HOME/rosmaster_x3_deploy/scripts/prepare_local_map.py"
 # Transfer the serial device from the vendor APP to the ROS driver.
-pgrep -f '^python3 /home/jetson/Rosmaster/rosmaster/rosmaster_main.py$' | xargs -r kill -TERM
+app_pids=$(pgrep -f '^python3 /home/jetson/Rosmaster/rosmaster/rosmaster_main.py$' || true)
+if [ -n "$app_pids" ]; then
+    printf '%s\n' "$app_pids" | xargs -r kill -TERM
+fi
 sleep 2
 nohup roslaunch "$task_root/sensors.launch" >"$task_root/sensors.log" 2>&1 </dev/null &
 echo "$!" >"$task_root/sensors.pid"

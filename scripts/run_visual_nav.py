@@ -8,7 +8,6 @@ import argparse
 import json
 import sys
 import time
-import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,7 +16,6 @@ sys.path.insert(0, str(ROOT / "src"))
 from x3_nav.vision.frames import QRObserver
 from x3_nav.config import load_config
 from x3_nav.mission.visual import VisualNavigation
-from x3_nav.vision.targets import detect_qr_targets, target_bearing_deg
 
 
 from x3_nav.bridge.simulation_provider import SimulationProvider
@@ -28,6 +26,7 @@ def main(argv=None):
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--demo", action="store_true")
     source.add_argument("--camera", help="Camera index or device path on this host")
+    source.add_argument("--observation-file", help="Fresh JSON from the real-camera QR observer; centered trigger only")
     parser.add_argument("--provider-dir")
     parser.add_argument("--config")
     parser.add_argument("--label", default="X3_TARGET_A")
@@ -42,9 +41,11 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.demo and args.provider_dir:
         parser.error("Simulation must not connect to a live Provider")
-    if not args.demo and (not args.provider_dir or any(value is None for value in
+    if not args.demo and not args.observation_file and (not args.provider_dir or any(value is None for value in
             (args.fx, args.cx, args.camera_yaw_deg, args.image_width, args.image_height))):
         parser.error("Camera mode requires Provider directory, fx/cx/yaw and calibration image dimensions")
+    if args.observation_file and not args.provider_dir:
+        parser.error("Real observation mode requires Provider directory")
     api = None
     mission = None
     mode = "simulation" if args.demo else "live"
@@ -60,8 +61,14 @@ def main(argv=None):
             api = RobonixNavigation(args.provider_dir, max_radius=args.max_radius, config=cfg)
             calibration = (args.fx, args.cx, args.camera_yaw_deg)
 
-        observe = QRObserver(args.label, camera=args.camera, demo=args.demo,
-                             calibration=calibration, image_size=(args.image_height, args.image_width))
+        if args.observation_file:
+            from functools import partial
+            from x3_nav.vision.camera_observation import centered_qr_bearing
+            observe = partial(centered_qr_bearing, args.observation_file, args.label)
+        else:
+            observe = QRObserver(args.label, camera=args.camera, demo=args.demo,
+                                 calibration=calibration, image_size=(args.image_height, args.image_width))
+
         mission = VisualNavigation(api, observe, max_radius=args.max_radius)
         result = mission.run(execute=args.execute)
     except (Exception, KeyboardInterrupt) as exc:
