@@ -13,7 +13,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from preview_visual_target import demo_frame, read_frame
 from x3_nav.vision.navigation import VisualNavigation
 from x3_nav.vision.targets import detect_qr_targets, target_bearing_deg
 
@@ -48,6 +47,7 @@ def main(argv=None):
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--demo", action="store_true")
     source.add_argument("--camera", help="Camera index or device path on this host")
+    source.add_argument("--observation-file", help="Fresh JSON from the real-camera QR observer; centered trigger only")
     parser.add_argument("--provider-dir")
     parser.add_argument("--label", default="X3_TARGET_A")
     parser.add_argument("--fx", type=float)
@@ -61,9 +61,11 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.demo and args.provider_dir:
         parser.error("Simulation must not connect to a live Provider")
-    if not args.demo and (not args.provider_dir or any(value is None for value in
+    if not args.demo and not args.observation_file and (not args.provider_dir or any(value is None for value in
             (args.fx, args.cx, args.camera_yaw_deg, args.image_width, args.image_height))):
         parser.error("Camera mode requires Provider directory, fx/cx/yaw and calibration image dimensions")
+    if args.observation_file and not args.provider_dir:
+        parser.error("Real observation mode requires Provider directory")
     api = None
     mission = None
     mode = "simulation" if args.demo else "live"
@@ -77,6 +79,10 @@ def main(argv=None):
             calibration = (args.fx, args.cx, args.camera_yaw_deg)
 
         def observe():
+            if args.observation_file:
+                from x3_nav.vision.camera_observation import centered_qr_bearing
+                return centered_qr_bearing(args.observation_file, args.label)
+            from preview_visual_target import demo_frame, read_frame
             frame = demo_frame(args.label) if args.demo else read_frame(args.camera, True)
             if not args.demo and frame.shape[:2] != (args.image_height, args.image_width):
                 raise ValueError("camera_resolution_differs_from_calibration")
