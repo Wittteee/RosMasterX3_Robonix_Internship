@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import time
+import math
+import threading
 from collections import defaultdict
 from typing import Any
 
@@ -20,35 +22,40 @@ def check_topic_rates(
     bridge: RosBridge,
     duration_sec: float = 3.0,
     keys: list[str] | None = None,
+    *, sleep=time.sleep,
 ) -> dict[str, Any]:
+    if not math.isfinite(duration_sec) or duration_sec <= 0:
+        raise ValueError("Sampling duration must be finite and positive")
     topics_cfg = bridge.config["topics"]
     keys = keys or ["scan", "odom", "amcl_pose", "move_base_status"]
     counts: dict[str, int] = defaultdict(int)
-    last_msg: dict[str, Any] = {}
+    lock = threading.Lock()
     subs = []
 
     def make_cb(name: str):
         def _cb(msg: dict[str, Any]) -> None:
-            counts[name] += 1
-            last_msg[name] = msg
+            with lock:
+                counts[name] += 1
 
         return _cb
 
-    for key in keys:
-        topic = topics_cfg[key]
-        msg_type = TOPIC_TYPES[key]
-        subs.append(bridge.subscribe(topic, msg_type, make_cb(key)))
-
-    time.sleep(duration_sec)
-    for s in subs:
-        try:
-            s.unsubscribe()
-        except Exception:
-            pass
+    try:
+        for key in keys:
+            topic = topics_cfg[key]
+            msg_type = TOPIC_TYPES[key]
+            subs.append(bridge.subscribe(topic, msg_type, make_cb(key)))
+        sleep(duration_sec)
+    finally:
+        for s in subs:
+            try:
+                s.unsubscribe()
+            except Exception:
+                pass
 
     report: dict[str, Any] = {}
     for key in keys:
-        n = counts[key]
+        with lock:
+            n = counts[key]
         report[key] = {
             "topic": topics_cfg[key],
             "count": n,

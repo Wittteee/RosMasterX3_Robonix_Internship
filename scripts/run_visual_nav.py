@@ -8,39 +8,19 @@ import argparse
 import json
 import sys
 import time
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from preview_visual_target import demo_frame, read_frame
-from x3_nav.vision.navigation import VisualNavigation
+from x3_nav.vision.frames import QRObserver
+from x3_nav.config import load_config
+from x3_nav.mission.visual import VisualNavigation
 from x3_nav.vision.targets import detect_qr_targets, target_bearing_deg
 
 
-class SimulationProvider:
-    """No transport, no ROS imports, no physical actuation."""
-    def health(self):
-        return {"ok": True, "simulation": True}
-
-    def preview(self):
-        return {"ok": True, "session_id": "simulation", "expires_epoch": time.time() + 60,
-                "options": [{"option_id": n, "radius_m": 0.2, "relative_angle_deg": angle}
-                            for n, angle in enumerate((-20, 0, 20), 1)]}
-
-    def prepare(self, session_id, option_id):
-        return {"ok": True, "token": "simulation-token", "confirmation_text": "simulation",
-                "expires_at_epoch": time.time() + 30}
-
-    def execute(self, token, confirmation_text):
-        return {"ok": True, "arrived": True, "move_base_status_name": "SUCCEEDED",
-                "simulation": True}
-
-    def cancel(self):
-        return {"ok": True, "simulation": True}
-
-    def close(self):
-        pass
+from x3_nav.bridge.simulation_provider import SimulationProvider
 
 
 def main(argv=None):
@@ -49,6 +29,7 @@ def main(argv=None):
     source.add_argument("--demo", action="store_true")
     source.add_argument("--camera", help="Camera index or device path on this host")
     parser.add_argument("--provider-dir")
+    parser.add_argument("--config")
     parser.add_argument("--label", default="X3_TARGET_A")
     parser.add_argument("--fx", type=float)
     parser.add_argument("--cx", type=float)
@@ -68,23 +49,19 @@ def main(argv=None):
     mission = None
     mode = "simulation" if args.demo else "live"
     try:
+        cfg = load_config(args.config)
+        if not 0 < args.max_radius <= cfg['safety']['candidate_distance_m']:
+            raise ValueError('Radius exceeds configured candidate distance limit')
         if args.demo:
             api = SimulationProvider()
             calibration = (500, 320, 0)
         else:
-            from x3_nav.vision.robonix_navigation import RobonixNavigation
-            api = RobonixNavigation(args.provider_dir, max_radius=args.max_radius)
+            from x3_nav.bridge.robonix_navigation import RobonixNavigation
+            api = RobonixNavigation(args.provider_dir, max_radius=args.max_radius, config=cfg)
             calibration = (args.fx, args.cx, args.camera_yaw_deg)
 
-        def observe():
-            frame = demo_frame(args.label) if args.demo else read_frame(args.camera, True)
-            if not args.demo and frame.shape[:2] != (args.image_height, args.image_width):
-                raise ValueError("camera_resolution_differs_from_calibration")
-            targets = detect_qr_targets(frame, args.label)
-            if len(targets) != 1:
-                raise ValueError("target_not_found" if not targets else "ambiguous_target")
-            return target_bearing_deg(targets[0], *calibration)
-
+        observe = QRObserver(args.label, camera=args.camera, demo=args.demo,
+                             calibration=calibration, image_size=(args.image_height, args.image_width))
         mission = VisualNavigation(api, observe, max_radius=args.max_radius)
         result = mission.run(execute=args.execute)
     except (Exception, KeyboardInterrupt) as exc:

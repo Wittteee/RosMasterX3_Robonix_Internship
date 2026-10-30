@@ -5,7 +5,8 @@ import os
 import math
 import threading
 
-from x3_nav.vision.robonix_preview import RobonixPreview
+from x3_nav.bridge.robonix_preview import RobonixPreview
+from x3_nav.config import load_config, validate_config
 
 
 @contextmanager
@@ -31,11 +32,22 @@ def prepared_execution_gate():
 
 
 class RobonixNavigation(RobonixPreview):
-    def __init__(self, provider_dir=None, *, max_radius=0.2):
+    def __init__(self, provider_dir=None, *, max_radius=0.2, config=None):
         if not math.isfinite(max_radius) or not 0.1 <= max_radius <= 0.8:
             raise ValueError("Provider radius must be in [0.1, 0.8] metres")
         self.max_radius = max_radius
+        self.config = validate_config(config) if config is not None else load_config()
         super().__init__(provider_dir)
+        # The reference Provider has a fixed ROS contract; never silently ignore
+        # remapped topics or frames supplied to the generic mission runner.
+        defaults = {'scan': '/scan', 'odom': '/odom', 'amcl_pose': '/amcl_pose',
+                    'move_base_status': '/move_base/status', 'move_base_goal': '/move_base_simple/goal',
+                    'move_base_cancel': '/move_base/cancel'}
+        if any(self.config['topics'][key] != value for key, value in defaults.items()) or self.config['mission']['frame_id'] != 'map':
+            raise ValueError('Reference Provider requires standard topics and map frame')
+        if hasattr(self.provider, 'bridge_cfg'):
+            self.provider.bridge_cfg.update(rosbridge_host=self.config['robot']['host'],
+                                            rosbridge_port=self.config['robot']['rosbridge_port'])
 
     def preview(self):
         # Ask the provider to PLAN within the requested radius, rather than
@@ -73,7 +85,8 @@ class RobonixNavigation(RobonixPreview):
                     done.set()
 
         try:
-            for name in ("/edition", "/voltage"):
+            config = getattr(self, 'config', None) or load_config()
+            for name in (config['robot']['edition_topic'], config['robot']['voltage_topic']):
                 topic = roslibpy.Topic(bridge.ros, name, "std_msgs/Float32")
                 subscriptions.append(topic)
                 topic.subscribe(lambda message, name=name: receive(name, message))

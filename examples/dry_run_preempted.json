@@ -1,0 +1,78 @@
+{
+  "ok": true,
+  "phase": "PREEMPTED",
+  "status_name": "PREEMPTED",
+  "detail": "PREEMPTED by displacement protection",
+  "snapshot": {
+    "phase": "PREEMPTED",
+    "candidate": {
+      "x": 0.3,
+      "y": 0,
+      "yaw": 0.0,
+      "frame_id": "map"
+    },
+    "human_confirmed": true,
+    "has_token": false,
+    "start_xy": [
+      0.0,
+      0.0
+    ],
+    "notes": [
+      "11:33:33 预览：已筛选候选点，机器人应保持静止（不下发 goal）",
+      "11:33:33 准备：全状态复核通过，已生成一次性执行令牌（short-window sensor data present）",
+      "11:33:33 CONFIRM：等待人工授权",
+      "11:33:33 确认：人工授权通过，允许单次下发目标",
+      "11:33:33 执行：已允许下发 PoseStamped（令牌已失效，单次触发）",
+      "11:33:33 结果：PREEMPTED（displacement protection; terminal cancellation observed；主动中止，非导航失败）"
+    ]
+  },
+  "extra": {
+    "mode": "dry-run",
+    "physical_motion_verified": false,
+    "goal_publish_attempted": true,
+    "cancel_requested": true,
+    "cancel_terminal_observed": true,
+    "health": {
+      "ok": true,
+      "missing": [],
+      "report": {
+        "scan": {
+          "topic": "/scan",
+          "count": 5,
+          "hz_est": 2.5,
+          "ok": true
+        },
+        "odom": {
+          "topic": "/odom",
+          "count": 4,
+          "hz_est": 2.0,
+          "ok": true
+        },
+        "amcl_pose": {
+          "topic": "/amcl_pose",
+          "count": 3,
+          "hz_est": 1.5,
+          "ok": true
+        },
+        "move_base_status": {
+          "topic": "/move_base/status",
+          "count": 2,
+          "hz_est": 1.0,
+          "ok": true
+        }
+      }
+    },
+    "last_pose_xy": [
+      0.08,
+      0.0
+    ],
+    "status": {
+      "status_code": 2,
+      "status_name": "PREEMPTED",
+      "text": "simulation only",
+      "goal_id": "offline-goal-1",
+      "ambiguous": false
+    }
+  },
+  "log_path": "E:\\schoolwork\\Robonix\\RosMasterX3_Robonix_Internship\\logs\\1793331213772900900_mission.json"
+}

@@ -3,6 +3,8 @@ robot:
   # SSH 端口转发后保持 localhost；也可改成 Jetson IP 直连 9090
   host: "127.0.0.1"
   rosbridge_port: 9090
+  edition_topic: "/edition"
+  voltage_topic: "/voltage"
 
 topics:
   # 只读状态
@@ -15,9 +17,8 @@ topics:
   move_base_cancel: "/move_base/cancel"
 
 safety:
-  # PPT：候选点约 0.80 m；物理距离约 1 m
+  # 候选点平面距离硬上限；不是实际行驶距离承诺
   candidate_distance_m: 0.80
-  physical_distance_hint_m: 1.0
   # 安全取消示例触发位移（PPT 约 0.080 m）
   preempt_trigger_displacement_m: 0.080
   # 禁止发布的底层话题（红线，不可删除）
@@ -30,12 +31,18 @@ mission:
   one_shot_token: true
   token_ttl_sec: 60
   default_timeout_sec: 120
+  health_duration_sec: 2.0
+  pose_max_age_sec: 2.0
+  preview_motion_tolerance_m: 0.03
+  cancel_timeout_sec: 3.0
+  poll_interval_sec: 0.1
 
 # 拓展：目标检测驱动导航（先 Mock，再接真检测话题）
 vision:
   target_label: "person"
   min_confidence: 0.50
   min_approach_m: 0.20
-  max_bearing_deg: 30.0
+  max_approach_m: 0.80
+  max_yaw_deg: 30.0
   # 车上接 YOLO 时可改成实际话题（后续订阅用）
   detections_topic: "/darknet_ros/bounding_boxes"

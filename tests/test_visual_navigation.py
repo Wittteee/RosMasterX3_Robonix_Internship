@@ -12,8 +12,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from run_visual_nav import SimulationProvider
-from x3_nav.vision.navigation import VisualNavigation
-from x3_nav.vision.robonix_navigation import RobonixNavigation, prepared_execution_gate
+from x3_nav.mission.visual import VisualNavigation
+from x3_nav.bridge.robonix_navigation import RobonixNavigation, prepared_execution_gate
 from x3_nav.vision.targets import recommend_option
 
 
@@ -130,7 +130,7 @@ class NavigationTests(unittest.TestCase):
                                    ExecutePreparedNavigation_Request=SimpleNamespace,
                                    CancelNavGoal_Request=SimpleNamespace)
         modules = {"rosmaster_x3_bridge.main": provider, "rosmaster_x3_bridge_mcp": bindings}
-        with patch("x3_nav.vision.robonix_preview.importlib.import_module", side_effect=modules.__getitem__):
+        with patch("x3_nav.bridge.robonix_preview.importlib.import_module", side_effect=modules.__getitem__):
             api = RobonixNavigation()
             api.prepare("s", 3)
             api.execute("token", "phrase")

@@ -21,17 +21,14 @@ def yaw_to_quaternion(yaw: float) -> dict[str, float]:
 def pose_xy_from_odometry(msg: dict[str, Any]) -> tuple[float, float] | None:
     try:
         p = msg["pose"]["pose"]["position"]
-        return float(p["x"]), float(p["y"])
+        xy = float(p["x"]), float(p["y"])
+        return xy if all(math.isfinite(v) for v in xy) else None
     except Exception:
         return None
 
 
 def pose_xy_from_amcl(msg: dict[str, Any]) -> tuple[float, float] | None:
-    try:
-        p = msg["pose"]["pose"]["position"]
-        return float(p["x"]), float(p["y"])
-    except Exception:
-        return None
+    return pose_xy_from_odometry(msg)
 
 
 class NavClient:

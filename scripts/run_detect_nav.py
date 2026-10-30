@@ -1,57 +1,46 @@
-"""目标检测驱动短距导航（拓展课题最小闭环）。
-
-默认 --mock 不连车：Mock 检测 → 候选点 → 安全预览/令牌干跑。
-实车使用 run_visual_nav.py；此旧入口禁止下发坐标。
-"""
-
-from __future__ import annotations
-
+"""Detection proposal -> common authorization chain; default is offline."""
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
-
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
-
+sys.path.insert(0, str(ROOT / 'src'))
 from x3_nav.config import load_config
-from x3_nav.vision.pipeline import DetectNavPipeline
+from x3_nav.vision.detect import Detection
+from x3_nav.mission.detection import run_detection
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="检测驱动短距安全导航")
-    parser.add_argument("--mock", action="store_true", help="使用 Mock 检测（推荐先跑）")
-    parser.add_argument("--label", type=str, default=None, help="目标标签，默认读 configs/robot.yaml")
-    parser.add_argument("--offset-x", type=float, default=0.15, help="目标水平偏移 [-1,1]，右为正")
-    parser.add_argument("--size", type=float, default=0.22, help="目标相对大小，越大越近")
-    parser.add_argument("--confidence", type=float, default=0.86)
-    parser.add_argument("--confirm", action="store_true", help="人工确认")
-    parser.add_argument("--dispatch", action="store_true", help="真下发 move_base goal（需 --confirm）")
-    parser.add_argument("--auto-preempt", action="store_true")
-    args = parser.parse_args()
-    if args.dispatch:
-        parser.error("此入口仅保留离线演示；实车请使用 run_visual_nav.py 的官方候选与令牌流程")
-
-    cfg = load_config()
-    pipe = DetectNavPipeline(cfg)
-
-    plan, result = pipe.dry_run_mock(
-        label=args.label,
-        offset_x=args.offset_x,
-        size=args.size,
-        confidence=args.confidence,
-        human_confirm=args.confirm,
-    )
-    print(json.dumps({
-        "mode": "mock-dry-run",
-        "plan": plan.to_dict(),
-        "ok": result.ok,
-        "phase": result.phase,
-        "detail": result.detail,
-        "snapshot": result.snapshot,
-    }, ensure_ascii=False, indent=2))
-    return 0 if result.ok else 1
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--mock', action='store_true')
+    mode.add_argument('--live', action='store_true', help='Use CLI-injected observation on real robot')
+    parser.add_argument('--label')
+    parser.add_argument('--offset-x', type=float, default=.15)
+    parser.add_argument('--size', type=float, default=.22)
+    parser.add_argument('--confidence', type=float, default=.86)
+    parser.add_argument('--confirm', action='store_true')
+    parser.add_argument('--dispatch', action='store_true')
+    parser.add_argument('--auto-preempt', action='store_true')
+    parser.add_argument('--timeout', type=float)
+    args = parser.parse_args(argv)
+    if args.dispatch and not args.confirm:
+        parser.error('--dispatch requires --confirm')
+    try:
+        cfg = load_config(args.config)
+        det = Detection(args.label or cfg['vision']['target_label'], args.confidence,
+                        args.offset_x, args.size, 'cli-injection' if args.live else 'mock')
+        plan, result = run_detection(cfg, det, dry_run=not args.live, human_confirm=args.confirm,
+            dispatch=args.dispatch, auto_preempt=args.auto_preempt, timeout_sec=args.timeout)
+        print(json.dumps(dict(asdict(result), plan=plan.to_dict() if plan else None,
+                             mode='live-cli-injection' if args.live else 'dry-run'), ensure_ascii=False, indent=2))
+        return 0 if result.ok else 2
+    except (ValueError, RuntimeError, KeyError, OSError) as exc:
+        print(json.dumps(dict(ok=False, error=str(exc)), ensure_ascii=False))
+        return 2
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     raise SystemExit(main())

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,9 +17,13 @@ from x3_nav.validation import check_topic_rates, summarize_health
 
 
 def main() -> int:
-    cfg = load_config()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config')
+    parser.add_argument('--duration', type=float, default=3.0)
+    args = parser.parse_args()
+    cfg = load_config(args.config)
     with RosBridge(cfg) as bridge:
-        report = check_topic_rates(bridge, duration_sec=3.0)
+        report = check_topic_rates(bridge, duration_sec=args.duration)
     health = summarize_health(report)
     print(json.dumps(health, ensure_ascii=False, indent=2))
     path = write_json_log(project_root(), "topics", health)

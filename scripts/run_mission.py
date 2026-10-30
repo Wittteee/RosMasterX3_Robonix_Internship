@@ -1,59 +1,52 @@
-"""完整主实验任务：连通 → 健康检查 → 预览/令牌 →（可选）确认下发 → 监控/安全取消。"""
-
-from __future__ import annotations
-
+"""Manual/relative short-step navigation, with independent consent and dispatch."""
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
-
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
-
+sys.path.insert(0, str(ROOT / 'src'))
 from x3_nav.config import load_config
-from x3_nav.mission.runner import MissionRunner
+from x3_nav.mission.runner import MissionRunner, offset_goal_from_robot
 from x3_nav.safety import CandidateGoal
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="安全点位导航完整任务")
-    parser.add_argument("--x", type=float, default=None, help="目标 x；默认用 candidate_distance_m")
-    parser.add_argument("--y", type=float, default=0.0)
-    parser.add_argument("--yaw", type=float, default=0.0)
-    parser.add_argument("--confirm", action="store_true", help="人工确认（否则停在准备阶段）")
-    parser.add_argument("--dispatch", action="store_true", help="确认后真下发 goal（实车危险，需同时 --confirm）")
-    parser.add_argument(
-        "--auto-preempt",
-        action="store_true",
-        help="按配置位移阈值自动 cancel，用于验证 PREEMPTED",
-    )
-    parser.add_argument("--timeout", type=float, default=None)
-    args = parser.parse_args()
-
-    cfg = load_config()
-    dist = float(cfg["safety"]["candidate_distance_m"])
-    x = dist if args.x is None else args.x
-    goal = CandidateGoal(x=x, y=args.y, yaw=args.yaw, frame_id=cfg["mission"]["frame_id"])
-    timeout = args.timeout if args.timeout is not None else float(cfg["mission"].get("default_timeout_sec", 120))
-
-    runner = MissionRunner(cfg)
-    result = runner.run(
-        goal,
-        human_confirm=args.confirm,
-        dispatch=args.dispatch,
-        auto_preempt=args.auto_preempt,
-        timeout_sec=timeout,
-    )
-    print(json.dumps({
-        "ok": result.ok,
-        "phase": result.phase,
-        "status_name": result.status_name,
-        "detail": result.detail,
-        "log_path": result.log_path,
-        "snapshot": result.snapshot,
-    }, ensure_ascii=False, indent=2))
-    return 0 if result.ok else 1
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config')
+    parser.add_argument('--x', type=float, help='Absolute goal x in configured frame')
+    parser.add_argument('--y', type=float, default=0.)
+    parser.add_argument('--yaw', type=float, default=0., help='Goal yaw in radians')
+    parser.add_argument('--distance', type=float, help='Forward step from current pose in metres')
+    parser.add_argument('--confirm', action='store_true')
+    parser.add_argument('--dispatch', action='store_true')
+    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--auto-preempt', action='store_true', help='Cancellation test, incompatible with arrival experiment')
+    parser.add_argument('--timeout', type=float)
+    args = parser.parse_args(argv)
+    if args.dispatch and not args.confirm:
+        parser.error('--dispatch requires --confirm')
+    if args.x is not None and args.distance is not None:
+        parser.error('Use either absolute --x/--y or relative --distance')
+    try:
+        cfg = load_config(args.config)
+        goal = None
+        if args.x is not None:
+            goal = CandidateGoal(args.x, args.y, args.yaw, cfg['mission']['frame_id'])
+        elif args.distance is not None:
+            if not 0 < args.distance <= cfg['safety']['candidate_distance_m']:
+                raise ValueError('Distance must be positive and within candidate limit')
+            goal = lambda pose: offset_goal_from_robot(pose.xy, args.distance, pose.yaw, pose.frame_id)
+        runner = MissionRunner(cfg)
+        run = runner.dry_run if args.dry_run else runner.run
+        result = run(goal, human_confirm=args.confirm, dispatch=args.dispatch,
+                     auto_preempt=args.auto_preempt, timeout_sec=args.timeout)
+        print(json.dumps(dict(asdict(result), mode=runner.mode), ensure_ascii=False, indent=2))
+        return 0 if result.ok else 2
+    except (ValueError, RuntimeError, KeyError, OSError) as exc:
+        print(json.dumps(dict(ok=False, error=str(exc)), ensure_ascii=False))
+        return 2
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     raise SystemExit(main())

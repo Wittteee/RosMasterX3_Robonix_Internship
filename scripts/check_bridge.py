@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,7 +14,10 @@ from x3_nav.config import load_config
 
 
 def main() -> int:
-    cfg = load_config()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config')
+    args = parser.parse_args()
+    cfg = load_config(args.config)
     host = cfg["robot"]["host"]
     port = cfg["robot"]["rosbridge_port"]
     print(f"连接 rosbridge {host}:{port} ...")

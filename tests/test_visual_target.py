@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from preview_visual_target import demo_frame
 from x3_nav.vision.targets import detect_qr_targets, recommend_option, target_bearing_deg
-from x3_nav.vision.robonix_preview import RobonixPreview
+from x3_nav.bridge.robonix_preview import RobonixPreview
 
 
 class VisualTargetTests(unittest.TestCase):
@@ -72,7 +72,7 @@ class VisualTargetTests(unittest.TestCase):
             "rosmaster_x3_bridge.main": provider,
             "rosmaster_x3_bridge_mcp": SimpleNamespace(PreviewMoveOptions_Request=SimpleNamespace),
         }
-        with patch("x3_nav.vision.robonix_preview.importlib.import_module", side_effect=modules.__getitem__):
+        with patch("x3_nav.bridge.robonix_preview.importlib.import_module", side_effect=modules.__getitem__):
             api = RobonixPreview()
             self.assertEqual(api.preview(), self.preview)
             self.assertEqual(preview_call.call_args.args[0].max_options, 5)

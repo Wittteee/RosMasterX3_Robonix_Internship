@@ -1,0 +1,10 @@
+PASS forbidden publication: cmd_vel
+PASS forbidden publication: /cmd_vel
+PASS forbidden publication: /cmd_vel/
+PASS forbidden publication: /robot/cmd_vel
+PASS dry-run: PREPARE
+PASS dry-run: CONFIRM
+PASS dry-run: SUCCEEDED
+PASS dry-run: PREEMPTED
+PASS detection proposal -> shared mission
+{"ok": true, "mode": "dry-run", "checks": 9, "physical_motion_verified": false}

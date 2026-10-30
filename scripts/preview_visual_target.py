@@ -17,31 +17,7 @@ from x3_nav.vision.targets import (
 )
 
 
-def read_frame(source: str, camera: bool) -> np.ndarray:
-    if not camera:
-        frame = cv2.imread(source)
-        if frame is None:
-            raise ValueError("Cannot read image: " + source)
-        return frame
-    capture = cv2.VideoCapture(int(source) if source.isdigit() else source)
-    try:
-        if not capture.isOpened():
-            raise RuntimeError("Cannot open camera: " + source)
-        ok, frame = capture.read()
-        if not ok or frame is None:
-            raise RuntimeError("Camera did not return a frame")
-        return frame
-    finally:
-        capture.release()
-
-
-def demo_frame(label: str) -> np.ndarray:
-    qr = cv2.QRCodeEncoder_create().encode(label)
-    qr = cv2.copyMakeBorder(qr, 4, 4, 4, 4, cv2.BORDER_CONSTANT, value=255)
-    qr = cv2.resize(qr, (240, 240), interpolation=cv2.INTER_NEAREST)
-    image = np.full((480, 640, 3), 255, dtype=np.uint8)
-    image[120:360, 100:340] = cv2.cvtColor(qr, cv2.COLOR_GRAY2BGR)
-    return image
+from x3_nav.vision.frames import read_frame, demo_frame
 
 
 def main() -> int:
@@ -88,7 +64,7 @@ def main() -> int:
                     result["recommendation"] = recommend_option(preview, bearing, args.max_radius)
                     result["reason"] = result["recommendation"]["reason"]
                 elif args.provider_dir:
-                    from x3_nav.vision.robonix_preview import RobonixPreview
+                    from x3_nav.bridge.robonix_preview import RobonixPreview
                     api = RobonixPreview(args.provider_dir)
                     result["recommendation"] = recommend_option(api.preview(), bearing, args.max_radius)
                     result["reason"] = result["recommendation"]["reason"]

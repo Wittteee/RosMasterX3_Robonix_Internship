@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "phase": "PREPARE",
+  "status_name": null,
+  "detail": "Prepared; no human confirmation, no goal sent",
+  "snapshot": {
+    "phase": "PREPARE",
+    "candidate": {
+      "x": 0.3,
+      "y": 0,
+      "yaw": 0.0,
+      "frame_id": "map"
+    },
+    "human_confirmed": false,
+    "has_token": true,
+    "start_xy": [
+      0.0,
+      0.0
+    ],
+    "notes": [
+      "11:33:33 预览：已筛选候选点，机器人应保持静止（不下发 goal）",
+      "11:33:33 准备：全状态复核通过，已生成一次性执行令牌（short-window sensor data present）"
+    ]
+  },
+  "extra": {
+    "mode": "dry-run",
+    "physical_motion_verified": false,
+    "goal_publish_attempted": false,
+    "cancel_requested": false,
+    "cancel_terminal_observed": false,
+    "health": {
+      "ok": true,
+      "missing": [],
+      "report": {
+        "scan": {
+          "topic": "/scan",
+          "count": 5,
+          "hz_est": 2.5,
+          "ok": true
+        },
+        "odom": {
+          "topic": "/odom",
+          "count": 4,
+          "hz_est": 2.0,
+          "ok": true
+        },
+        "amcl_pose": {
+          "topic": "/amcl_pose",
+          "count": 3,
+          "hz_est": 1.5,
+          "ok": true
+        },
+        "move_base_status": {
+          "topic": "/move_base/status",
+          "count": 2,
+          "hz_est": 1.0,
+          "ok": true
+        }
+      }
+    },
+    "status": {
+      "status_code": null,
+      "status_name": null,
+      "text": "",
+      "goal_id": null,
+      "ambiguous": false
+    }
+  },
+  "log_path": "E:\\schoolwork\\Robonix\\RosMasterX3_Robonix_Internship\\logs\\1793331213751951800_mission.json"
+}
