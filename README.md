@@ -41,6 +41,17 @@ python -X utf8 scripts/self_check.py
 当前开发验证环境是 Windows/Python 3.12。Python 3.10 的运行测试由 CI 配置覆盖，
 只有 CI 实际执行通过后才能认定该环境已验证；本轮未在 Jetson 上运行。
 
+## 真实目标检测（YOLOX）
+
+已接入 OpenCV DNN + YOLOX-s，支持照片/摄像头中的 COCO 80 类目标。
+检测默认只输出标注与 JSON；摄像头目标方向可进入已有官方候选与人工确认流程。
+安装、下载权重及运行方法见 [目标检测说明](docs/object_detection.md)。
+
+```bash
+python scripts/download_yolox.py
+python scripts/run_object_detection.py --image logs/demo_20261028/camera_current.jpg
+```
+
 ## 无实车完整演练
 
 ```bash

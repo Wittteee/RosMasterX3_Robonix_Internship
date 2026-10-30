@@ -7,6 +7,26 @@ policy_spec=importlib.util.spec_from_file_location('nav_calibration_policy',Path
 policy=importlib.util.module_from_spec(policy_spec);policy_spec.loader.exec_module(policy)
 
 class VelocityMappingTests(unittest.TestCase):
+    def test_profile_limits_and_conservative_ros_overrides(self):
+        p={'max_linear_mps':.08,'max_angular_rps':.15}
+        self.assertEqual(policy.require_speed_limits(p),p)
+        self.assertEqual(policy.require_speed_limits(p,.06,.1),
+                         {'max_linear_mps':.06,'max_angular_rps':.1})
+        with self.assertRaises(ValueError):policy.require_speed_limits(p,.09)
+        with self.assertRaises(ValueError):policy.require_speed_limits(p,None,.2)
+        for bad in (0,-1,float('nan'),float('inf'),True):
+            with self.assertRaises(ValueError):policy.require_speed_limits({'max_linear_mps':bad})
+        with self.assertRaises(ValueError):policy.require_speed_limits({'velocity_mapping':'legacy_half_speed'})
+
+    def test_navigation_cannot_exceed_profile_chassis_limit(self):
+        p={'status':'verified','heading_sign_verified':True,'odometry_scale_verified':True,
+           'minimum_stable_linear_mps':.05,'navigation_max_linear_mps':.09,
+           'measured_position_error_m':.03,'xy_goal_tolerance_m':.05,
+           'max_linear_mps':.08,'max_angular_rps':.15}
+        with self.assertRaises(ValueError):policy.require_calibration(p)
+        p['navigation_max_linear_mps']=.07
+        self.assertEqual(policy.require_calibration(p)['max_angular_rps'],.15)
+
     def test_metric_commands_are_not_attenuated(self):
         self.assertEqual(mapping.map_velocity(.09,-.01,.15),(.09,-.01,.15))
     def test_zero_and_signed_rotation(self):

@@ -17,4 +17,7 @@ _tmp_*.py
 # 本地构建产物 / 运行日志素材
 artifacts/
 logs/vision/
+logs/detection/
+models/*.onnx
+models/*.part
 **/node_modules/

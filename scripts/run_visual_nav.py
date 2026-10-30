@@ -1,4 +1,4 @@
-"""QR -> official candidate -> preparation -> interactive confirmation -> result.
+"""QR/YOLOX -> official candidate -> preparation -> interactive confirmation -> result.
 
 Defaults to no motion. --demo is entirely offline, even with --execute.
 """
@@ -30,6 +30,9 @@ def main(argv=None):
     parser.add_argument("--provider-dir")
     parser.add_argument("--config")
     parser.add_argument("--label", default="X3_TARGET_A")
+    parser.add_argument("--detector", choices=("qr", "yolox"), default="qr")
+    parser.add_argument("--model", type=Path, help="YOLOX-s ONNX weights")
+    parser.add_argument("--confidence", type=float, default=0.5)
     parser.add_argument("--fx", type=float)
     parser.add_argument("--cx", type=float)
     parser.add_argument("--camera-yaw-deg", type=float)
@@ -39,6 +42,10 @@ def main(argv=None):
     parser.add_argument("--execute", action="store_true", help="Allow interactive confirmation")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "logs" / "vision")
     args = parser.parse_args(argv)
+    if args.detector == "yolox":
+        from x3_nav.vision.yolox import COCO_CLASSES
+        if args.camera is None or args.label not in COCO_CLASSES:
+            parser.error("YOLOX navigation requires --camera and a COCO --label (e.g. bottle)")
     if args.demo and args.provider_dir:
         parser.error("Simulation must not connect to a live Provider")
     if not args.demo and not args.observation_file and (not args.provider_dir or any(value is None for value in
@@ -51,6 +58,11 @@ def main(argv=None):
     mode = "simulation" if args.demo else "live"
     try:
         cfg = load_config(args.config)
+        detector = None
+        if args.detector == "yolox":
+            from download_yolox import DEFAULT_MODEL
+            from x3_nav.vision.yolox import YOLOXDetector
+            detector = YOLOXDetector(args.model or DEFAULT_MODEL, args.confidence)
         if not 0 < args.max_radius <= cfg['safety']['candidate_distance_m']:
             raise ValueError('Radius exceeds configured candidate distance limit')
         if args.demo:
@@ -61,7 +73,11 @@ def main(argv=None):
             api = RobonixNavigation(args.provider_dir, max_radius=args.max_radius, config=cfg)
             calibration = (args.fx, args.cx, args.camera_yaw_deg)
 
-        if args.observation_file:
+        if detector is not None:
+            from x3_nav.vision.yolox import ObjectObserver
+            observe = ObjectObserver(detector, args.camera, args.label, calibration,
+                                     (args.image_height, args.image_width))
+        elif args.observation_file:
             from functools import partial
             from x3_nav.vision.camera_observation import centered_qr_bearing
             observe = partial(centered_qr_bearing, args.observation_file, args.label)
@@ -80,6 +96,9 @@ def main(argv=None):
             except Exception as exc:
                 print("Provider disconnect failed: " + str(exc), file=sys.stderr)
     result["mode"] = mode
+    result["detector"] = args.detector
+    if args.detector == "yolox" and mission is not None:
+        result["detections"] = [box.to_dict() for box in observe.last_boxes]
     result["physical_arrival_verified"] = mode == "live" and result.get("arrival_verified", False)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     path = args.output_dir / ("mission-" + str(time.time_ns()) + ".json")

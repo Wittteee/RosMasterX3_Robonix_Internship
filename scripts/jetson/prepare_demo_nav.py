@@ -12,7 +12,7 @@ node = tree.getroot().find('node')
 limits = {'DWAPlannerROS/max_vel_x':profile['navigation_max_linear_mps'], 'DWAPlannerROS/min_vel_x':0.0,
           'DWAPlannerROS/max_vel_y':0.0, 'DWAPlannerROS/min_vel_y':0.0,
           'DWAPlannerROS/max_vel_trans':profile['navigation_max_linear_mps'], 'DWAPlannerROS/min_vel_trans':profile['minimum_stable_linear_mps'],
-          'DWAPlannerROS/max_vel_theta':0.2, 'DWAPlannerROS/min_vel_theta':0.0,
+          'DWAPlannerROS/max_vel_theta':profile['max_angular_rps'], 'DWAPlannerROS/min_vel_theta':0.0,
           'DWAPlannerROS/trans_stopped_vel':0.01, 'DWAPlannerROS/theta_stopped_vel':0.02,
           'DWAPlannerROS/xy_goal_tolerance':profile['xy_goal_tolerance_m'], 'DWAPlannerROS/yaw_goal_tolerance':0.1}
 for name, value in limits.items():
