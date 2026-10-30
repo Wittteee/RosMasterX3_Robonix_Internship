@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-28",
+  "timezone": "Asia/Shanghai",
+  "software_evidence": "qr_auto_move_final2.json",
+  "real_camera_label": "X3_TARGET_A",
+  "command_duration_seconds": 4.04717672300103,
+  "independent_stop_exit": 0,
+  "human_observation": "是，识别后明显前进并停下",
+  "physical_completion_verified_by_user": true,
+  "distance_measured": false,
+  "uses_map": false,
+  "uses_robonix_navigation": false
+}

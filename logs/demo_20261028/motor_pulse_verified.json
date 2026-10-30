@@ -1,0 +1,6 @@
+{
+  "mode": "isolated_vendor_motor_diagnostic",
+  "pwm_percent": 25,
+  "pulse_seconds": 0.6,
+  "version_reply_verified": false
+}

@@ -1,0 +1,46 @@
+{
+  "mode": "simulation",
+  "preview_only": true,
+  "navigation_goal_sent": false,
+  "detections": [
+    {
+      "label": "X3_TARGET_A",
+      "center_x": 220.0,
+      "center_y": 240.0,
+      "corners": [
+        [
+          144.0,
+          165.0
+        ],
+        [
+          296.0,
+          165.0
+        ],
+        [
+          296.0,
+          315.0
+        ],
+        [
+          144.0,
+          315.0
+        ]
+      ],
+      "image_width": 640,
+      "image_height": 480
+    }
+  ],
+  "target_bearing_deg": 11.309932474020213,
+  "recommendation": {
+    "preview_only": true,
+    "navigation_goal_sent": false,
+    "target_bearing_deg": 11.309932474020213,
+    "selected_option": {
+      "option_id": 3,
+      "relative_angle_deg": 20.0,
+      "radius_m": 0.2
+    },
+    "reason": "candidate_recommended",
+    "session_id": "simulation-only"
+  },
+  "reason": "candidate_recommended"
+}

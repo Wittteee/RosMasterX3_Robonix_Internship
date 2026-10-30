@@ -1,0 +1,8 @@
+{
+  "mode": "isolated_vendor_motor_diagnostic",
+  "pwm_percent": 25,
+  "pulse_seconds": 0.6,
+  "elapsed_until_zero_sec": 0.602507118000176,
+  "received_hex": "",
+  "independent_stop_exit": 0
+}

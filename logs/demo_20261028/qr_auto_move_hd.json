@@ -1,0 +1,46 @@
+{
+  "mode": "real_qr_direct_base_demo",
+  "label": "X3_TARGET_A",
+  "motion_started": true,
+  "uses_map": false,
+  "speed_mps": 0.12,
+  "maximum_duration_sec": 4.0,
+  "events": [
+    {
+      "phase": "WAITING_FOR_REAL_QR",
+      "timestamp": 1793179169.056548
+    },
+    {
+      "phase": "QR_CONFIRMED",
+      "timestamp": 1793179187.254384
+    },
+    {
+      "phase": "MOVING",
+      "timestamp": 1793179188.3814383
+    },
+    {
+      "phase": "REJECTED_OR_INTERRUPTED",
+      "timestamp": 1793179188.443689
+    },
+    {
+      "phase": "STOP_SENT",
+      "timestamp": 1793179194.0061145
+    }
+  ],
+  "trigger_observation": {
+    "timestamp": 1793179186.8223565,
+    "source": "real_camera",
+    "frame_ok": true,
+    "targets": [
+      {
+        "label": "X3_TARGET_A",
+        "center_x": 641.7347412109375,
+        "image_width": 1280
+      }
+    ]
+  },
+  "error": "camera_observation_stale",
+  "stop_commands_sent": true,
+  "independent_stop_exit": null,
+  "physical_completion_verified": false
+}

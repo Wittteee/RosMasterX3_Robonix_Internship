@@ -1,0 +1,20 @@
+{
+  "mode": "real_qr_direct_base_demo",
+  "label": "X3_TARGET_A",
+  "motion_started": false,
+  "uses_map": false,
+  "speed_mps": 0.12,
+  "maximum_duration_sec": 4.0,
+  "events": [
+    {
+      "phase": "WAITING_FOR_REAL_QR",
+      "timestamp": 1793178053.0708988
+    },
+    {
+      "phase": "REJECTED_OR_INTERRUPTED",
+      "timestamp": 1793178098.0896454
+    }
+  ],
+  "error": "No stable centered real QR within 45 seconds",
+  "physical_completion_verified": false
+}
