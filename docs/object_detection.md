@@ -32,9 +32,15 @@ python scripts/run_object_detection.py --camera 0 --label bottle --confidence 0.
 python scripts/run_visual_nav.py --detector yolox --camera 0 --label bottle --provider-dir /path/to/provider --fx 500 --cx 320 --camera-yaw-deg 0 --image-width 640 --image-height 480 --max-radius 0.2
 ```
 
+已有实测 RGB 标定时，使用 `--camera-calibration /path/to/calibration.json` 代替内参和分辨率参数。
+JSON 保存 `image_width`、`image_height`、`camera_matrix`（3×3）、`distortion_coefficients` 和 `camera_yaw_deg`。
+如果内参文件尚未包含安装偏航角，可用 `--camera-yaw-deg` 提供现场实测值。可选 `capture_fourcc` 记录 `MJPG` 或 `YUYV`。
+使用文件时，采集按标定分辨率配置，计算方向前先校正检测框中心像素的镜头畸变。
+同一次任务中保持相机打开，要求设备支持单帧缓冲，每次重新观测先丢弃缓冲中的上一帧。
+
 默认停在准备阶段，不下发移动。额外指定 `--execute` 后仍需在终端输入“确认执行”，并通过已有健康检查、候选有效期和一次性令牌验证。原有 `--detector qr`（默认值）保持可用。
 
-每次候选准备前、人工确认后重新打开本机摄像头采集并检测。支持数字设备索引或 Linux `/dev/videoN`；实车导航不接受录像文件。单次采集加推理超过 2 秒、画面尺寸与标定不符、目标消失或同类目标不唯一，都会拒绝继续。若主机推理过慢，应先优化部署性能并验证延迟，而不是直接放宽时效限制。
+每次候选准备前、人工确认后重新采集并检测。支持数字设备索引或 Linux `/dev/videoN`；实车导航不接受录像文件。单次采集加推理超过 2 秒、画面尺寸与标定不符、目标消失或同类目标不唯一，都会拒绝继续。若主机推理过慢，应先优化部署性能并验证延迟，而不是直接放宽时效限制。
 
 检测框中心结合 `fx/cx` 与相机安装偏航角计算目标方向，再从 Provider 返回的安全短距候选中选择；不会用检测框估算目标实际距离，也不会自动连续追踪或保证最终停车距离。目标身份没有跨帧跟踪，适用于静态、唯一的目标。导航日志保留最近一次检测框及任务状态，存放在 `logs/vision/`。
 

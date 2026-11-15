@@ -22,22 +22,47 @@ class QRObserver:
             raise ValueError('target_not_found' if not targets else 'ambiguous_target')
         return target_bearing_deg(targets[0], *self.calibration)
 
-def read_frame(source: str, camera: bool) -> np.ndarray:
+def read_frame(source: str, camera: bool, *, image_size=None, capture_fourcc=None) -> np.ndarray:
     if not camera:
         frame = cv2.imread(source)
         if frame is None:
             raise ValueError("Cannot read image: " + source)
         return frame
+    capture = open_camera(source, image_size=image_size, capture_fourcc=capture_fourcc)
+    try:
+        return read_camera_frame(capture)
+    finally:
+        capture.release()
+
+
+def open_camera(source, *, image_size=None, capture_fourcc=None, buffer_size=None):
     capture = cv2.VideoCapture(int(source) if source.isdigit() else source)
     try:
         if not capture.isOpened():
             raise RuntimeError("Cannot open camera: " + source)
-        ok, frame = capture.read()
-        if not ok or frame is None:
-            raise RuntimeError("Camera did not return a frame")
-        return frame
-    finally:
+        if capture_fourcc is not None:
+            requested_format = cv2.VideoWriter_fourcc(*capture_fourcc)
+            if not capture.set(cv2.CAP_PROP_FOURCC, requested_format):
+                raise RuntimeError("Camera does not accept the calibrated capture format")
+        if image_size is not None:
+            height, width = image_size
+            capture.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+            capture.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        if buffer_size is not None:
+            prop = cv2.CAP_PROP_BUFFERSIZE
+            if not capture.set(prop, buffer_size) or capture.get(prop) != buffer_size:
+                raise RuntimeError("Camera does not support the required capture buffer size")
+        return capture
+    except BaseException:
         capture.release()
+        raise
+
+
+def read_camera_frame(capture):
+    ok, frame = capture.read()
+    if not ok or frame is None:
+        raise RuntimeError("Camera did not return a frame")
+    return frame
 
 
 def demo_frame(label: str) -> np.ndarray:

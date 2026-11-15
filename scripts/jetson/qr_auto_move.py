@@ -3,7 +3,6 @@ import fcntl
 import importlib.util
 import json
 import multiprocessing
-import sys
 import time
 from pathlib import Path
 from Rosmaster_Lib import Rosmaster
@@ -13,10 +12,25 @@ spec=importlib.util.spec_from_file_location('camera_observation',str(root/'demo_
 observation=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(observation)
 StableQrTrigger=observation.StableQrTrigger
-centered_qr_bearing=observation.centered_qr_bearing
 
 def read_observation():
     return json.loads((root/'logs/camera_qr.json').read_text())
+
+
+def wait_for_start_observation(trigger_timestamp):
+    deadline = time.monotonic() + 2.0
+    last_error = 'no frame newer than the trigger'
+    while time.monotonic() < deadline:
+        try:
+            data = read_observation()
+            observation.validate_centered_qr(data)
+            if float(data['timestamp']) > trigger_timestamp:
+                return data
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            last_error = str(exc)
+        time.sleep(.05)
+    raise RuntimeError('No fresh centered QR before movement: ' + last_error)
+
 
 def run():
     lock=open('/tmp/x3_qr_auto_move.lock','w')
@@ -57,7 +71,7 @@ def run():
         time.sleep(1)
         if bot.get_version()<=0:
             raise RuntimeError('Control board not responding')
-        centered_qr_bearing(root/'logs/camera_qr.json')
+        report['start_observation'] = wait_for_start_observation(float(report['trigger_observation']['timestamp']))
         stopper=multiprocessing.get_context('fork').Process(target=stop_independently)
         stopper.start()
         record('MOVING')

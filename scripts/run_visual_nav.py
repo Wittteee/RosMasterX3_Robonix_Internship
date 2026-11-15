@@ -36,6 +36,7 @@ def main(argv=None):
     parser.add_argument("--fx", type=float)
     parser.add_argument("--cx", type=float)
     parser.add_argument("--camera-yaw-deg", type=float)
+    parser.add_argument("--camera-calibration", type=Path, help="Measured RGB calibration JSON for YOLOX")
     parser.add_argument("--image-width", type=int, help="Width used during camera calibration")
     parser.add_argument("--image-height", type=int, help="Height used during camera calibration")
     parser.add_argument("--max-radius", type=float, default=0.2)
@@ -48,16 +49,26 @@ def main(argv=None):
             parser.error("YOLOX navigation requires --camera and a COCO --label (e.g. bottle)")
     if args.demo and args.provider_dir:
         parser.error("Simulation must not connect to a live Provider")
-    if not args.demo and not args.observation_file and (not args.provider_dir or any(value is None for value in
-            (args.fx, args.cx, args.camera_yaw_deg, args.image_width, args.image_height))):
+    camera_values = (args.fx, args.cx, args.image_width, args.image_height)
+    if args.camera_calibration and (args.detector != 'yolox' or any(value is not None for value in camera_values)):
+        parser.error("Use --camera-calibration with YOLOX and without individual camera intrinsics/dimensions")
+    if not args.demo and not args.observation_file and (not args.provider_dir or
+            (not args.camera_calibration and any(value is None for value in (*camera_values, args.camera_yaw_deg)))):
         parser.error("Camera mode requires Provider directory, fx/cx/yaw and calibration image dimensions")
     if args.observation_file and not args.provider_dir:
         parser.error("Real observation mode requires Provider directory")
     api = None
     mission = None
+    observe = None
     mode = "simulation" if args.demo else "live"
     try:
         cfg = load_config(args.config)
+        image_size = (args.image_height, args.image_width)
+        calibration = (args.fx, args.cx, args.camera_yaw_deg)
+        if args.camera_calibration:
+            from x3_nav.vision.camera_calibration import CameraCalibration
+            calibration = CameraCalibration.load(args.camera_calibration, args.camera_yaw_deg)
+            image_size = calibration.image_size
         detector = None
         if args.detector == "yolox":
             from download_yolox import DEFAULT_MODEL
@@ -71,12 +82,12 @@ def main(argv=None):
         else:
             from x3_nav.bridge.robonix_navigation import RobonixNavigation
             api = RobonixNavigation(args.provider_dir, max_radius=args.max_radius, config=cfg)
-            calibration = (args.fx, args.cx, args.camera_yaw_deg)
 
         if detector is not None:
             from x3_nav.vision.yolox import ObjectObserver
-            observe = ObjectObserver(detector, args.camera, args.label, calibration,
-                                     (args.image_height, args.image_width))
+            observe = ObjectObserver(detector, args.camera, args.label, calibration, image_size)
+            if args.camera_calibration:
+                observe.open()
         elif args.observation_file:
             from functools import partial
             from x3_nav.vision.camera_observation import centered_qr_bearing
@@ -90,6 +101,11 @@ def main(argv=None):
     except (Exception, KeyboardInterrupt) as exc:
         result = {"ok": False, "reason": str(exc), "events": mission.events if mission else []}
     finally:
+        if args.camera_calibration and observe is not None:
+            try:
+                observe.close()
+            except Exception as exc:
+                print("Camera release failed: " + str(exc), file=sys.stderr)
         if api is not None:
             try:
                 api.close()

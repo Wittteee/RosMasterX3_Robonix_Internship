@@ -96,6 +96,41 @@ def test_observer_rejects_stale_inference_and_recorded_video():
             observer()
 
 
+def test_measured_camera_profile_configures_capture_and_undistorts_bearing(tmp_path):
+    import json
+    import math
+    import cv2
+    from x3_nav.vision.camera_calibration import CameraCalibration
+
+    K = np.array([[500., 0., 320.], [0., 500., 240.], [0., 0., 1.]])
+    D = np.array([.2, .04, .005, -.01, 0.])
+    profile = dict(image_width=640, image_height=480, camera_matrix=K.tolist(),
+                   distortion_coefficients=D.tolist(), camera_yaw_deg=2., capture_fourcc='MJPG')
+    path = tmp_path / 'measured_camera.json'
+    path.write_text(json.dumps(profile), encoding='utf-8')
+    calibration = CameraCalibration.load(path)
+    pixels, _ = cv2.projectPoints(np.array([[-.2, .15, 1.]]), np.zeros(3), np.zeros(3), K, D)
+    x, y = pixels[0, 0]
+    detector = Mock()
+    detector.detect.return_value = [ObjectBox('bottle', .9, (x-10, y-10, x+10, y+10), 640, 480)]
+    observer = ObjectObserver(detector, '0', 'bottle', calibration, calibration.image_size)
+    with patch('x3_nav.vision.yolox.read_frame', return_value=np.zeros((480,640,3))) as read:
+        assert observer() == pytest.approx(2. + math.degrees(math.atan(.2)), abs=1e-5)
+    read.assert_called_once_with('0', camera=True, image_size=(480,640), capture_fourcc='MJPG')
+    capture = Mock()
+    capture.read.return_value = True, np.zeros((480,640,3))
+    with patch('x3_nav.vision.yolox.open_camera', return_value=capture) as open_camera:
+        observer.open()
+        assert observer() == pytest.approx(2. + math.degrees(math.atan(.2)), abs=1e-5)
+        observer.close()
+    open_camera.assert_called_once_with('0', image_size=(480,640), capture_fourcc='MJPG', buffer_size=1)
+    assert capture.grab.call_count == 9
+    capture.release.assert_called_once()
+    profile['camera_yaw_deg'] = None
+    with pytest.raises(ValueError, match='mounting yaw'):
+        CameraCalibration(profile)
+
+
 def test_missing_model_fails_without_network(tmp_path,capsys):
     with patch('roslibpy.Ros', side_effect=AssertionError('network')):
         assert run_object_detection.main(['--image','missing.jpg','--model',str(tmp_path/'missing.onnx'),

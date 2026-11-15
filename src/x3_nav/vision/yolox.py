@@ -12,8 +12,9 @@ import time
 import cv2
 import numpy as np
 
+from .camera_calibration import CameraCalibration
 from .detect import Detection
-from .frames import read_frame
+from .frames import open_camera, read_camera_frame, read_frame
 from .targets import Target, target_bearing_deg
 
 COCO_CLASSES = tuple((
@@ -134,16 +135,49 @@ class ObjectObserver:
         self.detector, self.camera, self.label = detector, camera, label
         self.calibration, self.image_size = calibration, image_size
         self.last_boxes = []
+        self.capture = None
+
+    def open(self):
+        if self.capture is not None:
+            return
+        capture = open_camera(self.camera, image_size=self.calibration.image_size,
+                              capture_fourcc=self.calibration.capture_fourcc, buffer_size=1)
+        try:
+            # Let the device settle before the first time-limited observation.
+            for _ in range(8):
+                if not capture.grab():
+                    raise RuntimeError("Camera warm-up failed")
+        except BaseException:
+            capture.release()
+            raise
+        self.capture = capture
+
+    def close(self):
+        if self.capture is not None:
+            self.capture.release()
+            self.capture = None
 
     def __call__(self):
         started = time.monotonic()
-        frame = read_frame(self.camera, camera=True)
+        if self.capture is not None:
+            # Discard the single queued frame before acquiring a new observation.
+            if not self.capture.grab():
+                raise RuntimeError("Cannot discard previous camera frame")
+            frame = read_camera_frame(self.capture)
+        elif isinstance(self.calibration, CameraCalibration):
+            frame = read_frame(self.camera, camera=True, image_size=self.calibration.image_size,
+                               capture_fourcc=self.calibration.capture_fourcc)
+        else:
+            frame = read_frame(self.camera, camera=True)
         if frame.shape[:2] != self.image_size:
             raise ValueError("Camera frame dimensions differ from calibration")
         self.last_boxes = self.detector.detect(frame)
         if time.monotonic() - started > 2.0:
             raise ValueError("Camera acquisition/inference exceeded the 2-second observation window")
-        return target_bearing_deg(select_unique(self.last_boxes, self.label).as_target(), *self.calibration)
+        target = select_unique(self.last_boxes, self.label).as_target()
+        if isinstance(self.calibration, CameraCalibration):
+            return self.calibration.bearing_deg(target)
+        return target_bearing_deg(target, *self.calibration)
 
 
 def annotate(frame, boxes):
