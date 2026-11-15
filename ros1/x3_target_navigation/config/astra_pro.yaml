@@ -1,0 +1,49 @@
+rgbd_target_node:
+  rgb_topic: /camera/rgb/image_inference
+  depth_topic: /camera/depth_registered/image_raw
+  camera_info_topic: /camera/rgb/camera_info
+  map_frame: map
+  target_label: bottle
+  confidence_threshold: 0.50
+  nms_threshold: 0.45
+  external_focus: true
+  min_depth_m: 0.25
+  max_depth_m: 3.00
+  depth_roi_scale: 0.40
+  min_depth_valid_ratio: 0.50
+  # Jetson OpenCV 4.1 CPU inference is about 2.3-3.2 s per frame.
+  max_observation_age_sec: 4.00
+  tf_timeout_sec: 0.20
+
+target_fusion_node:
+  min_samples: 5
+  max_samples: 12
+  # Five throttled static-target samples need about 20-25 s on this Jetson.
+  max_age_sec: 30.00
+  outlier_distance_m: 0.15
+  max_stddev_m: 0.04
+
+target_task_manager:
+  map_frame: map
+  # Refuse short-range execution while AMCL position uncertainty is larger
+  # than the parking distance budget.
+  max_pose_std_m: 0.15
+  target_max_age_sec: 10.00
+  # CPU inference can take several seconds; cancel an active goal after this
+  # much silence from the fused target stream.
+  target_loss_timeout_sec: 5.00
+  # RGB-only arrival evidence may finish after slow Jetson CPU inference.
+  # Navigation goal generation still always requires stable RGB-D depth.
+  visual_max_age_sec: 10.00
+  # 0.30 m is measured from the target to base_footprint. With the X3 front
+  # footprint at about 0.117 m, nominal physical front clearance is ~0.18 m.
+  # This is the first closer-stop trial; validate it with a ruler on the real
+  # robot before reducing it further.
+  standoff_m: 0.30
+  standoff_tolerance_m: 0.10
+  min_travel_m: 0.10
+  max_travel_m: 0.80
+  plan_tolerance_m: 0.05
+  target_drift_tolerance_m: 0.15
+  navigation_timeout_sec: 120.0
+  verification_timeout_sec: 15.0

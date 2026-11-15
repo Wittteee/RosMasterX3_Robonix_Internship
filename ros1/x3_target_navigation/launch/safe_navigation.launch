@@ -1,0 +1,8 @@
+<launch>
+  <arg name="map" default="final_site_20261107"/>
+
+  <node name="map_server" pkg="map_server" type="map_server"
+        args="$(find yahboomcar_nav)/maps/$(arg map).yaml"/>
+  <include file="$(find yahboomcar_nav)/launch/library/amcl.launch"/>
+  <include file="$(find x3_target_navigation)/launch/safe_move_base.launch"/>
+</launch>

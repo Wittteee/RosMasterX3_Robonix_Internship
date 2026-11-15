@@ -1,0 +1,9 @@
+std_msgs/Header header
+string label
+geometry_msgs/Point point
+float32 confidence
+float32 depth_m
+float32 depth_valid_ratio
+uint32 sample_count
+float64[9] covariance
+bool stable

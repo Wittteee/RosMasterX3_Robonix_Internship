@@ -29,7 +29,8 @@ python -X utf8 scripts/self_check.py
 ```
 
 `requirements.txt` 是基础导航依赖；`requirements-vision.txt` 增加 OpenCV/NumPy；
-`requirements-dev.txt` 再增加 pytest。只运行基础导航不必安装视觉依赖。
+`requirements-dev.txt` 再增加 pytest；`requirements-model-tools.txt` 仅用于生成
+Jetson OpenCV 4.1 兼容的 ONNX 副本。只运行基础导航不必安装视觉依赖。
 
 本机已有 `.venv` 时，Windows 可直接用：
 
@@ -51,6 +52,15 @@ python -X utf8 scripts/self_check.py
 python scripts/download_yolox.py
 python scripts/run_object_detection.py --image logs/demo_20261028/camera_current.jpg
 ```
+
+## ROS1 RGB-D 静态目标导航
+
+新增 [`ros1/x3_target_navigation`](ros1/x3_target_navigation/README.md) Catkin 包，
+面向 Jetson ROS Melodic 与 Astra Pro。它同步 RGB、注册深度和相机内参，
+将唯一 YOLOX 目标按图像时间戳转换到 `map`，经多帧融合后生成安全停车点。
+默认仅预览；执行模式仍需调用 `/target_navigation/confirm`，运动完全交给现有
+`move_base`，新增节点不发布 `/cmd_vel`。首版只支持静态目标，并在到达后重新
+识别核验。旧 Provider/二维码入口保持不变。
 
 ## 无实车完整演练
 
