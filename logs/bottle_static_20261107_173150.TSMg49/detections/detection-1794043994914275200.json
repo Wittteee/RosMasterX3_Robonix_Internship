@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "navigation_goal_sent": false,
+  "mode": "detection_only",
+  "inference_ms": 260.29,
+  "detections": [
+    {
+      "label": "bottle",
+      "confidence": 0.8777140378952026,
+      "xyxy": [
+        564.6581211090088,
+        217.1362018585205,
+        616.9818935394287,
+        395.80569648742676
+      ],
+      "image_width": 1280,
+      "image_height": 720
+    },
+    {
+      "label": "tv",
+      "confidence": 0.558023989200592,
+      "xyxy": [
+        91.21529388427734,
+        2.4488258361816406,
+        1095.6919174194336,
+        378.88351821899414
+      ],
+      "image_width": 1280,
+      "image_height": 720
+    }
+  ],
+  "annotated_image": "D:\\projects\\car\\RosMasterX3_Robonix_Internship\\logs\\bottle_static_20261107_173150.TSMg49\\detections\\detection-1794043994914275200.jpg",
+  "candidate_detection": {
+    "label": "bottle",
+    "confidence": 0.8777140378952026,
+    "offset_x": -0.0768437385559082,
+    "size": 0.010143947457922119,
+    "source": "yolox-opencv"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "source": "Jetson /dev/video0",
+  "frames": [
+    {
+      "filename": "frame_01.jpg",
+      "timestamp": 1794043912.4964674,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "filename": "frame_02.jpg",
+      "timestamp": 1794043912.8909156,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "filename": "frame_03.jpg",
+      "timestamp": 1794043913.283932,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "filename": "frame_04.jpg",
+      "timestamp": 1794043913.6900167,
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "filename": "frame_05.jpg",
+      "timestamp": 1794043914.087214,
+      "width": 1280,
+      "height": 720
+    }
+  ]
+}

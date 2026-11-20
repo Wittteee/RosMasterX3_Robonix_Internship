@@ -1,0 +1,73 @@
+{
+  "image_width": 1280,
+  "image_height": 720,
+  "capture_fourcc": "MJPG",
+  "camera_matrix": [
+    [
+      976.4420533221219,
+      0.0,
+      674.457499980107
+    ],
+    [
+      0.0,
+      975.6787263747007,
+      362.3388278570018
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "distortion_coefficients": [
+    0.017588389125848904,
+    0.1582177040180505,
+    9.791097422415601e-05,
+    0.008622055921946193,
+    0.0
+  ],
+  "camera_yaw_deg": 2.4650843878877176,
+  "intrinsics_source": "actual Astra Pro RGB checkerboard",
+  "images_used": 20,
+  "reprojection_rms_px": 0.5051739542985018,
+  "held_out_reprojection_rms_px": [
+    0.9076856970787048,
+    0.1401764154434204,
+    0.14021359384059906,
+    0.3394976556301117,
+    0.23433218896389008
+  ],
+  "corner_coverage": [
+    0.5201128482818603,
+    0.5389322916666667
+  ],
+  "mounting_yaw_sample_span_deg": 0.2773803860140762,
+  "mounting_yaw_reference": "screen plane parallel to front bumper, onsite aligned",
+  "mounting_yaw_views": [
+    {
+      "yaw_deg": 2.4650843878877176,
+      "vertical_deg": 5.556415575099057,
+      "reprojection_rms_px": 0.3826335072517395
+    },
+    {
+      "yaw_deg": 2.2880636889801638,
+      "vertical_deg": 5.832381853828264,
+      "reprojection_rms_px": 0.29719844460487366
+    },
+    {
+      "yaw_deg": 2.56544407499424,
+      "vertical_deg": 5.9003721799201365,
+      "reprojection_rms_px": 0.3167811632156372
+    },
+    {
+      "yaw_deg": 2.472604686716557,
+      "vertical_deg": 6.001816435096797,
+      "reprojection_rms_px": 0.13681986927986145
+    },
+    {
+      "yaw_deg": 2.4585363261806643,
+      "vertical_deg": 5.830523724078556,
+      "reprojection_rms_px": 0.13762854039669037
+    }
+  ]
+}

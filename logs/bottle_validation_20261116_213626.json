@@ -1,0 +1,65 @@
+{
+  "checks": {
+    "bottle_rgb_detection": true, 
+    "camera_alignment": true, 
+    "camera_streams": true, 
+    "controller_telemetry": true, 
+    "localization": false, 
+    "parking_preview": false, 
+    "path_planning": false, 
+    "scan": true, 
+    "stable_bottle_target": false, 
+    "timestamped_camera_tf": true
+  }, 
+  "counts": {
+    "depth": 745, 
+    "edition": 482, 
+    "info": 753, 
+    "odom": 500, 
+    "pose": 2, 
+    "rgb": 753, 
+    "scan": 633, 
+    "state": 1, 
+    "visual": 8, 
+    "voltage": 482
+  }, 
+  "depth": {
+    "frame": "camera_rgb_optical_frame", 
+    "height": 480, 
+    "message_age_sec": 0.07868480682373047, 
+    "width": 640
+  }, 
+  "duration_sec": 25.0236599445343, 
+  "edition": 2.299999952316284, 
+  "execute_enabled": false, 
+  "fused": null, 
+  "info": {
+    "frame": "camera_rgb_optical_frame", 
+    "height": 480, 
+    "message_age_sec": 0.034089088439941406, 
+    "width": 640
+  }, 
+  "localization": {
+    "maximum_std_m": 0.15, 
+    "message_age_sec": 6.54551362991333, 
+    "position_std_m": 4.063679390462922, 
+    "x": 5.8378358592069, 
+    "y": 0.25709780581265573
+  }, 
+  "nonzero_cmd_vel_count": 0, 
+  "odom_displacement_during_check_m": 0.0, 
+  "path_poses": null, 
+  "planning_reason": "Waiting for valid localization, stable target and parking preview", 
+  "raw": null, 
+  "ready_for_navigation": false, 
+  "rgb": {
+    "frame": "camera_rgb_optical_frame", 
+    "height": 480, 
+    "message_age_sec": 0.03401589393615723, 
+    "width": 640
+  }, 
+  "state": "IDLE: AMCL pose uncertainty too high for short navigation", 
+  "timestamp": "2026-11-16T21:36:26.464830", 
+  "visual_detection_count": 8, 
+  "voltage": 11.5
+}

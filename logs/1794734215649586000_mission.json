@@ -1,0 +1,78 @@
+{
+  "ok": true,
+  "phase": "SUCCEEDED",
+  "status_name": "SUCCEEDED",
+  "detail": "SUCCEEDED (reported by navigation, not a physical measurement)",
+  "snapshot": {
+    "phase": "SUCCEEDED",
+    "candidate": {
+      "x": 0.6659407789337295,
+      "y": -0.052410675946200413,
+      "yaw": -0.07853981633974481,
+      "frame_id": "map"
+    },
+    "human_confirmed": true,
+    "has_token": false,
+    "start_xy": [
+      0.0,
+      0.0
+    ],
+    "notes": [
+      "17:16:55 预览：已筛选候选点，机器人应保持静止（不下发 goal）",
+      "17:16:55 准备：全状态复核通过，已生成一次性执行令牌（short-window sensor data present）",
+      "17:16:55 CONFIRM：等待人工授权",
+      "17:16:55 确认：人工授权通过，允许单次下发目标",
+      "17:16:55 执行：已允许下发 PoseStamped（令牌已失效，单次触发）",
+      "17:16:55 结果：SUCCEEDED（导航状态回报，不等于独立物理停车验证）"
+    ]
+  },
+  "extra": {
+    "mode": "dry-run",
+    "physical_motion_verified": false,
+    "goal_publish_attempted": true,
+    "cancel_requested": false,
+    "cancel_terminal_observed": false,
+    "health": {
+      "ok": true,
+      "missing": [],
+      "report": {
+        "scan": {
+          "topic": "/scan",
+          "count": 5,
+          "hz_est": 2.5,
+          "ok": true
+        },
+        "odom": {
+          "topic": "/odom",
+          "count": 4,
+          "hz_est": 2.0,
+          "ok": true
+        },
+        "amcl_pose": {
+          "topic": "/amcl_pose",
+          "count": 3,
+          "hz_est": 1.5,
+          "ok": true
+        },
+        "move_base_status": {
+          "topic": "/move_base/status",
+          "count": 2,
+          "hz_est": 1.0,
+          "ok": true
+        }
+      }
+    },
+    "last_pose_xy": [
+      0.638027093589202,
+      -0.05021382126582076
+    ],
+    "status": {
+      "status_code": 3,
+      "status_name": "SUCCEEDED",
+      "text": "simulation only",
+      "goal_id": "offline-goal-1",
+      "ambiguous": false
+    }
+  },
+  "log_path": "D:\\projects\\car\\RosMasterX3_Robonix_Internship\\logs\\1794734215649586000_mission.json"
+}

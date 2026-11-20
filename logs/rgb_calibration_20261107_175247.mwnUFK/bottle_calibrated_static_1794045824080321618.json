@@ -1,0 +1,43 @@
+{
+  "mode": "stationary_jetson_only",
+  "profile": "/home/jetson/rosmaster_x3_deploy/vision_runtime.XeJkZx/configs/astra_pro_rgb_1280x720.json",
+  "opencv": "4.11.0",
+  "numpy": "1.26.4",
+  "opencv_threads": 4,
+  "observation_median_ms": 1994.8,
+  "accepted_observations": 1,
+  "robot_motion_requested": false,
+  "observations": [
+    {
+      "bearing_deg": null,
+      "total_observation_ms": 2633.0,
+      "error": "Camera acquisition/inference exceeded the 2-second observation window",
+      "bottles": []
+    },
+    {
+      "bearing_deg": -3.4307784908615,
+      "total_observation_ms": 1994.8,
+      "error": null,
+      "bottles": [
+        {
+          "label": "bottle",
+          "confidence": 0.7053113579750061,
+          "xyxy": [
+            750.350118637085,
+            219.30704498291016,
+            800.8843059539795,
+            390.4201889038086
+          ],
+          "image_width": 1280,
+          "image_height": 720
+        }
+      ]
+    },
+    {
+      "bearing_deg": null,
+      "total_observation_ms": 1948.7,
+      "error": "Target 'bottle': expected one object, found 0",
+      "bottles": []
+    }
+  ]
+}

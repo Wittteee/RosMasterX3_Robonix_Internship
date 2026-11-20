@@ -1,0 +1,419 @@
+{
+  "mode": "offline_simulation",
+  "target": "bottle",
+  "detector_input": "synthetic_bounding_boxes",
+  "confirmation_input": "simulated",
+  "robot_connected": false,
+  "physical_motion_verified": false,
+  "calibration": {
+    "fx_px": 500,
+    "cx_px": 320,
+    "camera_yaw_deg": 0,
+    "width_px": 640,
+    "height_px": 480
+  },
+  "preview_candidates_m": [
+    0.2,
+    0.2,
+    0.2
+  ],
+  "synthetic_bottle": {
+    "label": "bottle",
+    "confidence": 0.9,
+    "xyxy": [
+      118.0,
+      150.0,
+      162.0,
+      310.0
+    ],
+    "image_width": 640,
+    "image_height": 480
+  },
+  "cases": [
+    {
+      "name": "confirmed_unique_bottle",
+      "camera_reads": 3,
+      "confirmation_calls": 1,
+      "prepare_calls": 1,
+      "execute_calls": 1,
+      "selected_candidate": {
+        "option_id": 3,
+        "radius_m": 0.2,
+        "relative_angle_deg": 20,
+        "x": 0.1879385241571817,
+        "y": 0.06840402866513375,
+        "yaw_deg": 0.0
+      },
+      "trajectory": {
+        "status": "SUCCEEDED",
+        "simulated_goal_publications": 1,
+        "reached_xy_m": [
+          0.18793852415718168,
+          0.06840402866513373
+        ],
+        "final_xy_m": [
+          0.18793852415718168,
+          0.06840402866513373
+        ],
+        "goal_error_m": 3.1031676915590914e-17,
+        "post_arrival_sample_sec": 1.0,
+        "simulated_position_stationary": true
+      },
+      "result": {
+        "ok": true,
+        "execution_attempted": true,
+        "arrival_verified": true,
+        "events": [
+          {
+            "time_epoch": 1794044302.1934133,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1934133,
+            "phase": "DETECTED",
+            "bearing_deg": 19.798876354524932
+          },
+          {
+            "time_epoch": 1794044302.1944118,
+            "phase": "RECOMMENDED",
+            "session_id": "simulation",
+            "option": {
+              "option_id": 3,
+              "radius_m": 0.2,
+              "relative_angle_deg": 20,
+              "x": 0.1879385241571817,
+              "y": 0.06840402866513375,
+              "yaw_deg": 0.0
+            }
+          },
+          {
+            "time_epoch": 1794044302.1944118,
+            "phase": "PREPARED",
+            "option_id": 3,
+            "target": null,
+            "expires_at_epoch": 1794044332.1944118
+          },
+          {
+            "time_epoch": 1794044302.1944118,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1944118,
+            "phase": "EXECUTING"
+          },
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "SUCCEEDED",
+            "outcome": {
+              "ok": true,
+              "arrived": true,
+              "move_base_status_name": "SUCCEEDED",
+              "simulation": true,
+              "trajectory": {
+                "status": "SUCCEEDED",
+                "simulated_goal_publications": 1,
+                "reached_xy_m": [
+                  0.18793852415718168,
+                  0.06840402866513373
+                ],
+                "final_xy_m": [
+                  0.18793852415718168,
+                  0.06840402866513373
+                ],
+                "goal_error_m": 3.1031676915590914e-17,
+                "post_arrival_sample_sec": 1.0,
+                "simulated_position_stationary": true
+              }
+            }
+          }
+        ],
+        "snapshot": {
+          "phase": "SUCCEEDED",
+          "candidate": {
+            "x": 0.1879385241571817,
+            "y": 0.06840402866513375,
+            "yaw": 0.0,
+            "frame_id": "map"
+          },
+          "human_confirmed": true,
+          "has_token": false,
+          "start_xy": [
+            0.0,
+            0.0
+          ],
+          "notes": [
+            "17:38:22 预览：已筛选候选点，机器人应保持静止（不下发 goal）",
+            "17:38:22 准备：全状态复核通过，已生成一次性执行令牌（official Provider accepted selected candidate）",
+            "17:38:22 CONFIRM：等待人工授权",
+            "17:38:22 确认：人工授权通过，允许单次下发目标",
+            "17:38:22 执行：已允许下发 PoseStamped（令牌已失效，单次触发）",
+            "17:38:22 结果：SUCCEEDED（导航状态回报，不等于独立物理停车验证）"
+          ]
+        },
+        "reason": "arrived"
+      }
+    },
+    {
+      "name": "operator_declined",
+      "camera_reads": 2,
+      "confirmation_calls": 1,
+      "prepare_calls": 1,
+      "execute_calls": 0,
+      "selected_candidate": {
+        "option_id": 3,
+        "radius_m": 0.2,
+        "relative_angle_deg": 20,
+        "x": 0.1879385241571817,
+        "y": 0.06840402866513375,
+        "yaw_deg": 0.0
+      },
+      "trajectory": null,
+      "result": {
+        "ok": false,
+        "execution_attempted": false,
+        "arrival_verified": false,
+        "events": [
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "DETECTED",
+            "bearing_deg": 19.798876354524932
+          },
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "RECOMMENDED",
+            "session_id": "simulation",
+            "option": {
+              "option_id": 3,
+              "radius_m": 0.2,
+              "relative_angle_deg": 20,
+              "x": 0.1879385241571817,
+              "y": 0.06840402866513375,
+              "yaw_deg": 0.0
+            }
+          },
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "PREPARED",
+            "option_id": 3,
+            "target": null,
+            "expires_at_epoch": 1794044332.1977708
+          },
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "CANCELED_BEFORE_EXECUTION"
+          }
+        ],
+        "reason": "human_declined",
+        "snapshot": {
+          "phase": "FAILED",
+          "candidate": {
+            "x": 0.1879385241571817,
+            "y": 0.06840402866513375,
+            "yaw": 0.0,
+            "frame_id": "map"
+          },
+          "human_confirmed": false,
+          "has_token": false,
+          "start_xy": [
+            0.0,
+            0.0
+          ],
+          "notes": [
+            "17:38:22 预览：已筛选候选点，机器人应保持静止（不下发 goal）",
+            "17:38:22 准备：全状态复核通过，已生成一次性执行令牌（official Provider accepted selected candidate）",
+            "17:38:22 CONFIRM：等待人工授权",
+            "17:38:22 结果：FAILED（human_declined; no execution）"
+          ]
+        }
+      }
+    },
+    {
+      "name": "no_bottle",
+      "camera_reads": 1,
+      "confirmation_calls": 0,
+      "prepare_calls": 0,
+      "execute_calls": 0,
+      "selected_candidate": null,
+      "trajectory": null,
+      "result": {
+        "ok": false,
+        "execution_attempted": false,
+        "arrival_verified": false,
+        "events": [
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1977708,
+            "phase": "REJECTED",
+            "error": "Target 'bottle': expected one object, found 0"
+          }
+        ],
+        "snapshot": {
+          "phase": "FAILED",
+          "candidate": null,
+          "human_confirmed": false,
+          "has_token": false,
+          "start_xy": null,
+          "notes": [
+            "17:38:22 结果：FAILED（Target 'bottle': expected one object, found 0）"
+          ]
+        },
+        "reason": "Target 'bottle': expected one object, found 0"
+      }
+    },
+    {
+      "name": "duplicate_bottle",
+      "camera_reads": 1,
+      "confirmation_calls": 0,
+      "prepare_calls": 0,
+      "execute_calls": 0,
+      "selected_candidate": null,
+      "trajectory": null,
+      "result": {
+        "ok": false,
+        "execution_attempted": false,
+        "arrival_verified": false,
+        "events": [
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "REJECTED",
+            "error": "Target 'bottle': expected one object, found 2"
+          }
+        ],
+        "snapshot": {
+          "phase": "FAILED",
+          "candidate": null,
+          "human_confirmed": false,
+          "has_token": false,
+          "start_xy": null,
+          "notes": [
+            "17:38:22 结果：FAILED（Target 'bottle': expected one object, found 2）"
+          ]
+        },
+        "reason": "Target 'bottle': expected one object, found 2"
+      }
+    },
+    {
+      "name": "bottle_disappears_after_confirmation",
+      "camera_reads": 3,
+      "confirmation_calls": 1,
+      "prepare_calls": 1,
+      "execute_calls": 0,
+      "selected_candidate": {
+        "option_id": 3,
+        "radius_m": 0.2,
+        "relative_angle_deg": 20,
+        "x": 0.1879385241571817,
+        "y": 0.06840402866513375,
+        "yaw_deg": 0.0
+      },
+      "trajectory": null,
+      "result": {
+        "ok": false,
+        "execution_attempted": false,
+        "arrival_verified": false,
+        "events": [
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "DETECTED",
+            "bearing_deg": 19.798876354524932
+          },
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "RECOMMENDED",
+            "session_id": "simulation",
+            "option": {
+              "option_id": 3,
+              "radius_m": 0.2,
+              "relative_angle_deg": 20,
+              "x": 0.1879385241571817,
+              "y": 0.06840402866513375,
+              "yaw_deg": 0.0
+            }
+          },
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "PREPARED",
+            "option_id": 3,
+            "target": null,
+            "expires_at_epoch": 1794044332.1990714
+          },
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "HEALTH",
+            "report": {
+              "ok": true,
+              "simulation": true
+            }
+          },
+          {
+            "time_epoch": 1794044302.1990714,
+            "phase": "REJECTED",
+            "error": "Target 'bottle': expected one object, found 0"
+          }
+        ],
+        "snapshot": {
+          "phase": "FAILED",
+          "candidate": {
+            "x": 0.1879385241571817,
+            "y": 0.06840402866513375,
+            "yaw": 0.0,
+            "frame_id": "map"
+          },
+          "human_confirmed": true,
+          "has_token": false,
+          "start_xy": [
+            0.0,
+            0.0
+          ],
+          "notes": [
+            "17:38:22 预览：已筛选候选点，机器人应保持静止（不下发 goal）",
+            "17:38:22 准备：全状态复核通过，已生成一次性执行令牌（official Provider accepted selected candidate）",
+            "17:38:22 CONFIRM：等待人工授权",
+            "17:38:22 确认：人工授权通过，允许单次下发目标",
+            "17:38:22 结果：FAILED（Target 'bottle': expected one object, found 0）"
+          ]
+        },
+        "reason": "Target 'bottle': expected one object, found 0"
+      }
+    }
+  ]
+}
