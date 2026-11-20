@@ -60,16 +60,59 @@ DepthSample robustDepth(const cv::Mat& depth, const cv::Rect& detection,
   DepthSample result;
   result.valid_ratio = static_cast<double>(values.size()) /
                        static_cast<double>(centre.area());
-  if (values.empty() || result.valid_ratio < min_valid_ratio) {
+  if (!values.empty() && result.valid_ratio >= min_valid_ratio) {
+    const size_t middle = values.size() / 2;
+    std::nth_element(values.begin(), values.begin() + middle, values.end());
+    result.metres = values[middle];
+    if (values.size() % 2 == 0) {
+      const double lower =
+          *std::max_element(values.begin(), values.begin() + middle);
+      result.metres = (lower + result.metres) * 0.5;
+    }
+    result.valid = std::isfinite(result.metres);
     return result;
   }
-  const size_t middle = values.size() / 2;
-  std::nth_element(values.begin(), values.begin() + middle, values.end());
-  result.metres = values[middle];
-  if (values.size() % 2 == 0) {
-    const double lower = *std::max_element(values.begin(), values.begin() + middle);
-    result.metres = (lower + result.metres) * 0.5;
+
+  // A glossy or pale object can leave the centre empty while its rim still
+  // returns a tight near-range cluster. Use that cluster instead of the wall
+  // visible through the hole.
+  std::vector<double> box_values;
+  box_values.reserve(static_cast<size_t>(clipped.area()));
+  for (int row = clipped.y; row < clipped.y + clipped.height; ++row) {
+    for (int col = clipped.x; col < clipped.x + clipped.width; ++col) {
+      const double value = depthAt(depth, row, col);
+      if (std::isfinite(value) && value >= min_depth_m && value <= max_depth_m) {
+        box_values.push_back(value);
+      }
+    }
   }
+  constexpr size_t kMinCluster = 80;
+  constexpr double kClusterBandM = 0.12;
+  if (box_values.size() < kMinCluster) {
+    return result;
+  }
+  std::sort(box_values.begin(), box_values.end());
+  size_t cluster_begin = box_values.size();
+  for (size_t i = 0; i + kMinCluster <= box_values.size(); ++i) {
+    if (box_values[i + kMinCluster - 1] - box_values[i] <= kClusterBandM) {
+      cluster_begin = i;
+      break;
+    }
+  }
+  if (cluster_begin == box_values.size()) {
+    return result;
+  }
+  size_t cluster_end = cluster_begin + kMinCluster - 1;
+  while (cluster_end + 1 < box_values.size() &&
+         box_values[cluster_end + 1] - box_values[cluster_begin] <=
+             kClusterBandM) {
+    ++cluster_end;
+  }
+  const size_t cluster_size = cluster_end - cluster_begin + 1;
+  const size_t cluster_middle = cluster_begin + cluster_size / 2;
+  result.metres = box_values[cluster_middle];
+  result.valid_ratio =
+      static_cast<double>(cluster_size) / static_cast<double>(clipped.area());
   result.valid = std::isfinite(result.metres);
   return result;
 }

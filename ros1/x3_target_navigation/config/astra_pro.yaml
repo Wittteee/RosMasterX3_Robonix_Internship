@@ -3,8 +3,9 @@ rgbd_target_node:
   depth_topic: /camera/depth_registered/image_raw
   camera_info_topic: /camera/rgb/camera_info
   map_frame: map
+  # The white cylinder alternates between bottle and cup scores around 0.05-0.17.
   target_label: bottle
-  confidence_threshold: 0.50
+  confidence_threshold: 0.08
   nms_threshold: 0.45
   external_focus: true
   min_depth_m: 0.25
@@ -29,18 +30,18 @@ target_task_manager:
   # than the parking distance budget.
   max_pose_std_m: 0.15
   target_max_age_sec: 10.00
-  # CPU inference can take several seconds; cancel an active goal after this
-  # much silence from the fused target stream.
-  target_loss_timeout_sec: 5.00
+  # CPU inference takes about 3 s, and a transparent bottle can miss depth
+  # for several frames while RGB still sees it. Keep the goal while either a
+  # fresh fused target or a fresh RGB detection is arriving.
+  target_loss_timeout_sec: 15.00
   # RGB-only arrival evidence may finish after slow Jetson CPU inference.
   # Navigation goal generation still always requires stable RGB-D depth.
   visual_max_age_sec: 10.00
-  # 0.30 m is measured from the target to base_footprint. With the X3 front
-  # footprint at about 0.117 m, nominal physical front clearance is ~0.18 m.
-  # This is the first closer-stop trial; validate it with a ruler on the real
-  # robot before reducing it further.
-  standoff_m: 0.30
-  standoff_tolerance_m: 0.10
+  # Distance from the bottle to base_footprint. The front edge is 0.117 m
+  # ahead of that point, so 0.167 m leaves a 5 cm gap in front of the bumper.
+  # The goal tolerance must stay inside that gap or the body can reach the bottle.
+  standoff_m: 0.167
+  standoff_tolerance_m: 0.04
   min_travel_m: 0.10
   max_travel_m: 0.80
   plan_tolerance_m: 0.05

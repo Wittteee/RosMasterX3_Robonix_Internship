@@ -119,7 +119,9 @@ class YoloX {
       for (int grid_y = 0; grid_y < side; ++grid_y) {
         for (int grid_x = 0; grid_x < side; ++grid_x, ++index) {
           const float* row = rows.ptr<float>(index);
-          const float score = row[4] * row[5 + class_id_];
+          const float bottle = row[4] * row[5 + 39];
+          const float cup = row[4] * row[5 + 41];
+          const float score = std::max(bottle, cup);
           if (!std::isfinite(score) || score < confidence_) {
             continue;
           }
@@ -143,12 +145,23 @@ class YoloX {
     }
     std::vector<int> keep;
     cv::dnn::NMSBoxes(boxes, scores, confidence_, nms_, keep);
-    if (keep.size() != 1U) {
-      ROS_WARN_THROTTLE(2.0, "Expected one target after NMS, found %zu", keep.size());
+    if (keep.empty()) {
+      ROS_WARN_THROTTLE(2.0, "Expected one target after NMS, found 0");
       return false;
     }
-    detection->box = boxes[keep.front()];
-    detection->confidence = scores[keep.front()];
+    int best = keep.front();
+    for (const int index : keep) {
+      if (scores[static_cast<size_t>(index)] > scores[static_cast<size_t>(best)]) {
+        best = index;
+      }
+    }
+    if (keep.size() != 1U) {
+      ROS_WARN_THROTTLE(
+          2.0, "Expected one target after NMS, found %zu; using the highest",
+          keep.size());
+    }
+    detection->box = boxes[static_cast<size_t>(best)];
+    detection->confidence = scores[static_cast<size_t>(best)];
     return true;
   }
 

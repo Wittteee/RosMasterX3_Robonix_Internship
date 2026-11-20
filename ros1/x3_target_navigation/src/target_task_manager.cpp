@@ -127,6 +127,12 @@ class TargetTaskManager {
       verifyArrival(*message, now);
       return;
     }
+    // A finished attempt must be able to plan again. NAVIGATING stays latched
+    // so a new detection cannot replace the goal already sent to move_base.
+    if (state_ == "PREEMPTED" || state_ == "FAILED") {
+      have_preview_ = false;
+      state_ = "IDLE";
+    }
     if (state_ != "IDLE" && state_ != "PREVIEW") {
       return;
     }
@@ -145,10 +151,21 @@ class TargetTaskManager {
     setState("PREVIEW", "goal planned; call /target_navigation/confirm");
   }
 
+  bool visualFresh(const ros::Time& now) const {
+    if (last_visual_stamp_.isZero()) {
+      return false;
+    }
+    const double age = (now - last_visual_stamp_).toSec();
+    return age >= 0.0 && age <= visual_max_age_sec_;
+  }
+
   void visualDetectionCallback(const std_msgs::Header::ConstPtr& message) {
     std::lock_guard<std::mutex> guard(mutex_);
     const ros::Time now = ros::Time::now();
     const double age = (now - message->stamp).toSec();
+    if (!message->stamp.isZero() && age >= 0.0 && age <= visual_max_age_sec_) {
+      last_visual_stamp_ = message->stamp;
+    }
     if (state_ != "VERIFYING" || !have_pose_ || message->stamp.isZero() ||
         message->stamp <= verification_started_ || age < 0.0 ||
         age > visual_max_age_sec_) {
@@ -305,7 +322,8 @@ class TargetTaskManager {
       setState("IDLE", "prepared target expired before confirmation");
     } else if (state_ == "NAVIGATING" && have_target_ &&
                (now - latest_target_.header.stamp).toSec() >
-                   target_loss_timeout_sec_) {
+                   target_loss_timeout_sec_ &&
+               !visualFresh(now)) {
       move_base_.cancelGoal();
       setState("PREEMPTED", "target lost during navigation; cancel requested");
     } else if (state_ == "NAVIGATING" &&
@@ -375,6 +393,7 @@ class TargetTaskManager {
   TargetEstimate target_at_preview_;
   ros::Time navigation_started_;
   ros::Time verification_started_;
+  ros::Time last_visual_stamp_;
 };
 
 }  // namespace x3_target_navigation
