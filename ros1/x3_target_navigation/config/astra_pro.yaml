@@ -29,6 +29,16 @@ target_fusion_node:
   max_stddev_m: 0.08
 
 target_task_manager:
+  # Function 1: straight approach, stop command at measured front gap <= 5 cm.
+  obstacle_stop_approach: true
+  obstacle_stop_distance_m: 0.05
+  approach_speed_mps: 0.04
+  # Function 2 is opt-in through obstacle_bypass:=true.
+  bypass_clearance_m: 0.05
+  # Function 2: approach the frozen bottle goal; stop at front gap <= 5 cm,
+  # then select and validate a side route after stopped odometry is confirmed.
+  bypass_detection_distance_m: 0.05
+  bypass_max_shift_m: 0.45
   map_frame: map
   # Refuse short-range execution while AMCL position uncertainty is larger
   # than the parking distance budget.
@@ -42,12 +52,13 @@ target_task_manager:
   clearance_min_m: 0.10
   clearance_max_m: 0.20
   footprint_front_m: 0.117
+  footprint_half_width_m: 0.100
   depth_error_m: 0.03
   braking_distance_m: 0.03
   obstacle_margin_m: 0.10
   obstacle_bearing_half_angle_rad: 0.35
-  trans_stopped_vel: 0.02
-  theta_stopped_vel: 0.05
+  trans_stopped_vel: 0.003
+  theta_stopped_vel: 0.01
   stop_confirmation_timeout_sec: 2.00
   # RGB-only arrival evidence may finish after slow Jetson CPU inference.
   # Navigation goal generation still always requires stable RGB-D depth.

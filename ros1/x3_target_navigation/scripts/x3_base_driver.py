@@ -9,6 +9,7 @@ import time
 
 import rospy
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Header
 import Rosmaster_Lib
 
 
@@ -56,6 +57,28 @@ _state = {"driver": None, "last_command": None, "stopped": True}
 _publisher = None
 _max_linear = 0.1
 _max_angular = 0.2
+_require_navigation_permission = False
+_permission_time = None
+_permission_allowed = False
+
+
+def _motion_permitted():
+    if not _require_navigation_permission:
+        return True
+    age = monotonic() - _permission_time if _permission_time is not None else -1
+    return _permission_allowed and 0.0 <= age <= 0.4
+
+
+def _permission_callback(message):
+    global _permission_time, _permission_allowed
+    with _lock:
+        age = (rospy.Time.now() - message.stamp).to_sec()
+        _permission_allowed = (message.frame_id == "ALLOW" and
+                               not message.stamp.is_zero() and 0.0 <= age <= 0.4)
+        # Do not extend an old queued ALLOW heartbeat by another 0.4 seconds.
+        _permission_time = monotonic() - max(0.0, age)
+        if not _motion_permitted():
+            _stop()
 
 
 def _apply(driver, command):
@@ -75,6 +98,8 @@ def _corrected_callback(self, msg):
         except (TypeError, ValueError):
             command = (0.0, 0.0, 0.0)
             rospy.logerr("Rejected non-finite base velocity; stopping")
+        if not _motion_permitted():
+            command = (0.0, 0.0, 0.0)
         _apply(self, command)
         _state["last_command"] = monotonic()
 
@@ -94,7 +119,7 @@ def _watchdog(event):
         last = _state["last_command"]
         now = monotonic()
         if (not _state["stopped"] and last is not None and
-                (now - last > 0.4 or now < last)):
+                (now - last > 0.4 or now < last or not _motion_permitted())):
             driver = _state["driver"]
             if driver is not None:
                 for _ in range(3):
@@ -136,9 +161,13 @@ def _firmware_version(car):
 
 
 def main():
-    global _publisher, _max_linear, _max_angular
+    global _publisher, _max_linear, _max_angular, _require_navigation_permission
     rospy.init_node("driver_node", anonymous=False)
     _max_linear, _max_angular = _limits()
+    _require_navigation_permission = rospy.get_param("~require_navigation_permission", False)
+    permission_subscriber = rospy.Subscriber(
+        "/target_navigation/motion_permission", Header,
+        _permission_callback, queue_size=1)
     Driver.cmd_vel_callback = _corrected_callback
     driver = Driver()
     version = -1.0

@@ -49,11 +49,25 @@ TEST(DepthGeometry, KeepsObjectDepthWhenSmallForegroundOccluderAppears) {
     }
   }
   const DepthSample sample =
-      robustDepth(depth, cv::Rect(4, 4, 12, 12), 0.2, 2.0, 0.5, 0.5);
+      // Keep all 12 foreground pixels in the sampled ROI. A half-size centre
+      // ROI only includes two of them and must reject that tiny cluster.
+      robustDepth(depth, cv::Rect(4, 4, 12, 12), 0.2, 2.0, 1.0, 0.5);
   EXPECT_TRUE(sample.valid);
   EXPECT_TRUE(sample.nearest_valid);
   EXPECT_NEAR(sample.metres, 1.0, 1e-9);
   EXPECT_NEAR(sample.nearest_metres, 0.4, 1e-9);
+}
+
+TEST(DepthGeometry, RejectsForegroundClusterOutsideSampledCentre) {
+  cv::Mat depth(20, 20, CV_16UC1, cv::Scalar(1000));
+  for (int row = 5; row < 8; ++row) {
+    for (int col = 5; col < 9; ++col) depth.at<uint16_t>(row, col) = 400;
+  }
+  const auto sample = robustDepth(depth, cv::Rect(4, 4, 12, 12),
+                                  0.2, 2.0, 0.5, 0.5);
+  EXPECT_TRUE(sample.valid);
+  EXPECT_FALSE(sample.nearest_valid);
+  EXPECT_EQ(sample.nearest_count, 2U);
 }
 
 TEST(DepthGeometry, SupportsFloatAndDeprojectsPinhole) {

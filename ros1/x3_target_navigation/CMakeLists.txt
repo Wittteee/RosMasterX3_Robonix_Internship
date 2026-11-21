@@ -57,6 +57,13 @@ install(DIRECTORY config launch
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  catkin_install_python(PROGRAMS test/test_obstacle_threshold.py
+    test/test_bypass_behavior.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+  add_rostest(test/obstacle_threshold.test)
+  foreach(scenario right left full no_path side_blocked dynamic server_delayed wrong_direction brake_rebound)
+    add_rostest(test/bypass_behavior.test ARGS scenario:=${scenario})
+  endforeach()
   catkin_add_gtest(test_target_core test/test_target_core.cpp)
   if(TARGET test_target_core)
     add_dependencies(test_target_core ${${PROJECT_NAME}_EXPORTED_TARGETS})

@@ -3,6 +3,8 @@
   <arg name="model_path" default="$(env HOME)/models/object_detection_yolox_2022nov_opencv41.onnx"/>
   <!-- false rejects /target_navigation/confirm. Pass execute:=true for an attended run. -->
   <arg name="execute" default="false"/>
+  <arg name="obstacle_stop_approach" default="true"/>
+  <arg name="obstacle_bypass" default="false"/>
   <arg name="target_label" default="bottle"/>
   <arg name="start_astra" default="false"/>
   <arg name="start_bringup" default="false"/>
@@ -15,7 +17,10 @@
          command="python $(find x3_target_navigation)/scripts/check_exclusive_devices.py $(arg start_bringup) $(arg start_astra)"/>
 
   <group if="$(arg start_bringup)">
-    <include file="$(find x3_target_navigation)/launch/safe_bringup.launch"/>
+    <include file="$(find x3_target_navigation)/launch/safe_bringup.launch">
+      <arg name="require_navigation_permission" value="true"/>
+      <arg name="velocity_topic" value="$(eval '/target_navigation/approach_velocity' if arg('obstacle_stop_approach') else '/cmd_vel')"/>
+    </include>
     <node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode"
           output="screen" required="true">
       <param name="serial_port" value="/dev/x3_lidar"/>
@@ -55,6 +60,8 @@
   <include if="$(arg start_navigation)"
            file="$(find x3_target_navigation)/launch/safe_navigation.launch">
     <arg name="map" value="$(arg map)"/>
+    <arg name="start_move_base" value="$(eval not arg('obstacle_stop_approach') or arg('obstacle_bypass'))"/>
+    <arg name="bypass_holonomic" value="$(arg obstacle_bypass)"/>
   </include>
 
   <group ns="target_navigation">
@@ -78,6 +85,8 @@
     <node pkg="x3_target_navigation" type="target_task_manager"
           name="target_task_manager" output="screen" required="true">
       <param name="execute_enabled" value="$(arg execute)"/>
+      <param name="obstacle_stop_approach" value="$(arg obstacle_stop_approach)"/>
+      <param name="obstacle_bypass_enabled" value="$(arg obstacle_bypass)"/>
       <remap from="fused_target" to="/target_navigation/fused_target"/>
       <remap from="visual_detection"
              to="/target_navigation/visual_detection"/>

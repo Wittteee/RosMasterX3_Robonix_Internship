@@ -1,5 +1,7 @@
 <launch>
   <arg name="robot_type" value="$(env ROBOT_TYPE)"/>
+  <arg name="require_navigation_permission" default="false"/>
+  <arg name="velocity_topic" default="/cmd_vel"/>
 
   <param name="robot_description"
          command="$(find xacro)/xacro --inorder '$(find yahboomcar_description)/urdf/yahboomcar_$(arg robot_type).urdf'"/>
@@ -11,6 +13,8 @@
   <node pkg="x3_target_navigation" type="x3_base_driver.py"
         name="driver_node" required="true" output="screen">
     <param name="port" value="/dev/x3_base"/>
+    <param name="require_navigation_permission" value="$(arg require_navigation_permission)"/>
+    <remap from="cmd_vel" to="$(arg velocity_topic)"/>
     <param name="calibration_profile"
            value="$(find x3_target_navigation)/config/chassis_nav_calibration.json"/>
     <param name="imu_link" type="string" value="imu_link"/>

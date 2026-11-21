@@ -1,0 +1,615 @@
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+... logging to /home/jetson/.ros/log/ea36bffe-e597-11f1-9b46-e8f408fd4b1b/roslaunch-jetson-YAHBOOM-3590.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/jetson/rosmaster_x3_runtime/obstacle2_20261121/hardware_5cm_01/trial.launch
+[1mstarted roslaunch server http://127.0.0.1:32897/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /amcl/base_frame_id: base_footprint
+ * /amcl/global_frame_id: map
+ * /amcl/gui_publish_rate: 10.0
+ * /amcl/initial_cov_aa: 0.01
+ * /amcl/initial_cov_xx: 0.0025
+ * /amcl/initial_cov_yy: 0.0025
+ * /amcl/initial_pose_a: 0.760086479524
+ * /amcl/initial_pose_x: 1.54048234033
+ * /amcl/initial_pose_y: 0.435748453346
+ * /amcl/kld_err: 0.05
+ * /amcl/kld_z: 0.99
+ * /amcl/laser_lambda_short: 0.1
+ * /amcl/laser_likelihood_max_dist: 2.0
+ * /amcl/laser_max_beams: 30
+ * /amcl/laser_max_range: 12.0
+ * /amcl/laser_model_type: likelihood_field
+ * /amcl/laser_sigma_hit: 0.2
+ * /amcl/laser_z_hit: 0.5
+ * /amcl/laser_z_max: 0.05
+ * /amcl/laser_z_rand: 0.5
+ * /amcl/laser_z_short: 0.05
+ * /amcl/max_particles: 500
+ * /amcl/min_particles: 200
+ * /amcl/odom_alpha1: 0.2
+ * /amcl/odom_alpha2: 0.2
+ * /amcl/odom_alpha3: 0.8
+ * /amcl/odom_alpha4: 0.2
+ * /amcl/odom_alpha5: 0.1
+ * /amcl/odom_frame_id: odom
+ * /amcl/odom_model_type: omni
+ * /amcl/recovery_alpha_fast: 0.0
+ * /amcl/recovery_alpha_slow: 0.0
+ * /amcl/resample_interval: 1
+ * /amcl/transform_tolerance: 2.0
+ * /amcl/update_min_a: 0.0
+ * /amcl/update_min_d: 0.0
+ * /amcl/use_map_topic: True
+ * /camera/camera_nodelet_manager/num_worker_threads: 4
+ * /camera/depth_rectify_depth/interpolation: 0
+ * /camera/depth_registered_rectify_depth/interpolation: 0
+ * /camera/driver/auto_exposure: True
+ * /camera/driver/auto_white_balance: True
+ * /camera/driver/bootorder: 0
+ * /camera/driver/color_depth_synchronization: False
+ * /camera/driver/depth_camera_info_url: 
+ * /camera/driver/depth_frame_id: camera_depth_opti...
+ * /camera/driver/depth_registration: True
+ * /camera/driver/device_id: #1
+ * /camera/driver/devnums: 1
+ * /camera/driver/rgb_camera_info_url: 
+ * /camera/driver/rgb_frame_id: camera_rgb_optica...
+ * /camera/rgb/camera_frame_id: camera_rgb_optica...
+ * /camera/rgb/camera_info_url: file:///home/jets...
+ * /camera/rgb/framerate: 30
+ * /camera/rgb/image_height: 480
+ * /camera/rgb/image_width: 640
+ * /camera/rgb/pixel_format: yuyv
+ * /camera/rgb/video_device: /dev/x3_camera_rgb
+ * /driver_node/calibration_profile: /home/jetson/rosm...
+ * /driver_node/imu_link: imu_link
+ * /driver_node/port: /dev/x3_base
+ * /driver_node/require_navigation_permission: True
+ * /ekf_localization/acceleration_gains: [0.8, 0.0, 0.0, 0...
+ * /ekf_localization/acceleration_limits: [1.3, 0.0, 0.0, 0...
+ * /ekf_localization/base_link_frame: /base_footprint
+ * /ekf_localization/control_config: [True, False, Fal...
+ * /ekf_localization/control_timeout: 0.2
+ * /ekf_localization/debug: False
+ * /ekf_localization/debug_out_file: /path/to/debug/fi...
+ * /ekf_localization/deceleration_gains: [1.0, 0.0, 0.0, 0...
+ * /ekf_localization/deceleration_limits: [1.3, 0.0, 0.0, 0...
+ * /ekf_localization/frequency: 20
+ * /ekf_localization/imu0: /imu0
+ * /ekf_localization/imu0_config: [False, False, Fa...
+ * /ekf_localization/imu0_differential: True
+ * /ekf_localization/imu0_queue_size: 1
+ * /ekf_localization/imu0_relative: False
+ * /ekf_localization/imu0_remove_gravitational_acceleration: True
+ * /ekf_localization/initial_estimate_covariance: ['1e-9', 0, 0, 0,...
+ * /ekf_localization/odom0: /odom0
+ * /ekf_localization/odom0_config: [False, False, Fa...
+ * /ekf_localization/odom0_differential: True
+ * /ekf_localization/odom0_nodelay: False
+ * /ekf_localization/odom0_queue_size: 1
+ * /ekf_localization/odom0_relative: False
+ * /ekf_localization/odom_frame: /odom
+ * /ekf_localization/predict_to_current_time: True
+ * /ekf_localization/print_diagnostics: True
+ * /ekf_localization/process_noise_covariance: [0.05, 0, 0, 0, 0...
+ * /ekf_localization/publish_acceleration: False
+ * /ekf_localization/publish_tf: False
+ * /ekf_localization/sensor_timeout: 0.1
+ * /ekf_localization/stamped_control: False
+ * /ekf_localization/transform_time_offset: 0.0
+ * /ekf_localization/transform_timeout: 0.0
+ * /ekf_localization/two_d_mode: True
+ * /ekf_localization/use_control: False
+ * /ekf_localization/world_frame: /odom
+ * /imu_filter_madgwick/angular_scale: 1.05
+ * /imu_filter_madgwick/fixed_frame: base_link
+ * /imu_filter_madgwick/orientation_stddev: 0.05
+ * /imu_filter_madgwick/publish_tf: False
+ * /imu_filter_madgwick/use_mag: False
+ * /imu_filter_madgwick/use_magnetic_field_msg: False
+ * /imu_filter_madgwick/world_frame: enu
+ * /move_base/DWAPlannerROS/acc_lim_theta: 0.3
+ * /move_base/DWAPlannerROS/acc_lim_x: 0.3
+ * /move_base/DWAPlannerROS/acc_lim_y: 0.3
+ * /move_base/DWAPlannerROS/angular_sim_granularity: 0.01
+ * /move_base/DWAPlannerROS/controller_frequency: 10.0
+ * /move_base/DWAPlannerROS/forward_point_distance: 0.0
+ * /move_base/DWAPlannerROS/global_frame_id: /map
+ * /move_base/DWAPlannerROS/goal_distance_bias: 32.0
+ * /move_base/DWAPlannerROS/latch_xy_goal_tolerance: True
+ * /move_base/DWAPlannerROS/max_rot_vel: 5.0
+ * /move_base/DWAPlannerROS/max_scaling_factor: 0.2
+ * /move_base/DWAPlannerROS/max_vel_theta: 0.15
+ * /move_base/DWAPlannerROS/max_vel_trans: 0.04
+ * /move_base/DWAPlannerROS/max_vel_x: 0.04
+ * /move_base/DWAPlannerROS/max_vel_y: 0.03
+ * /move_base/DWAPlannerROS/min_rot_vel: 5.0
+ * /move_base/DWAPlannerROS/min_vel_theta: 0.0
+ * /move_base/DWAPlannerROS/min_vel_trans: 0.005
+ * /move_base/DWAPlannerROS/min_vel_x: 0.0
+ * /move_base/DWAPlannerROS/min_vel_y: -0.03
+ * /move_base/DWAPlannerROS/occdist_scale: 0.02
+ * /move_base/DWAPlannerROS/oscillation_reset_angle: 0.05
+ * /move_base/DWAPlannerROS/oscillation_reset_dist: 0.05
+ * /move_base/DWAPlannerROS/path_distance_bias: 32.0
+ * /move_base/DWAPlannerROS/publish_cost_grid_pc: False
+ * /move_base/DWAPlannerROS/publish_traj_pc: False
+ * /move_base/DWAPlannerROS/scaling_speed: 0.25
+ * /move_base/DWAPlannerROS/sim_granularity: 0.005
+ * /move_base/DWAPlannerROS/sim_time: 3.0
+ * /move_base/DWAPlannerROS/stop_time_buffer: 0.3
+ * /move_base/DWAPlannerROS/theta_stopped_vel: 0.01
+ * /move_base/DWAPlannerROS/trans_stopped_vel: 0.003
+ * /move_base/DWAPlannerROS/twirling_scale: 2.0
+ * /move_base/DWAPlannerROS/vth_samples: 9
+ * /move_base/DWAPlannerROS/vtheta_samples: 10
+ * /move_base/DWAPlannerROS/vx_samples: 8
+ * /move_base/DWAPlannerROS/vy_samples: 9
+ * /move_base/DWAPlannerROS/xy_goal_tolerance: 0.02
+ * /move_base/DWAPlannerROS/yaw_goal_tolerance: 0.06
+ * /move_base/GlobalPlanner/allow_unknown: False
+ * /move_base/GlobalPlanner/old_navfn_behavior: False
+ * /move_base/GlobalPlanner/use_grid_path: False
+ * /move_base/NavfnROS/allow_unknown: False
+ * /move_base/aggressive_reset/layer_names: ['obstacle_layer']
+ * /move_base/aggressive_reset/reset_distance: 3.0
+ * /move_base/base_global_planner: global_planner/Gl...
+ * /move_base/base_local_planner: dwa_local_planner...
+ * /move_base/clearing_rotation_allowed: False
+ * /move_base/conservative_reset/layer_names: ['obstacle_layer']
+ * /move_base/conservative_reset/reset_distance: 1.0
+ * /move_base/conservative_reset_dist: 5.0
+ * /move_base/controller_frequency: 10.0
+ * /move_base/controller_patience: 5.0
+ * /move_base/global_costmap/cost_scaling_factor: 3.0
+ * /move_base/global_costmap/footprint: [[-0.117, -0.1], ...
+ * /move_base/global_costmap/footprint_padding: 0.02
+ * /move_base/global_costmap/global_frame: map
+ * /move_base/global_costmap/inflation_layer/cost_scaling_factor: 1.0
+ * /move_base/global_costmap/inflation_layer/enabled: True
+ * /move_base/global_costmap/inflation_layer/inflation_radius: 0.2
+ * /move_base/global_costmap/inflation_radius: 0.3
+ * /move_base/global_costmap/map_type: costmap
+ * /move_base/global_costmap/obstacle_layer/combination_method: 1
+ * /move_base/global_costmap/obstacle_layer/enabled: True
+ * /move_base/global_costmap/obstacle_layer/max_obstacle_height: 2.0
+ * /move_base/global_costmap/obstacle_layer/min_obstacle_height: 0.0
+ * /move_base/global_costmap/obstacle_layer/observation_sources: scan
+ * /move_base/global_costmap/obstacle_layer/obstacle_range: 3.0
+ * /move_base/global_costmap/obstacle_layer/publish_voxel_map: False
+ * /move_base/global_costmap/obstacle_layer/raytrace_range: 3.5
+ * /move_base/global_costmap/obstacle_layer/scan/clearing: True
+ * /move_base/global_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /move_base/global_costmap/obstacle_layer/scan/expected_update_rate: 0.3
+ * /move_base/global_costmap/obstacle_layer/scan/inf_is_valid: True
+ * /move_base/global_costmap/obstacle_layer/scan/marking: True
+ * /move_base/global_costmap/obstacle_layer/scan/observation_persistence: 0.0
+ * /move_base/global_costmap/obstacle_layer/scan/sensor_frame: laser
+ * /move_base/global_costmap/obstacle_layer/scan/topic: /scan
+ * /move_base/global_costmap/obstacle_layer/track_unknown_space: True
+ * /move_base/global_costmap/obstacle_range: 3.0
+ * /move_base/global_costmap/plugins: [{'type': 'costma...
+ * /move_base/global_costmap/publish_frequency: 2.0
+ * /move_base/global_costmap/raytrace_range: 3.5
+ * /move_base/global_costmap/resolution: 0.05
+ * /move_base/global_costmap/robot_base_frame: base_footprint
+ * /move_base/global_costmap/static_layer/enabled: True
+ * /move_base/global_costmap/static_layer/map_topic: /map
+ * /move_base/global_costmap/static_map: True
+ * /move_base/global_costmap/track_unknown_space: True
+ * /move_base/global_costmap/transform_tolerance: 0.5
+ * /move_base/global_costmap/update_frequency: 5.0
+ * /move_base/local_costmap/cost_scaling_factor: 3.0
+ * /move_base/local_costmap/footprint: [[-0.117, -0.1], ...
+ * /move_base/local_costmap/footprint_padding: 0.02
+ * /move_base/local_costmap/global_frame: odom
+ * /move_base/local_costmap/height: 2.5
+ * /move_base/local_costmap/inflation_layer/cost_scaling_factor: 1.0
+ * /move_base/local_costmap/inflation_layer/enabled: True
+ * /move_base/local_costmap/inflation_layer/inflation_radius: 0.2
+ * /move_base/local_costmap/inflation_radius: 0.3
+ * /move_base/local_costmap/map_type: costmap
+ * /move_base/local_costmap/obstacle_layer/combination_method: 1
+ * /move_base/local_costmap/obstacle_layer/enabled: True
+ * /move_base/local_costmap/obstacle_layer/max_obstacle_height: 2.0
+ * /move_base/local_costmap/obstacle_layer/min_obstacle_height: 0.0
+ * /move_base/local_costmap/obstacle_layer/observation_sources: scan
+ * /move_base/local_costmap/obstacle_layer/obstacle_range: 3.0
+ * /move_base/local_costmap/obstacle_layer/publish_voxel_map: False
+ * /move_base/local_costmap/obstacle_layer/raytrace_range: 3.5
+ * /move_base/local_costmap/obstacle_layer/scan/clearing: True
+ * /move_base/local_costmap/obstacle_layer/scan/data_type: LaserScan
+ * /move_base/local_costmap/obstacle_layer/scan/expected_update_rate: 0.3
+ * /move_base/local_costmap/obstacle_layer/scan/inf_is_valid: True
+ * /move_base/local_costmap/obstacle_layer/scan/marking: True
+ * /move_base/local_costmap/obstacle_layer/scan/observation_persistence: 0.0
+ * /move_base/local_costmap/obstacle_layer/scan/sensor_frame: laser
+ * /move_base/local_costmap/obstacle_layer/scan/topic: /scan
+ * /move_base/local_costmap/obstacle_layer/track_unknown_space: True
+ * /move_base/local_costmap/obstacle_range: 3.0
+ * /move_base/local_costmap/plugins: [{'type': 'costma...
+ * /move_base/local_costmap/publish_frequency: 2.0
+ * /move_base/local_costmap/raytrace_range: 3.5
+ * /move_base/local_costmap/resolution: 0.02
+ * /move_base/local_costmap/robot_base_frame: base_footprint
+ * /move_base/local_costmap/rolling_window: True
+ * /move_base/local_costmap/static_layer/enabled: True
+ * /move_base/local_costmap/static_layer/map_topic: /map
+ * /move_base/local_costmap/static_map: False
+ * /move_base/local_costmap/track_unknown_space: True
+ * /move_base/local_costmap/transform_tolerance: 0.5
+ * /move_base/local_costmap/update_frequency: 10.0
+ * /move_base/local_costmap/width: 2.5
+ * /move_base/max_planning_retries: -1.0
+ * /move_base/move_slow_and_clear/clearing_distance: 0.1
+ * /move_base/move_slow_and_clear/limited_distance: 0.3
+ * /move_base/move_slow_and_clear/limited_rot_speed: 0.4
+ * /move_base/move_slow_and_clear/limited_trans_speed: 0.1
+ * /move_base/oscillation_distance: 0.02
+ * /move_base/oscillation_timeout: 15.0
+ * /move_base/planner_frequency: 3.0
+ * /move_base/planner_patience: 5.0
+ * /move_base/recovery_behavior_enabled: False
+ * /move_base/recovery_behaviors: [{'type': 'clear_...
+ * /move_base/shutdown_costmaps: False
+ * /move_base/super_reset/layer_names: ['obstacle_layer']
+ * /move_base/super_reset/reset_distance: 5.0
+ * /odometry_publisher/base_footprint_frame: base_footprint
+ * /odometry_publisher/linear_scale_x: 1.0
+ * /odometry_publisher/linear_scale_y: 1.0
+ * /odometry_publisher/odom_frame: odom
+ * /robot_description: <?xml version="1....
+ * /rosdistro: melodic
+ * /rosversion: 1.14.13
+ * /rplidarNode/angle_compensate: True
+ * /rplidarNode/frame_id: laser
+ * /rplidarNode/inverted: False
+ * /rplidarNode/serial_baudrate: 115200
+ * /rplidarNode/serial_port: /dev/x3_lidar
+ * /target_navigation/rgbd_target_node/camera_info_topic: /camera/rgb/camer...
+ * /target_navigation/rgbd_target_node/confidence_threshold: 0.08
+ * /target_navigation/rgbd_target_node/depth_roi_scale: 0.4
+ * /target_navigation/rgbd_target_node/depth_topic: /camera/depth_reg...
+ * /target_navigation/rgbd_target_node/external_focus: True
+ * /target_navigation/rgbd_target_node/map_frame: map
+ * /target_navigation/rgbd_target_node/max_depth_m: 3.0
+ * /target_navigation/rgbd_target_node/max_observation_age_sec: 4.0
+ * /target_navigation/rgbd_target_node/min_depth_m: 0.25
+ * /target_navigation/rgbd_target_node/min_depth_valid_ratio: 0.5
+ * /target_navigation/rgbd_target_node/model_path: /home/jetson/mode...
+ * /target_navigation/rgbd_target_node/nms_threshold: 0.45
+ * /target_navigation/rgbd_target_node/rgb_topic: /camera/rgb/image...
+ * /target_navigation/rgbd_target_node/target_label: bottle
+ * /target_navigation/rgbd_target_node/tf_future_tolerance_sec: 5.0
+ * /target_navigation/rgbd_target_node/tf_timeout_sec: 0.2
+ * /target_navigation/target_fusion_node/max_age_sec: 30.0
+ * /target_navigation/target_fusion_node/max_samples: 12
+ * /target_navigation/target_fusion_node/max_stddev_m: 0.08
+ * /target_navigation/target_fusion_node/min_samples: 3
+ * /target_navigation/target_fusion_node/outlier_distance_m: 0.22
+ * /target_navigation/target_task_manager/approach_speed_mps: 0.04
+ * /target_navigation/target_task_manager/braking_distance_m: 0.03
+ * /target_navigation/target_task_manager/bypass_clearance_m: 0.05
+ * /target_navigation/target_task_manager/bypass_detection_distance_m: 0.05
+ * /target_navigation/target_task_manager/bypass_max_shift_m: 0.45
+ * /target_navigation/target_task_manager/camera_frame: camera_rgb_optica...
+ * /target_navigation/target_task_manager/clearance_max_m: 0.2
+ * /target_navigation/target_task_manager/clearance_min_m: 0.1
+ * /target_navigation/target_task_manager/depth_error_m: 0.03
+ * /target_navigation/target_task_manager/depth_topic: /camera/depth_reg...
+ * /target_navigation/target_task_manager/edition_topic: /edition
+ * /target_navigation/target_task_manager/execute_enabled: True
+ * /target_navigation/target_task_manager/footprint_front_m: 0.117
+ * /target_navigation/target_task_manager/footprint_half_width_m: 0.1
+ * /target_navigation/target_task_manager/map_frame: map
+ * /target_navigation/target_task_manager/max_pose_std_m: 0.15
+ * /target_navigation/target_task_manager/max_travel_m: 1.2
+ * /target_navigation/target_task_manager/max_voltage_v: 13.5
+ * /target_navigation/target_task_manager/min_edition: 1.0
+ * /target_navigation/target_task_manager/min_scan_hz: 5.0
+ * /target_navigation/target_task_manager/min_travel_m: 0.1
+ * /target_navigation/target_task_manager/min_voltage_v: 10.0
+ * /target_navigation/target_task_manager/navigation_timeout_sec: 120.0
+ * /target_navigation/target_task_manager/obstacle_bearing_half_angle_rad: 0.35
+ * /target_navigation/target_task_manager/obstacle_bypass_enabled: True
+ * /target_navigation/target_task_manager/obstacle_margin_m: 0.1
+ * /target_navigation/target_task_manager/obstacle_stop_approach: True
+ * /target_navigation/target_task_manager/obstacle_stop_distance_m: 0.05
+ * /target_navigation/target_task_manager/parking_clearance_m: 0.12
+ * /target_navigation/target_task_manager/plan_tolerance_m: 0.05
+ * /target_navigation/target_task_manager/rgb_topic: /camera/rgb/image...
+ * /target_navigation/target_task_manager/scan_topic: /scan
+ * /target_navigation/target_task_manager/sensor_timeout_sec: 1.0
+ * /target_navigation/target_task_manager/standoff_m: 0.3
+ * /target_navigation/target_task_manager/standoff_tolerance_m: 0.04
+ * /target_navigation/target_task_manager/stop_confirmation_timeout_sec: 2.0
+ * /target_navigation/target_task_manager/target_drift_tolerance_m: 0.15
+ * /target_navigation/target_task_manager/target_loss_timeout_sec: 15.0
+ * /target_navigation/target_task_manager/target_max_age_sec: 10.0
+ * /target_navigation/target_task_manager/theta_stopped_vel: 0.01
+ * /target_navigation/target_task_manager/trans_stopped_vel: 0.003
+ * /target_navigation/target_task_manager/verification_timeout_sec: 15.0
+ * /target_navigation/target_task_manager/visual_max_age_sec: 10.0
+ * /target_navigation/target_task_manager/voltage_topic: /voltage
+ * /x3_device_preflight: devices-free
+
+NODES
+  /
+    amcl (amcl/amcl)
+    base_link_to_laser (tf2_ros/static_transform_publisher)
+    camera_base_link (tf2_ros/static_transform_publisher)
+    camera_base_link1 (tf2_ros/static_transform_publisher)
+    camera_base_link2 (tf2_ros/static_transform_publisher)
+    camera_base_link3 (tf2_ros/static_transform_publisher)
+    driver_node (x3_target_navigation/x3_base_driver.py)
+    ekf_localization (robot_localization/ekf_localization_node)
+    imu_filter_madgwick (imu_filter_madgwick/imu_filter_node)
+    joint_state_publisher (joint_state_publisher/joint_state_publisher)
+    map_server (map_server/map_server)
+    move_base (move_base/move_base)
+    odom_tf_relay (x3_target_navigation/odom_tf_relay.py)
+    odometry_publisher (yahboomcar_bringup/base_node)
+    rgb_inference_throttle (topic_tools/throttle)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    rplidarNode (rplidar_ros/rplidarNode)
+  /camera/
+    camera_nodelet_manager (nodelet/nodelet)
+    depth_metric (nodelet/nodelet)
+    depth_metric_rect (nodelet/nodelet)
+    depth_points (nodelet/nodelet)
+    depth_rectify_depth (nodelet/nodelet)
+    depth_registered_hw_metric_rect (nodelet/nodelet)
+    depth_registered_metric (nodelet/nodelet)
+    depth_registered_rectify_depth (nodelet/nodelet)
+    driver (nodelet/nodelet)
+    points_xyzrgb_hw_registered (nodelet/nodelet)
+    rgb (usb_cam/usb_cam_node)
+  /target_navigation/
+    rgbd_target_node (x3_target_navigation/rgbd_target_node)
+    target_fusion_node (x3_target_navigation/target_fusion_node)
+    target_task_manager (x3_target_navigation/target_task_manager)
+
+auto-starting new master
+[1mprocess[master]: started with pid [3726][0m
+[1mROS_MASTER_URI=http://127.0.0.1:11311[0m
+]2;/home/jetson/rosmaster_x3_runtime/obstacle2_20261121/hardware_5cm_01/trial.launch http://127.0.0.1:11311
+[1msetting /run_id to ea36bffe-e597-11f1-9b46-e8f408fd4b1b[0m
+[1mprocess[rosout-1]: started with pid [3788][0m
+started core service [/rosout]
+[1mprocess[joint_state_publisher-2]: started with pid [3807][0m
+[1mprocess[robot_state_publisher-3]: started with pid [3809][0m
+[1mprocess[driver_node-4]: started with pid [3811][0m
+[1mprocess[odometry_publisher-5]: started with pid [3819][0m
+[1mprocess[imu_filter_madgwick-6]: started with pid [3837][0m
+[1mprocess[ekf_localization-7]: started with pid [3844][0m
+[1mprocess[odom_tf_relay-8]: started with pid [3857][0m
+[1mprocess[rplidarNode-9]: started with pid [3880][0m
+[1mprocess[base_link_to_laser-10]: started with pid [3886][0m
+[1mprocess[camera/camera_nodelet_manager-11]: started with pid [3900][0m
+[1mprocess[camera/driver-12]: started with pid [3910][0m
+[1mprocess[camera/depth_rectify_depth-13]: started with pid [3918][0m
+[1mprocess[camera/depth_metric_rect-14]: started with pid [3931][0m
+[1mprocess[camera/depth_metric-15]: started with pid [3955][0m
+[1mprocess[camera/depth_points-16]: started with pid [3965][0m
+[1mprocess[camera/depth_registered_rectify_depth-17]: started with pid [3976[33m[ WARN] [1795257614.224493684]: Warning: /imu0 is listed as an input topic, but all its update variables are false[0m
+[33m[ WARN] [1795257614.257443594]: Camera calibration file did not specify distortion model, assuming plumb bob[0m
+[33m[ WARN] [1795257614.257701354]: [head_camera] does not match name camera in file /home/jetson/.ros/camera_info/camera.yaml[0m
+[33m[ WARN] [1795257614.739421529]: unknown control 'focus_auto'
+[0m
+[33m[ WARN] [1795257615.611422481]: Camera calibration file did not specify distortion model, assuming plumb bob[0m
+[33m[ WARN] [1795257616.872317461]: global_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[ WARN] [1795257616.888450192]: global_costmap: Pre-Hydro parameter "map_type" unused since "plugins" is provided[0m
+[33m[ WARN] [1795257618.009488414]: The /scan observation buffer has not been updated for 0.49 seconds, and it should be updated every 0.30 seconds.[0m
+[33m[ WARN] [1795257618.379787822]: local_costmap: Pre-Hydro parameter "static_map" unused since "plugins" is provided[0m
+[33m[ WARN] [1795257618.382266317]: local_costmap: Pre-Hydro parameter "map_type" unused since "plugins" is provided[0m
+[33m[ WARN] [1795257618.983699864]: Parameter max_rot_vel is deprecated (and will not load properly). Use max_vel_theta instead.[0m
+[33m[ WARN] [1795257618.985000311]: Parameter min_rot_vel is deprecated (and will not load properly). Use min_vel_theta instead.[0m
+[33m[ WARN] [1795257619.062704416]: Target TF unavailable: Lookup would require extrapolation into the past.  Requested time 1795257615.933240406 but the earliest data is at time 1795257616.819521024, when looking up transform from frame [camera_rgb_optical_frame] to frame [map][0m
+[33m[ WARN] [1795257619.209501300]: The /scan observation buffer has not been updated for 1.69 seconds, and it should be updated every 0.30 seconds.[0m
+[33m[ WARN] [1795257619.310113973]: The /scan observation buffer has not been updated for 0.69 seconds, and it should be updated every 0.30 seconds.[0m
+[33m[ WARN] [1795257619.409514391]: The /scan observation buffer has not been updated for 1.89 seconds, and it should be updated every 0.30 seconds.[0m
+[33m[ WARN] [1795257619.414222390]: The /scan observation buffer has not been updated for 0.79 seconds, and it should be updated every 0.30 seconds.[0m
+[33m[ WARN] [1795257648.314912669]: Target depth is not sufficiently valid[0m
+[33m[ WARN] [1795257651.332164826]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257654.613341960]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257657.644903136]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257660.645978946]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257663.658129440]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257666.689905561]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257669.943918031]: Expected one target after NMS, found 0[0m
+[0m[ INFO] [1795257616.893061839]: global_costmap: Using plugin "static_layer"[0m
+[0m[ INFO] [1795257616.971840311]: Requesting the map...[0m
+[0m[ INFO] [1795257617.243002597]: Resizing costmap to 800 X 800 at 0.050000 m/pix[0m
+[0m[ INFO] [1795257617.345690022]: Received a 800 X 800 map at 0.050000 m/pix[0m
+[0m[ INFO] [1795257617.374218846]: global_costmap: Using plugin "obstacle_layer"[0m
+[0m[ INFO] [1795257617.444463944]:     Subscribed to Topics: scan[0m
+[0m[ INFO] [1795257617.621087731]: global_costmap: Using plugin "inflation_layer"[0m
+[0m[ INFO] [1795257618.392277130]: local_costmap: Using plugin "obstacle_layer"[0m
+[0m[ INFO] [1795257618.506256616]:     Subscribed to Topics: scan[0m
+[0m[ INFO] [1795257618.718965992]: local_costmap: Using plugin "inflation_layer"[0m
+[0m[ INFO] [1795257618.945971971]: Created local_planner dwa_local_planner/DWAPlannerROS[0m
+[0m[ INFO] [1795257618.955880800]: Sim period is set to 0.10[0m
+[0m[ INFO] [1795257619.329664879]: Recovery behavior will clear layer 'obstacle_layer'[0m
+[0m[ INFO] [1795257619.499717148]: odom received![0m
+[0m[ INFO] [1795257652.097859765]: Got new plan[0m
+[0m[ INFO] [1795257652.397833084]: Got new plan[0m
+[0m[ INFO] [1795257652.697834051]: Got new plan[0m
+[0m[ INFO] [1795257653.097837419]: Got new plan[0m
+[0m[ INFO] [1795257653.398270418]: Got new plan[0m
+[0m[ INFO] [1795257653.697851256]: Got new plan[0m
+[0m[ INFO] [1795257654.097897953]: Got new plan[0m
+[0m[ INFO] [1795257654.397839528]: Got new plan[0m
+[0m[ INFO] [1795257654.697823214]: Got new plan[0m
+[0m[ INFO] [1795257655.097828471]: Got new plan[0m
+[0m[ INFO] [1795257655.397832798]: Got new plan[0m
+[0m[ INFO] [1795257655.698384260]: Got new plan[0m
+[0m[ INFO] [1795257656.097837037]: Got new plan[0m
+[0m[ INFO] [1795257656.397845268]: Got new plan[0m
+[0m[ INFO] [1795257656.697848506]: Got new plan[0m
+[0m[ INFO] [1795257657.097849283]: Got new plan[0m
+[0m[ INFO] [1795257657.400794537]: Got new plan[0m
+[0m[ INFO] [1795257657.697828080]: Got new plan[0m
+[0m[ INFO] [1795257658.097971161]: Got new plan[0m
+[0m[ INFO] [1795257658.397833536]: Got new plan[0m
+[0m[ INFO] [1795257658.697831814]: Got new plan[0m
+[0m[ INFO] [1795257659.097851791]: Got new plan[0m
+[0m[ INFO] [1795257659.397837110]: Got new plan[0m
+[0m[ INFO] [1795257659.697827836]: Got new plan[0m
+[0m[ INFO] [1795257660.097849125]: Got new plan[0m
+[0m[ INFO] [1795257660.397826348]: Got new plan[0m
+[0m[ INFO] [1795257660.697856370]: Got new plan[0m
+[0m[ INFO] [1795257661.097788859]: Got new plan[0m
+[0m[ INFO] [1795257661.398168386]: Got new plan[0m
+[0m[ INFO] [1795257661.697833512]: Got new plan[0m
+[0m[ INFO] [1795257662.097831825]: Got new plan[0m
+[0m[ INFO] [1795257662.397843288]: Got new plan[0m
+[0m[ INFO] [1795257662.702968253]: Got new plan[0m
+[0m[ INFO] [1795257663.099231271]: Got new plan[0m
+[0m[ INFO] [1795257663.397853646]: Got new plan[0m
+[0m[ INFO] [1795257663.797974678]: Got new plan[0m
+[0m[ INFO] [1795257664.097835453]: Got new plan[0m
+[0m[ INFO] [1795257664.397836964]: Got new plan[0m
+[0m[ INFO] [1795257664.798341740]: Got new plan[0m
+[0m[ INFO] [1795257665.097828691]: Got new plan[0m
+[0m[ INFO] [1795257665.397842330]: Got new plan[0m
+[0m[ INFO] [1795257665.801434337]: Got new plan[0m
+[0m[ INFO] [1795257666.097835721]: Got new plan[0m
+[0m[ INFO] [1795257666.397855280]: Got new plan[0m
+[0m[ INFO] [1795257666.797827128]: Got new plan[0m
+[0m[ INFO] [1795257667.097817759]: Got new plan[0m
+[0m[ INFO] [1795257667.397834918]: Got new plan[0m
+[0m[ INFO] [1795257667.797833806]: Got new plan[0m
+[0m[ INFO] [1795257668.097853525]: Got new plan[0m
+[0m[ INFO] [1795257668.397821628]: Got new plan[0m
+[0m[ INFO] [1795257668.797939300]: Got new plan[0m
+[0m[ INFO] [1795257669.097841547]: Got new plan[0m
+[0m[ INFO] [1795257669.397870130]: Got new plan[0m
+[0m[ INFO] [1795257669.797846010]: Got new plan[0m
+[0m[ INFO] [1795257670.097821505]: Got new plan[0m
+[0m[ INFO] [1795257670.397870939]: Got new plan[0m
+[0m[ INFO] [17952[33m[ WARN] [1795257672.893217712]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257675.857407619]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257678.618351846]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257681.711835668]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257684.724508419]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257687.815040322]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257690.950408541]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257693.988735906]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257697.075270664]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257700.103814216]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257703.133546718]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257706.146692493]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257709.209421217]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257712.297891700]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257715.385826756]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257719.162015559]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257722.558365029]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257725.551554443]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257729.367503573]: Expected one target after NMS, found 0[0m
+[33m[ WARN] [1795257733.475764033]: Expected one target after NMS, found 0[0m
+advertised as /camera/rgb/image_inference
+[0m[ INFO] [1795257614.431186454]: Subscribed to map topic.[0m
+[0m[ INFO] [1795257614.880782030]: Received a 800 X 800 map @ 0.050 m/pix
+[0m
+[0m[ INFO] [1795257614.936899197]: Initializing likelihood field model; this can take some time on large maps...[0m
+[0m[ INFO] [1795257614.993670412]: Done initializing likelihood field model.[0m
+[0m[ INFO] [1795257614.239189488]: camera calibration URL: file:///home/jetson/.ros/camera_info/camera.yaml[0m
+[0m[ INFO] [1795257614.257783498]: Starting 'head_camera' (/dev/x3_camera_rgb) at 640x480 via mmap (yuyv) at 30 FPS[0m
+[0m[ INFO] [1795257614.685469641]: Target navigation IDLE: waiting for stable RGB-D target[0m
+[0m[ INFO] [1795257614.735495802]: Target navigation IDLE: precheck failed: lidar frequency unavailable[0m
+[0m[ INFO] [1795257616.038107089]: Target navigation IDLE: precheck failed: camera TF is unavailable[0m
+[0m[ INFO] [1795257616.885422449]: Target navigation IDLE: waiting for stable RGB-D target[0m
+[0m[ INFO] [1795257619.835469143]: Target navigation IDLE: precheck failed: AMCL pose is not initialized[0m
+[0m[ INFO] [1795257639.435425021]: Target navigation IDLE: waiting for stable RGB-D target[0m
+[0m[ INFO] [1795257639.485522829]: Target navigation PREVIEW: goal planned; call /target_navigation/confirm[0m
+[0m[ INFO] [1795257641.553392061]: Target navigation NAVIGATING: confirmed bottle goal; approach bottle, brake at 5 cm then validate bypass[0m
+[0m[ INFO] [1795257651.511227652]: Target navigation NAVIGATING: BRAKING_FOR_RIGHT_BYPASS: obstacle intrudes from left[0m
+[0m[ INFO] [1795257651.986479415]: Target navigation NAVIGATING: BYPASS_RIGHT_SHIFT[0m
+[0m[ INFO] [1795257671.013930965]: Target navigation STOPPING: BYPASS_SENSOR_UNAVAILABLE[0m
+[0m[ INFO] [1795257671.137828595]: Target navigation FAILED: BYPASS_SENSOR_UNAVAILABLE[0m
+57670.797881313]: Got new plan[0m
+[0m[ INFO] [1795257612.736516885]: RPLIDAR running on ROS package rplidar_ros, SDK Version:2.0.0[0m
+[0m[ INFO] [1795257612.866654670]: RPLIDAR S/N: 989EED93C0EA98C6C2E29EF56A444061[0m
+[0m[ INFO] [1795257612.866732302]: Firmware Ver: 1.29[0m
+[0m[ INFO] [1795257612.866759662]: Hardware Rev: 7[0m
+[0m[ INFO] [1795257612.918066910]: RPLidar health status : OK.[0m
+[0m[ INFO] [1795257613.363800312]: current scan mode: Sensitivity, sample rate: 8 Khz, max_distance: 12.0 m, scan frequency:10.0 Hz, [0m
+[0m[ INFO] [1795257610.619522356]: Starting ImuFilter[0m
+[0m[ INFO] [1795257611.246460727]: Using dt computed from message headers[0m
+[0m[ INFO] [1795257612.760282478]: Imu filter gain set to 0.100000[0m
+[0m[ INFO] [1795257612.760351982]: Gyro drift bias set to 0.000000[0m
+[0m[ INFO] [1795257612.760396302]: Magnetometer bias values: 0.000000 0.000000 0.000000[0m
+[0m[ INFO] [1795257614.319722615]: First IMU message received.[0m
+Rosmaster Serial Opened! Baudrate=115200
+----------------create receive threading--------------
+[INFO] [1795257614.237805]: Chassis /dev/x3_base version 2.3 voltage 10.20 V; limits 0.10 m/s 0.20 rad/s
+[INFO] [1795257736.949356]: Close the robot...
+Traceback (most recent call last):
+  File "/home/jetson/rosmaster_x3_runtime/obstacle2_20261121/build_ws/src/x3_target_navigation/scripts/x3_base_driver.py", line 200, in <module>
+    main()
+  File "/home/jetson/rosmaster_x3_runtime/obstacle2_20261121/build_ws/src/x3_target_navigation/scripts/x3_base_driver.py", line 196, in main
+    driver.pub_data()
+  File "/home/jetson/yahboomcar_ws/src/yahboomcar_bringup/scripts/Mcnamu_driver.py", line 102, in pub_data
+    self.velPublisher.publish(twist)
+  File "/opt/ros/melodic/lib/python2.7/dist-packages/rospy/topics.py", line 876, in publish
+    raise ROSException("publish() to an unregistered() handle")
+rospy.exceptions.ROSException: publish() to an unregistered() handle
+][0m
+[1mprocess[camera/points_xyzrgb_hw_registered-18]: started with pid [4000][0m
+[1mprocess[camera/depth_registered_hw_metric_rect-19]: started with pid [4005][0m
+[1mprocess[camera/depth_registered_metric-20]: started with pid [4013][0m
+[1mprocess[camera_base_link-21]: started with pid [4021][0m
+[1mprocess[camera_base_link1-22]: started with pid [4036][0m
+[1mprocess[camera_base_link2-23]: started with pid [4045][0m
+[1mprocess[camera_base_link3-24]: started with pid [4057][0m
+[1mprocess[camera/rgb-25]: started with pid [4072][0m
+[1mprocess[rgb_inference_throttle-26]: started with pid [4085][0m
+[1mprocess[map_server-27]: started with pid [4100][0m
+[1mprocess[amcl-28]: started with pid [4124][0m
+[1mprocess[move_base-29]: started with pid [4130][0m
+[1mprocess[target_navigation/rgbd_target_node-30]: started with pid [4160][0m
+[1mprocess[target_navigation/target_fusion_node-31]: started with pid [4183][0m
+[1mprocess[target_navigation/target_task_manager-32]: started with pid [4215][0m
+[target_navigation/target_task_manager-32] killing on exit
+[target_navigation/target_fusion_node-31] killing on exit
+[target_navigation/rgbd_target_node-30] killing on exit
+[move_base-29] killing on exit
+[amcl-28] killing on exit
+[map_server-27] killing on exit
+[rgb_inference_throttle-26] killing on exit
+[camera/rgb-25] killing on exit
+[camera_base_link3-24] killing on exit
+[camera_base_link2-23] killing on exit
+[camera_base_link1-22] killing on exit
+[camera_base_link-21] killing on exit
+[camera/depth_registered_metric-20] killing on exit
+[camera/depth_registered_hw_metric_rect-19] killing on exit
+[camera/points_xyzrgb_hw_registered-18] killing on exit
+[camera/depth_registered_rectify_depth-17] killing on exit
+[camera/depth_points-16] killing on exit
+[camera/depth_metric-15] killing on exit
+[camera/depth_metric_rect-14] killing on exit
+[camera/depth_rectify_depth-13] killing on exit
+[camera/driver-12] killing on exit
+[camera/camera_nodelet_manager-11] killing on exit
+[base_link_to_laser-10] killing on exit
+[rplidarNode-9] killing on exit
+[odom_tf_relay-8] killing on exit
+[ekf_localization-7] killing on exit
+[imu_filter_madgwick-6] killing on exit
+[odometry_publisher-5] killing on exit
+[driver_node-4] killing on exit
+[robot_state_publisher-3] killing on exit
+[joint_state_publisher-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

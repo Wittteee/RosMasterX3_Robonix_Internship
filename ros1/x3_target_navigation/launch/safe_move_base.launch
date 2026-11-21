@@ -1,5 +1,6 @@
 <launch>
   <arg name="robot_type" value="$(env ROBOT_TYPE)"/>
+  <arg name="bypass_holonomic" default="false"/>
 
   <node pkg="move_base" type="move_base" name="move_base"
         respawn="false" output="screen">
@@ -21,24 +22,28 @@
     <param name="recovery_behavior_enabled" value="false"/>
     <param name="clearing_rotation_allowed" value="false"/>
     <param name="DWAPlannerROS/min_vel_x" value="0.0"/>
-    <param name="DWAPlannerROS/max_vel_x" value="0.10"/>
-    <param name="DWAPlannerROS/min_vel_y" value="0.0"/>
-    <param name="DWAPlannerROS/max_vel_y" value="0.0"/>
-    <param name="DWAPlannerROS/max_vel_trans" value="0.10"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/max_vel_x" value="0.10"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/min_vel_y" value="0.0"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/max_vel_y" value="0.0"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/max_vel_trans" value="0.10"/>
     <param name="DWAPlannerROS/min_vel_theta" value="0.0"/>
     <!-- Use the measured rectangular X3 footprint. Do not replace it with a
          fake small robot_radius just to make a blocked goal plan. -->
     <rosparam param="local_costmap/footprint">[[-0.117, -0.100], [-0.117, 0.100], [0.117, 0.100], [0.117, -0.100]]</rosparam>
     <rosparam param="global_costmap/footprint">[[-0.117, -0.100], [-0.117, 0.100], [0.117, 0.100], [0.117, -0.100]]</rosparam>
-    <param name="local_costmap/inflation_layer/inflation_radius" value="0.15"/>
-    <param name="global_costmap/inflation_layer/inflation_radius" value="0.15"/>
-    <param name="DWAPlannerROS/max_vel_theta" value="0.30"/>
-    <param name="DWAPlannerROS/xy_goal_tolerance" value="0.03"/>
-    <param name="DWAPlannerROS/yaw_goal_tolerance" value="0.08"/>
+    <param unless="$(arg bypass_holonomic)" name="local_costmap/inflation_layer/inflation_radius" value="0.15"/>
+    <param unless="$(arg bypass_holonomic)" name="global_costmap/inflation_layer/inflation_radius" value="0.15"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/max_vel_theta" value="0.30"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/xy_goal_tolerance" value="0.03"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/yaw_goal_tolerance" value="0.08"/>
     <param name="DWAPlannerROS/latch_xy_goal_tolerance" value="true"/>
-    <param name="DWAPlannerROS/trans_stopped_vel" value="0.02"/>
-    <param name="DWAPlannerROS/theta_stopped_vel" value="0.05"/>
-    <remap from="cmd_vel" to="cmd_vel"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/trans_stopped_vel" value="0.02"/>
+    <param unless="$(arg bypass_holonomic)" name="DWAPlannerROS/theta_stopped_vel" value="0.05"/>
+    <!-- Only function 2 enables lateral planning. Commands go through the
+         manager's stopped/replan/side/footprint gates before the base driver. -->
+    <rosparam if="$(arg bypass_holonomic)" command="load"
+              file="$(find x3_target_navigation)/config/bypass_move_base.yaml"/>
+    <remap from="cmd_vel" to="$(eval '/target_navigation/bypass_nav_velocity' if arg('bypass_holonomic') else '/cmd_vel')"/>
     <remap from="odom" to="odom"/>
   </node>
 </launch>

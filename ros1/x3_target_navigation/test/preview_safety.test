@@ -2,6 +2,7 @@
   <node pkg="x3_target_navigation" type="target_task_manager"
         name="target_task_manager" ns="target_navigation" output="screen">
     <param name="execute_enabled" value="false"/>
+    <param name="obstacle_stop_approach" value="true"/>
   </node>
 
   <test test-name="preview_safety"

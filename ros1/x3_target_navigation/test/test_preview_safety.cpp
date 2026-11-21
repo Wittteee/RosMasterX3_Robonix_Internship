@@ -15,6 +15,8 @@ TEST(PreviewSafety, ConfirmationIsRejectedAndNoVelocityIsPublished) {
   ros::NodeHandle node;
   ros::Subscriber velocity =
       node.subscribe("/cmd_vel", 1, velocityCallback);
+  ros::Subscriber approach_velocity =
+      node.subscribe("/target_navigation/approach_velocity", 1, velocityCallback);
   ros::ServiceClient confirm =
       node.serviceClient<std_srvs::Trigger>("/target_navigation/confirm");
   ASSERT_TRUE(confirm.waitForExistence(ros::Duration(5.0)));
@@ -30,6 +32,7 @@ TEST(PreviewSafety, ConfirmationIsRejectedAndNoVelocityIsPublished) {
   }
   EXPECT_FALSE(velocity_received);
   (void)velocity;
+  (void)approach_velocity;
 }
 
 }  // namespace

@@ -1,5 +1,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <nav_msgs/GetPlan.h>
@@ -27,6 +29,8 @@
 #include <limits>
 
 #include "x3_target_navigation/TargetEstimate.h"
+#include "x3_target_navigation/approach_obstacle.hpp"
+#include "x3_target_navigation/bypass_geometry.hpp"
 #include "x3_target_navigation/parking_geometry.hpp"
 
 namespace x3_target_navigation {
@@ -41,6 +45,13 @@ class TargetTaskManager {
         tf_listener_(tf_buffer_),
         move_base_("/move_base", true) {
     private_nh_.param("execute_enabled", execute_enabled_, false);
+    private_nh_.param("obstacle_stop_approach", obstacle_stop_approach_, false);
+    private_nh_.param("obstacle_bypass_enabled", obstacle_bypass_enabled_, false);
+    private_nh_.param("bypass_clearance_m", bypass_clearance_m_, 0.05);
+    private_nh_.param("bypass_detection_distance_m", bypass_detection_distance_m_, 0.05);
+    private_nh_.param("bypass_max_shift_m", bypass_max_shift_m_, 0.45);
+    private_nh_.param("obstacle_stop_distance_m", obstacle_stop_distance_m_, 0.05);
+    private_nh_.param("approach_speed_mps", approach_speed_mps_, 0.04);
     private_nh_.param<std::string>("map_frame", map_frame_, "map");
     private_nh_.param<std::string>("camera_frame", camera_frame_,
                                    "camera_rgb_optical_frame");
@@ -51,6 +62,7 @@ class TargetTaskManager {
     private_nh_.param("clearance_min_m", clearance_min_m_, 0.10);
     private_nh_.param("clearance_max_m", clearance_max_m_, 0.20);
     private_nh_.param("footprint_front_m", footprint_front_m_, 0.117);
+    private_nh_.param("footprint_half_width_m", footprint_half_width_m_, 0.100);
     private_nh_.param("depth_error_m", depth_error_m_, 0.03);
     private_nh_.param("braking_distance_m", braking_distance_m_, 0.03);
     private_nh_.param("obstacle_margin_m", obstacle_margin_m_, 0.10);
@@ -101,24 +113,30 @@ class TargetTaskManager {
     edition_subscriber_ = nh_.subscribe(
         edition_topic, 5, &TargetTaskManager::editionCallback, this);
     scan_subscriber_ = nh_.subscribe(
-        scan_topic, 20, &TargetTaskManager::scanCallback, this);
+        scan_topic, obstacle_bypass_enabled_ ? 1 : 20, &TargetTaskManager::scanCallback, this);
     rgb_subscriber_ = nh_.subscribe(
         rgb_topic, 1, &TargetTaskManager::rgbCallback, this);
     depth_subscriber_ = nh_.subscribe(
         depth_topic, 1, &TargetTaskManager::depthCallback, this);
     odom_subscriber_ = nh_.subscribe(
         "/odom", 20, &TargetTaskManager::odomCallback, this);
+    bypass_velocity_subscriber_ = nh_.subscribe(
+        "bypass_nav_velocity", 1, &TargetTaskManager::bypassVelocityCallback, this);
     preview_publisher_ =
         nh_.advertise<geometry_msgs::PoseStamped>("preview_goal", 1, true);
     state_publisher_ =
         nh_.advertise<std_msgs::String>("state", 1, true);
+    motion_permission_publisher_ =
+        nh_.advertise<std_msgs::Header>("motion_permission", 1);
+    approach_velocity_publisher_ =
+        nh_.advertise<geometry_msgs::Twist>("approach_velocity", 1);
     confirm_service_ = nh_.advertiseService(
         "confirm", &TargetTaskManager::confirm, this);
     cancel_service_ = nh_.advertiseService(
         "cancel", &TargetTaskManager::cancel, this);
     make_plan_client_ = nh_.serviceClient<nav_msgs::GetPlan>("/move_base/make_plan");
     timer_ = private_nh_.createTimer(
-        ros::Duration(0.1), &TargetTaskManager::timerCallback, this);
+        ros::Duration(0.05), &TargetTaskManager::timerCallback, this);
     setState("IDLE", "waiting for stable RGB-D target");
   }
 
@@ -126,10 +144,17 @@ class TargetTaskManager {
   void validateParameters() const {
     const bool valid =
         max_pose_std_m_ > 0.0 && target_max_age_sec_ > 0.0 &&
+        obstacle_stop_distance_m_ > 0.0 &&
+        approach_speed_mps_ > 0.0 && approach_speed_mps_ <= 0.04 &&
+        (!obstacle_bypass_enabled_ || obstacle_stop_approach_) &&
+        bypass_clearance_m_ >= 0.03 && bypass_detection_distance_m_ >= 0.05 &&
+        bypass_detection_distance_m_ <= 0.50 &&
+        bypass_max_shift_m_ >= 0.20 && bypass_max_shift_m_ <= 0.60 &&
         target_loss_timeout_sec_ > 0.0 &&
         parking_clearance_m_ >= clearance_min_m_ &&
         parking_clearance_m_ <= clearance_max_m_ &&
-        footprint_front_m_ > 0.0 && depth_error_m_ >= 0.0 &&
+        footprint_front_m_ > 0.0 && footprint_half_width_m_ > 0.0 &&
+        depth_error_m_ >= 0.0 &&
         braking_distance_m_ >= 0.0 &&
         obstacle_margin_m_ > 0.0 && obstacle_bearing_half_angle_rad_ > 0.0 &&
         trans_stopped_vel_ >= 0.0 && theta_stopped_vel_ >= 0.0 &&
@@ -137,7 +162,8 @@ class TargetTaskManager {
         visual_max_age_sec_ > 0.0 &&
         standoff_m_ > 0.0 &&
         standoff_tolerance_m_ > 0.0 && min_travel_m_ >= 0.10 &&
-        max_travel_m_ >= min_travel_m_ && max_travel_m_ <= 0.80 &&
+        max_travel_m_ >= min_travel_m_ &&
+        max_travel_m_ <= (obstacle_bypass_enabled_ ? 1.20 : 0.80) &&
         plan_tolerance_m_ > 0.0 && target_drift_tolerance_m_ > 0.0 &&
         navigation_timeout_sec_ > 0.0 && verification_timeout_sec_ > 0.0 &&
         min_voltage_v_ > 0.0 && max_voltage_v_ > min_voltage_v_ &&
@@ -156,6 +182,7 @@ class TargetTaskManager {
     std::lock_guard<std::mutex> guard(mutex_);
     if (msg->header.frame_id != map_frame_ || msg->header.stamp.isZero()) {
       have_pose_ = false;
+      if (state_ == "NAVIGATING") requestSafetyStop("LOCALIZATION_UNAVAILABLE");
       return;
     }
     const double x_variance = msg->pose.covariance[0];
@@ -164,7 +191,11 @@ class TargetTaskManager {
         x_variance < 0.0 || y_variance < 0.0 ||
         std::sqrt(std::max(x_variance, y_variance)) > max_pose_std_m_) {
       have_pose_ = false;
-      setState("IDLE", "AMCL pose uncertainty too high for short navigation");
+      if (state_ == "NAVIGATING") {
+        requestSafetyStop("LOCALIZATION_UNAVAILABLE");
+      } else if (!task_locked_ && !stop_waiting_) {
+        setState("IDLE", "AMCL pose uncertainty too high for short navigation");
+      }
       return;
     }
     robot_pose_.header = msg->header;
@@ -188,8 +219,13 @@ class TargetTaskManager {
     if (!fresh(*message, now) || !have_pose_) {
       return;
     }
-    if (task_locked_) {
+    if (task_locked_ || stop_waiting_) {
       return;
+    }
+    if (state_ == "NAVIGATING") {
+      latest_target_ = *message;
+      have_target_ = true;
+      return;  // Do not let a sensor callback overwrite an active task state.
     }
     const std::string blocked = precheckReason(now);
     if (!blocked.empty()) {
@@ -215,7 +251,7 @@ class TargetTaskManager {
     geometry_msgs::PoseStamped candidate;
     std::string reason;
     if (!buildParkingGoal(*message, &candidate, &reason) ||
-        !planAvailable(candidate, &reason)) {
+        (!obstacle_stop_approach_ && !planAvailable(candidate, &reason))) {
       if (reason.find("no path") != std::string::npos ||
           reason.find("BLOCKED_NO_SAFE_PATH") != std::string::npos) {
         setState("FAILED", "BLOCKED_NO_SAFE_PATH: " + reason);
@@ -269,7 +305,8 @@ class TargetTaskManager {
       const double required_standoff = footprint_front_m_ +
           parking_clearance_m_ + depth_error_m_ + braking_distance_m_;
       parking = computeParkingGeometry(
-          robot_pose_.pose.position, target.surface_point, required_standoff,
+          robot_pose_.pose.position,
+          obstacle_stop_approach_ ? target.point : target.surface_point, required_standoff,
           min_travel_m_, max_travel_m_);
     } catch (const std::invalid_argument& error) {
       *reason = error.what();
@@ -282,6 +319,9 @@ class TargetTaskManager {
     orientation.setRPY(0.0, 0.0, parking.yaw);
     goal->pose.orientation = tf2::toMsg(orientation);
     obstacle_limited_ = false;
+    // Function 1 measures the live front gap. Clipping to a distant obstacle
+    // here would otherwise stop at the old 10 cm + braking margin.
+    if (obstacle_stop_approach_) return true;
     double obstacle_range = std::numeric_limits<double>::infinity();
     if (have_scan_ && obstacleRangeToward(target.surface_point,
                                            &obstacle_range)) {
@@ -311,6 +351,13 @@ class TargetTaskManager {
     if (!have_scan_ || scan_.ranges.empty()) {
       return false;
     }
+    geometry_msgs::TransformStamped laser_to_base;
+    try {
+      laser_to_base = tf_buffer_.lookupTransform(
+          "base_footprint", scan_.header.frame_id, scan_.header.stamp);
+    } catch (const tf2::TransformException&) {
+      return false;  // Confirmation's corridor check will reject missing TF.
+    }
     const double dx = target.x - robot_pose_.pose.position.x;
     const double dy = target.y - robot_pose_.pose.position.y;
     const double robot_yaw = tf2::getYaw(robot_pose_.pose.orientation);
@@ -321,14 +368,18 @@ class TargetTaskManager {
     for (std::size_t i = 0; i < scan_.ranges.size(); ++i) {
       const double angle = scan_.angle_min +
           static_cast<double>(i) * scan_.angle_increment;
-      double delta = angle - bearing;
+      const double value = scan_.ranges[i];
+      if (!std::isfinite(value) || value < scan_.range_min ||
+          value > scan_.range_max) continue;
+      geometry_msgs::PointStamped point, base_point;
+      point.point.x = value * std::cos(angle);
+      point.point.y = value * std::sin(angle);
+      tf2::doTransform(point, base_point, laser_to_base);
+      double delta = std::atan2(base_point.point.y, base_point.point.x) - bearing;
       while (delta > M_PI) delta -= 2.0 * M_PI;
       while (delta < -M_PI) delta += 2.0 * M_PI;
-      const double value = scan_.ranges[i];
-      if (std::abs(delta) <= obstacle_bearing_half_angle_rad_ &&
-          std::isfinite(value) && value >= scan_.range_min &&
-          value <= scan_.range_max) {
-        nearest = std::min(nearest, value);
+      if (std::abs(delta) <= obstacle_bearing_half_angle_rad_) {
+        nearest = std::min(nearest, std::hypot(base_point.point.x, base_point.point.y));
       }
     }
     if (!std::isfinite(nearest)) return false;
@@ -363,6 +414,11 @@ class TargetTaskManager {
       response.message = "execute_enabled is false; preview only";
       return true;
     }
+    if (task_locked_ || stop_waiting_) {
+      response.success = false;
+      response.message = "safety stop latched; restart launch before a new attempt";
+      return true;
+    }
     const std::string blocked = precheckReason(now);
     if (!blocked.empty()) {
       response.success = false;
@@ -376,6 +432,49 @@ class TargetTaskManager {
       return true;
     }
     std::string reason;
+    reason = approachBlockReason(now);
+    if (!reason.empty()) {
+      task_locked_ = true;
+      have_preview_ = false;
+      setState("FAILED", reason);
+      response.success = false;
+      response.message = reason;
+      return true;
+    }
+    if (obstacle_stop_approach_) {
+      // Do not block the single ROS callback thread while costmaps start:
+      // doing so queues old scans and can falsely trigger SCAN_UNAVAILABLE.
+      if (obstacle_bypass_enabled_ && !move_base_.isServerConnected()) {
+        response.success = false;
+        response.message = "function 2 requires move_base and its live costmaps";
+        return true;
+      }
+      if (!recent(odom_stamp_, now)) {
+        response.success = false;
+        response.message = "fresh odometry required for straight approach";
+        return true;
+      }
+      approach_start_ = robot_pose_.pose.position;
+      approach_yaw_ = std::atan2(preview_goal_.pose.position.y - approach_start_.y,
+                                 preview_goal_.pose.position.x - approach_start_.x);
+      double error = approach_yaw_ - tf2::getYaw(robot_pose_.pose.orientation);
+      error = std::atan2(std::sin(error), std::cos(error));
+      if (std::abs(error) > 0.35) {
+        response.success = false;
+        response.message = "bottle must be in front for straight approach";
+        return true;
+      }
+      navigation_started_ = now;
+      have_preview_ = false;
+      bypass_phase_ = "NONE";
+      bypass_stage_ = -1;
+      setState("NAVIGATING", obstacle_bypass_enabled_ ?
+          "confirmed bottle goal; approach bottle, brake at 5 cm then validate bypass" :
+          "one-shot confirmed straight approach; stop at 5 cm front gap");
+      response.success = true;
+      response.message = "straight approach accepted; confirmation consumed";
+      return true;
+    }
     if (!planAvailable(preview_goal_, &reason)) {
       setState("FAILED", reason);
       response.success = false;
@@ -406,9 +505,9 @@ class TargetTaskManager {
               std_srvs::Trigger::Response& response) {
     std::lock_guard<std::mutex> guard(mutex_);
     if (state_ == "NAVIGATING") {
-      move_base_.cancelGoal();
+      if (!obstacle_stop_approach_ || bypassActionActive()) move_base_.cancelGoal();
       stop_waiting_ = true;
-      stop_terminal_ = false;
+      stop_terminal_ = obstacle_stop_approach_ && !bypassActionActive();
       stop_reason_ = "CANCELLED_BY_OPERATOR";
       stop_started_ = ros::Time::now();
       setState("STOPPING", "cancel requested; waiting for terminal and zero velocity");
@@ -428,6 +527,24 @@ class TargetTaskManager {
       stop_terminal_ = true;
       return;
     }
+    if (task_locked_) return;  // A late result cannot clear STOP_UNCONFIRMED.
+    if (obstacle_bypass_enabled_ && bypassActionActive()) {
+      approach_velocity_publisher_.publish(geometry_msgs::Twist());
+      if (state == actionlib::SimpleClientGoalState::SUCCEEDED) {
+        bypass_phase_ = "LEG_STOP";
+        bypass_stop_started_ = ros::Time::now();
+        bypass_zero_samples_ = 0;
+        setState("NAVIGATING", "BYPASS_LEG_STOP: confirming stopped before next segment");
+      } else {
+        // The action is already terminal. Do not wait for a second callback.
+        bypass_phase_ = "NONE";
+        requestSafetyStop("BYPASS_ACTION_FAILED: " + state.toString());
+        stop_terminal_ = true;
+      }
+      publishMotionPermission(ros::Time::now());
+      return;
+    }
+    if (obstacle_stop_approach_) return;
     if (state == actionlib::SimpleClientGoalState::SUCCEEDED) {
       if (obstacle_limited_) {
         stop_waiting_ = true;
@@ -486,16 +603,24 @@ class TargetTaskManager {
   void timerCallback(const ros::TimerEvent&) {
     std::lock_guard<std::mutex> guard(mutex_);
     const ros::Time now = ros::Time::now();
+    if (state_ == "NAVIGATING") {
+      const std::string obstacle = approachBlockReason(now);
+      const std::string sensors = precheckReason(now);
+      if (!obstacle.empty() || !sensors.empty()) {
+        requestSafetyStop(obstacle.empty() ? sensors : obstacle);
+      }
+    }
+    publishMotionPermission(now);
     if (stop_waiting_) {
       const bool velocity_stopped =
           recent(odom_stamp_, now) && linear_speed_mps_ <= trans_stopped_vel_ &&
           angular_speed_rps_ <= theta_stopped_vel_;
       if (stop_terminal_ && velocity_stopped) {
-        const bool failed = stop_reason_ == "NAVIGATION_TIMEOUT" ||
+        const bool failed = safety_stop_latched_ || stop_reason_ == "NAVIGATION_TIMEOUT" ||
                             stop_reason_ == "BLOCKED_NO_SAFE_PATH";
         setState(failed ? "FAILED" : "PREEMPTED", stop_reason_);
         stop_waiting_ = false;
-        task_locked_ = false;
+        task_locked_ = safety_stop_latched_;
       } else if ((now - stop_started_).toSec() >
                  stop_confirmation_timeout_sec_) {
         setState("FAILED", "STOP_UNCONFIRMED");
@@ -529,21 +654,13 @@ class TargetTaskManager {
     if (state_ == "NAVIGATING" && have_target_ &&
                (now - latest_target_.header.stamp).toSec() >
                    target_loss_timeout_sec_ &&
-               !visualFresh(now)) {
-      move_base_.cancelGoal();
-      stop_waiting_ = true;
-      stop_terminal_ = false;
-      stop_reason_ = "TARGET_LOST";
-      stop_started_ = now;
-      setState("STOPPING", "target lost; waiting for terminal and zero velocity");
+               !visualFresh(now) &&
+               !(obstacle_bypass_enabled_ && bypass_phase_ != "NONE") &&
+               !(obstacle_stop_approach_ && std::isfinite(front_obstacle_gap_m_))) {
+      requestSafetyStop("TARGET_LOST");
     } else if (state_ == "NAVIGATING" &&
                (now - navigation_started_).toSec() > navigation_timeout_sec_) {
-      move_base_.cancelGoal();
-      stop_waiting_ = true;
-      stop_terminal_ = false;
-      stop_reason_ = "NAVIGATION_TIMEOUT";
-      stop_started_ = now;
-      setState("STOPPING", "navigation timeout; waiting for terminal and zero velocity");
+      requestSafetyStop("NAVIGATION_TIMEOUT");
     } else if (state_ == "VERIFYING" &&
                (now - verification_started_).toSec() >
                    verification_timeout_sec_) {
@@ -554,6 +671,7 @@ class TargetTaskManager {
                 "tolerance"
               : "no fresh visual arrival verification");
     }
+    if (obstacle_stop_approach_ && state_ == "NAVIGATING") runStraightApproach(now);
   }
 
   void voltageCallback(const std_msgs::Float32::ConstPtr& message) {
@@ -578,6 +696,390 @@ class TargetTaskManager {
            (now - scan_stamps_.front()).toSec() > 2.0) {
       scan_stamps_.pop_front();
     }
+    if (state_ == "NAVIGATING") {
+      const std::string reason = approachBlockReason(now);
+      if (!reason.empty()) requestSafetyStop(reason);
+    }
+  }
+
+  // Caller holds mutex_. Stop is latched even if the obstacle later disappears.
+  void requestSafetyStop(const std::string& reason) {
+    if (obstacle_stop_approach_ && reason == "BLOCKED_NO_SAFE_PATH") {
+      ROS_WARN("Obstacle stop commanded: front gap %.4f m, threshold %.4f m",
+               front_obstacle_gap_m_, obstacle_stop_distance_m_);
+    }
+    safety_stop_latched_ = true;
+    task_locked_ = true;
+    have_preview_ = false;
+    stop_waiting_ = true;
+    const bool cancel_bypass = bypassActionActive();
+    stop_terminal_ = obstacle_stop_approach_ && !cancel_bypass;
+    stop_reason_ = reason;
+    stop_started_ = ros::Time::now();
+    setState("STOPPING", reason);
+    publishMotionPermission(stop_started_);
+    if (!obstacle_stop_approach_ || cancel_bypass) move_base_.cancelGoal();
+  }
+
+  void runStraightApproach(const ros::Time& now) {
+    if (!recent(odom_stamp_, now)) {
+      requestSafetyStop("ODOMETRY_UNAVAILABLE");
+      return;
+    }
+    if (obstacle_bypass_enabled_ && runBypassController(now)) return;
+    const double ux = std::cos(approach_yaw_), uy = std::sin(approach_yaw_);
+    const double dx = robot_pose_.pose.position.x - approach_start_.x;
+    const double dy = robot_pose_.pose.position.y - approach_start_.y;
+    if (std::hypot(dx, dy) > max_travel_m_) {
+      requestSafetyStop("MAX_APPROACH_TRAVEL_REACHED");
+      return;
+    }
+    const double cross = -dx * uy + dy * ux;
+    const double remaining = (preview_goal_.pose.position.x - robot_pose_.pose.position.x) * ux +
+        (preview_goal_.pose.position.y - robot_pose_.pose.position.y) * uy;
+    const double desired_yaw = approach_yaw_ + std::atan2(-cross, 0.30);
+    const double delta = desired_yaw - tf2::getYaw(robot_pose_.pose.orientation);
+    const auto command = approachVelocity(remaining, cross,
+        std::atan2(std::sin(delta), std::cos(delta)),
+        front_obstacle_gap_m_, obstacle_stop_distance_m_, approach_speed_mps_);
+    if (command.off_route) { requestSafetyStop("APPROACH_OFF_ROUTE"); return; }
+    if (command.arrived) {
+      verification_started_ = now;
+      saw_post_arrival_visual_ = false;
+      setState("VERIFYING", "straight approach reached bottle parking point");
+      return;
+    }
+    geometry_msgs::Twist velocity;
+    velocity.linear.x = command.linear;
+    velocity.angular.z = command.angular;
+    approach_velocity_publisher_.publish(velocity);
+  }
+
+  bool bypassActionActive() const {
+    return obstacle_bypass_enabled_ &&
+        (bypass_phase_ == "SHIFT" || bypass_phase_ == "PASS" || bypass_phase_ == "REJOIN");
+  }
+
+  void beginBypassStop(const ros::Time& now) {
+    bypass_trigger_side_ = bypass_decision_.side;
+    bypass_phase_ = "BRAKING";
+    bypass_stop_started_ = now;
+    bypass_zero_samples_ = 0;
+    bypass_last_zero_odom_ = ros::Time();
+    approach_velocity_publisher_.publish(geometry_msgs::Twist());
+    setState("NAVIGATING", bypass_decision_.side == BypassSide::LEFT ?
+        "BRAKING_FOR_LEFT_BYPASS: obstacle intrudes from right" :
+        "BRAKING_FOR_RIGHT_BYPASS: obstacle intrudes from left");
+  }
+
+  geometry_msgs::PoseStamped bypassPose(double x, double y, double yaw) const {
+    geometry_msgs::PoseStamped pose;
+    pose.header.frame_id = map_frame_;
+    pose.header.stamp = ros::Time::now();
+    pose.pose.position.x = x;
+    pose.pose.position.y = y;
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, yaw);
+    pose.pose.orientation = tf2::toMsg(q);
+    return pose;
+  }
+
+  bool checkBypassPlan(const geometry_msgs::PoseStamped& start,
+                        const geometry_msgs::PoseStamped& goal, int stage) {
+    if (!make_plan_client_.exists()) { ROS_WARN("Bypass planner service unavailable"); return false; }
+    nav_msgs::GetPlan request;
+    request.request.start = start;
+    request.request.start.header.stamp = ros::Time::now();
+    request.request.goal = goal;
+    request.request.tolerance = std::min(0.02, plan_tolerance_m_);
+    if (!make_plan_client_.call(request) || request.response.plan.poses.empty()) {
+      ROS_WARN("Bypass stage %d returned no plan", stage); return false;
+    }
+    std::vector<BypassPoint> path;
+    const double c = std::cos(approach_yaw_), s = std::sin(approach_yaw_);
+    double length = 0.0;
+    for (const auto& pose : request.response.plan.poses) {
+      if (pose.header.frame_id != map_frame_ ||
+          !std::isfinite(pose.pose.position.x) || !std::isfinite(pose.pose.position.y)) {
+        ROS_WARN("Bypass stage %d invalid frame/point: %s", stage, pose.header.frame_id.c_str()); return false;
+      }
+      const double dx = pose.pose.position.x-bypass_origin_.x;
+      const double dy = pose.pose.position.y-bypass_origin_.y;
+      if (std::abs(-s*dx+c*dy) > bypass_max_shift_m_) {
+        ROS_WARN("Bypass stage %d exceeds lateral bound", stage); return false;
+      }
+      if (!bypassLegAllowed(bypass_side_, stage, c*dx+s*dy, -s*dx+c*dy,
+                           0.0, bypass_shift_y_)) {
+        ROS_WARN("Bypass stage %d plan leaves corridor at %.3f %.3f", stage, c*dx+s*dy, -s*dx+c*dy);
+        return false;
+      }
+      BypassPoint point{pose.pose.position.x, pose.pose.position.y};
+      if (!path.empty()) length += std::hypot(point.x-path.back().x, point.y-path.back().y);
+      path.push_back(point);
+    }
+    if (length > 2.0 ||
+        std::hypot(path.front().x-start.pose.position.x, path.front().y-start.pose.position.y) > 0.08 ||
+        std::hypot(path.back().x-goal.pose.position.x, path.back().y-goal.pose.position.y) > 0.04) {
+      ROS_WARN("Bypass stage %d plan endpoint/length rejected", stage); return false;
+    }
+    path.insert(path.begin(), BypassPoint{start.pose.position.x,start.pose.position.y});
+    const bool body_clear = stage == 0 ?
+        bypassTranslationPathClear(path,bypass_points_map_,tf2::getYaw(start.pose.orientation),
+                                   footprint_front_m_,footprint_half_width_m_,0.03) :
+        bypassPathClear(path,bypass_points_map_,footprint_front_m_,footprint_half_width_m_,0.03);
+    if (!body_clear) {
+      ROS_WARN("Bypass stage %d swept footprint blocked", stage); return false;
+    }
+    return true;
+  }
+
+  bool prepareBypass() {
+    if (!bypass_decision_.blocked || bypass_decision_.side == BypassSide::NONE) return false;
+    if (bypass_decision_.side != bypass_trigger_side_) return false;
+    bypass_side_ = bypass_decision_.side;
+    bypass_origin_ = robot_pose_.pose.position;
+    const double c = std::cos(approach_yaw_), s = std::sin(approach_yaw_);
+    const double x = bypass_origin_.x, y = bypass_origin_.y;
+    const double standoff = footprint_front_m_+parking_clearance_m_+
+        depth_error_m_+braking_distance_m_;
+    const double target_dx = target_at_preview_.point.x-x;
+    const double target_dy = target_at_preview_.point.y-y;
+    const double lateral = bypassShiftForTarget(bypass_decision_,
+        {c*target_dx+s*target_dy, -s*target_dx+c*target_dy}, standoff, bypass_max_shift_m_);
+    if (!std::isfinite(lateral)) return false;
+    bypass_shift_y_ = lateral;
+    const double forward = bypass_decision_.pass_x;
+    bypass_goals_.clear();
+    bypass_goals_.push_back(bypassPose(x-s*lateral, y+c*lateral,
+                                     tf2::getYaw(robot_pose_.pose.orientation)));
+    bypass_goals_.push_back(bypassPose(x+c*forward-s*lateral,
+                                      y+s*forward+c*lateral, approach_yaw_));
+    try {
+      // Re-approach the same frozen bottle from the clear side; do not insist
+      // on returning to a parking point that now lies behind the obstacle.
+      const auto parking = computeParkingGeometry(bypass_goals_[1].pose.position,
+          target_at_preview_.point, standoff, 0.03, 1.2);
+      bypass_goals_.push_back(bypassPose(parking.position.x, parking.position.y, parking.yaw));
+    } catch (const std::invalid_argument&) { return false; }
+    geometry_msgs::PoseStamped start = robot_pose_;
+    for (int i = 0; i < 3; ++i) {
+      if (!checkBypassPlan(start, bypass_goals_[i], i)) return false;
+      start = bypass_goals_[i];
+    }
+    return true;
+  }
+
+  void sendBypassLeg(int stage, const ros::Time& now) {
+    bypass_stage_ = stage;
+    bypass_phase_ = stage == 0 ? "SHIFT" : stage == 1 ? "PASS" : "REJOIN";
+    bypass_command_stamp_ = now;
+    bypass_not_before_ = now+ros::Duration(0.1);
+    move_base_msgs::MoveBaseGoal goal;
+    goal.target_pose = bypass_goals_[stage];
+    goal.target_pose.header.stamp = now;
+    move_base_.sendGoal(goal, boost::bind(&TargetTaskManager::moveDone, this, _1, _2));
+    setState("NAVIGATING", std::string(bypass_side_ == BypassSide::LEFT ? "BYPASS_LEFT_" : "BYPASS_RIGHT_")+
+        bypass_phase_);
+  }
+
+  bool runBypassController(const ros::Time& now) {
+    if (bypass_phase_ == "NONE") return false;
+    if (bypassActionActive()) {
+      if ((now-bypass_command_stamp_).toSec() > 0.4) {
+        approach_velocity_publisher_.publish(geometry_msgs::Twist());
+        if ((now-bypass_command_stamp_).toSec() > 3.0) requestSafetyStop("BYPASS_COMMAND_TIMEOUT");
+      }
+      return true;
+    }
+    approach_velocity_publisher_.publish(geometry_msgs::Twist());
+    if (odom_stamp_ > bypass_stop_started_ && odom_stamp_ > bypass_last_zero_odom_) {
+      bypass_last_zero_odom_ = odom_stamp_;
+      bypass_zero_samples_ = linear_speed_mps_ <= trans_stopped_vel_ &&
+          angular_speed_rps_ <= theta_stopped_vel_ ? bypass_zero_samples_+1 : 0;
+    }
+    if (bypass_zero_samples_ < 3) {
+      if ((now-bypass_stop_started_).toSec() > stop_confirmation_timeout_sec_)
+        requestSafetyStop("BYPASS_STOP_UNCONFIRMED");
+      return true;
+    }
+    if (bypass_phase_ == "BRAKING") {
+      if (!bypass_decision_.blocked) {
+        bypass_phase_ = "NONE";
+        setState("NAVIGATING", "obstacle cleared after confirmed stop; resuming approach");
+      } else if (!prepareBypass()) {
+        requestSafetyStop("BLOCKED_NO_SAFE_BYPASS");
+      } else {
+        sendBypassLeg(0, ros::Time::now());
+      }
+    } else if (bypass_phase_ == "LEG_STOP") {
+      if (bypass_stage_ == 2) {
+        bypass_phase_ = "NONE";
+        verification_started_ = now;
+        saw_post_arrival_visual_ = false;
+        setState("VERIFYING", "bypass complete; waiting for fresh bottle arrival verification");
+      } else if (!checkBypassPlan(robot_pose_, bypass_goals_[bypass_stage_+1], bypass_stage_+1)) {
+        requestSafetyStop("BLOCKED_BYPASS_ROUTE_CHANGED");
+      } else {
+        sendBypassLeg(bypass_stage_+1, now);
+      }
+    }
+    return true;
+  }
+
+  void bypassVelocityCallback(const geometry_msgs::Twist::ConstPtr& message) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    const ros::Time now = ros::Time::now();
+    if (!execute_enabled_ || !bypassActionActive() || state_ != "NAVIGATING" ||
+        task_locked_ || stop_waiting_ || now < bypass_not_before_) return;
+    const double scan_age = (now-bypass_scan_stamp_).toSec();
+    if (!recent(bypass_scan_stamp_, now) || scan_age > 0.35 ||
+        !precheckReason(now).empty() || !recent(odom_stamp_, now)) {
+      requestSafetyStop("BYPASS_SENSOR_UNAVAILABLE");
+      return;
+    }
+    double vx = message->linear.x, vy = message->linear.y, wz = message->angular.z;
+    if (!std::isfinite(vx) || !std::isfinite(vy) || !std::isfinite(wz)) {
+      requestSafetyStop("BYPASS_INVALID_VELOCITY"); return;
+    }
+    const double scale = std::max(1.0, std::hypot(vx, vy)/0.04);
+    vx /= scale; vy /= scale;
+    wz = std::max(-0.15, std::min(0.15, wz));
+    const double delta = tf2::getYaw(robot_pose_.pose.orientation)-approach_yaw_;
+    const double lateral = std::sin(delta)*vx+std::cos(delta)*vy;
+    if (bypass_stage_ == 0 && static_cast<int>(bypass_side_)*lateral < -0.005) {
+      // Some DWA startup samples still refer to its previous scoring grid.
+      // Never forward them. Keep stopped until a valid sample arrives; the
+      // command watchdog latches a failure if wrong-side commands persist.
+      approach_velocity_publisher_.publish(geometry_msgs::Twist());
+      ROS_WARN_THROTTLE(1.0, "Rejected planner command toward blocked side");
+      return;
+    }
+    const double dx = robot_pose_.pose.position.x-bypass_origin_.x;
+    const double dy = robot_pose_.pose.position.y-bypass_origin_.y;
+    if (std::abs(-std::sin(approach_yaw_)*dx+std::cos(approach_yaw_)*dy) > bypass_max_shift_m_) {
+      requestSafetyStop("BYPASS_LATERAL_LIMIT"); return;
+    }
+    if (!bypassLegAllowed(bypass_side_, bypass_stage_,
+        std::cos(approach_yaw_)*dx+std::sin(approach_yaw_)*dy,
+        -std::sin(approach_yaw_)*dx+std::cos(approach_yaw_)*dy, 0.0, bypass_shift_y_)) {
+      requestSafetyStop("BYPASS_OFF_PLANNED_SIDE"); return;
+    }
+    for (const auto& point : bypass_points_base_) {
+      if (insideSweptFootprint(point, vx, vy, wz, footprint_front_m_, footprint_half_width_m_, 0.03)) {
+        requestSafetyStop("BYPASS_DYNAMIC_OBSTACLE"); return;
+      }
+    }
+    geometry_msgs::Twist safe;
+    safe.linear.x = vx; safe.linear.y = vy; safe.angular.z = wz;
+    approach_velocity_publisher_.publish(safe);
+    bypass_command_stamp_ = now;
+  }
+
+  void publishMotionPermission(const ros::Time& now) {
+    std_msgs::Header permission;
+    permission.stamp = now;
+    permission.frame_id = state_ == "NAVIGATING" && !stop_waiting_ &&
+        !task_locked_ && bypass_phase_ != "BRAKING" &&
+        bypass_phase_ != "LEG_STOP" ? "ALLOW" : "STOP";
+    motion_permission_publisher_.publish(permission);
+  }
+
+  std::string approachBlockReason(const ros::Time& now) {
+    front_obstacle_gap_m_ = std::numeric_limits<double>::infinity();
+    if (!have_scan_ || !recent(scan_.header.stamp, now) ||
+        scan_.header.frame_id.empty() || scan_.ranges.empty() ||
+        !std::isfinite(scan_.angle_min) ||
+        !std::isfinite(scan_.angle_increment) || scan_.angle_increment == 0.0 ||
+        !std::isfinite(scan_.range_min) || !std::isfinite(scan_.range_max) ||
+        scan_.range_min < 0.0 || scan_.range_max <= scan_.range_min) {
+      return "SCAN_UNAVAILABLE";
+    }
+    geometry_msgs::TransformStamped laser_to_base;
+    geometry_msgs::TransformStamped laser_to_map;
+    geometry_msgs::PoseStamped goal_in_base;
+    try {
+      laser_to_base = tf_buffer_.lookupTransform(
+          "base_footprint", scan_.header.frame_id, scan_.header.stamp,
+          ros::Duration(0.05));
+      geometry_msgs::PoseStamped goal = preview_goal_;
+      if (obstacle_stop_approach_) goal.pose.position = target_at_preview_.point;
+      goal.header.stamp = scan_.header.stamp;
+      tf_buffer_.transform(goal, goal_in_base, "base_footprint", ros::Duration(0.05));
+      if (obstacle_bypass_enabled_) {
+        laser_to_map = tf_buffer_.lookupTransform(map_frame_, scan_.header.frame_id,
+                                                 scan_.header.stamp, ros::Duration(0.05));
+      }
+    } catch (const tf2::TransformException&) {
+      return "OBSTACLE_TF_UNAVAILABLE";
+    }
+    bool usable = false;
+    std::vector<BypassPoint> route_points;
+    if (obstacle_bypass_enabled_) {
+      bypass_points_base_.clear();
+      bypass_points_map_.clear();
+    }
+    const double robot_yaw = tf2::getYaw(robot_pose_.pose.orientation);
+    const double route_yaw = state_ == "NAVIGATING" ? approach_yaw_ :
+        robot_yaw+std::atan2(goal_in_base.pose.position.y, goal_in_base.pose.position.x);
+    const double route_delta = robot_yaw-route_yaw;
+    for (std::size_t i = 0; i < scan_.ranges.size(); ++i) {
+      const double range = scan_.ranges[i];
+      // +inf is a valid no-return ray. NaN, -inf and out-of-range values
+      // cannot establish sensor health or a clear route.
+      if (std::isinf(range) && range > 0.0) { usable = true; continue; }
+      if (!std::isfinite(range) || range < scan_.range_min ||
+          range > scan_.range_max) continue;
+      usable = true;
+      const double angle = scan_.angle_min + i * scan_.angle_increment;
+      geometry_msgs::PointStamped point, base_point;
+      point.point.x = range * std::cos(angle);
+      point.point.y = range * std::sin(angle);
+      tf2::doTransform(point, base_point, laser_to_base);
+      if (obstacle_bypass_enabled_) {
+        const double x = base_point.point.x, y = base_point.point.y;
+        // Laser can see its own rear chassis. Mask only the physical body,
+        // while preserving all external side and rear obstacles for bypass.
+        if (isChassisReturn(x, y, footprint_front_m_, footprint_half_width_m_)) continue;
+        bypass_points_base_.push_back({x,y});
+        geometry_msgs::PointStamped map_point;
+        tf2::doTransform(point, map_point, laser_to_map);
+        bypass_points_map_.push_back({map_point.point.x, map_point.point.y});
+        route_points.push_back({std::cos(route_delta)*x-std::sin(route_delta)*y,
+                                std::sin(route_delta)*x+std::cos(route_delta)*y});
+        continue;
+      }
+      if (obstacle_stop_approach_) {
+        const double gap = interveningObstacleGap(base_point.point.x, base_point.point.y,
+            goal_in_base.pose.position.x, goal_in_base.pose.position.y,
+            footprint_half_width_m_, footprint_front_m_, obstacle_margin_m_, depth_error_m_);
+        if (!std::isfinite(gap)) continue;
+        // Threshold uses the actual front plane, not radial laser distance.
+        front_obstacle_gap_m_ = std::min(front_obstacle_gap_m_, gap);
+        if (obstacleStopRequired(base_point.point.x, footprint_front_m_,
+                                 obstacle_stop_distance_m_)) {
+          return "BLOCKED_NO_SAFE_PATH";
+        }
+      } else if (blocksApproach(base_point.point.x, base_point.point.y,
+                               goal_in_base.pose.position.x, goal_in_base.pose.position.y,
+                               footprint_half_width_m_, footprint_front_m_,
+                               obstacle_margin_m_, braking_distance_m_)) {
+        return "BLOCKED_NO_SAFE_PATH";
+      }
+    }
+    if (usable && obstacle_bypass_enabled_) {
+      bypass_scan_stamp_ = scan_.header.stamp;
+      bypass_decision_ = classifyBypass(route_points,
+          std::hypot(goal_in_base.pose.position.x, goal_in_base.pose.position.y),
+          footprint_front_m_, footprint_half_width_m_, bypass_clearance_m_,
+          bypass_detection_distance_m_+(bypass_phase_ == "BRAKING" ? 0.03 : 0.0),
+          bypass_max_shift_m_, route_delta);
+      if (bypass_decision_.blocked) front_obstacle_gap_m_ = 0.0;  // Track frozen occluded target.
+      if (state_ == "NAVIGATING" && bypass_phase_ == "NONE" && bypass_decision_.blocked) {
+        if (bypass_decision_.side == BypassSide::NONE) return "BLOCKED_FULL_WIDTH_OR_AMBIGUOUS";
+        beginBypassStop(now);
+      }
+    }
+    return usable ? "" : "SCAN_UNAVAILABLE";
   }
 
   void rgbCallback(const sensor_msgs::Image::ConstPtr& message) {
@@ -642,6 +1144,10 @@ class TargetTaskManager {
     }
     state_ = state;
     detail_ = detail;
+    if (execute_enabled_ && obstacle_stop_approach_ && state_ != "NAVIGATING") {
+      approach_velocity_publisher_.publish(geometry_msgs::Twist());
+    }
+    publishMotionPermission(ros::Time::now());
     std_msgs::String message;
     message.data = state + ": " + detail;
     state_publisher_.publish(message);
@@ -659,10 +1165,13 @@ class TargetTaskManager {
   ros::Subscriber rgb_subscriber_;
   ros::Subscriber depth_subscriber_;
   ros::Subscriber odom_subscriber_;
+  ros::Subscriber bypass_velocity_subscriber_;
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
   ros::Publisher preview_publisher_;
   ros::Publisher state_publisher_;
+  ros::Publisher motion_permission_publisher_;
+  ros::Publisher approach_velocity_publisher_;
   ros::ServiceServer confirm_service_;
   ros::ServiceServer cancel_service_;
   ros::ServiceClient make_plan_client_;
@@ -673,6 +1182,28 @@ class TargetTaskManager {
   std::string state_;
   std::string detail_;
   bool execute_enabled_ = false;
+  bool obstacle_stop_approach_ = false;
+  bool obstacle_bypass_enabled_ = false;
+  double bypass_clearance_m_ = 0.05;
+  double bypass_detection_distance_m_ = 0.05;
+  double bypass_max_shift_m_ = 0.45;
+  BypassDecision bypass_decision_;
+  std::vector<BypassPoint> bypass_points_base_, bypass_points_map_;
+  std::string bypass_phase_ = "NONE";
+  int bypass_stage_ = -1;
+  int bypass_zero_samples_ = 0;
+  geometry_msgs::Point bypass_origin_;
+  BypassSide bypass_side_ = BypassSide::NONE;
+  BypassSide bypass_trigger_side_ = BypassSide::NONE;
+  double bypass_shift_y_ = 0.0;
+  std::vector<geometry_msgs::PoseStamped> bypass_goals_;
+  ros::Time bypass_stop_started_, bypass_last_zero_odom_, bypass_scan_stamp_;
+  ros::Time bypass_command_stamp_, bypass_not_before_;
+  double obstacle_stop_distance_m_ = 0.05;
+  double approach_speed_mps_ = 0.04;
+  double front_obstacle_gap_m_ = std::numeric_limits<double>::infinity();
+  geometry_msgs::Point approach_start_;
+  double approach_yaw_ = 0.0;
   bool have_pose_ = false;
   bool have_target_ = false;
   bool have_preview_ = false;
@@ -680,6 +1211,7 @@ class TargetTaskManager {
   bool stop_waiting_ = false;
   bool stop_terminal_ = false;
   bool task_locked_ = false;
+  bool safety_stop_latched_ = false;
   std::string stop_reason_;
   ros::Time stop_started_;
   double target_max_age_sec_ = 1.0;
@@ -688,6 +1220,7 @@ class TargetTaskManager {
   double clearance_min_m_ = 0.10;
   double clearance_max_m_ = 0.20;
   double footprint_front_m_ = 0.117;
+  double footprint_half_width_m_ = 0.100;
   double depth_error_m_ = 0.03;
   double braking_distance_m_ = 0.03;
   double obstacle_margin_m_ = 0.10;

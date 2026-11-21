@@ -1,5 +1,7 @@
 <launch>
   <arg name="map" default="final_site_20261107"/>
+  <arg name="start_move_base" default="true"/>
+  <arg name="bypass_holonomic" default="false"/>
 
   <node name="map_server" pkg="map_server" type="map_server"
         args="$(find yahboomcar_nav)/maps/$(arg map).yaml"/>
@@ -40,5 +42,7 @@
     <remap from="scan" to="scan"/>
     <remap from="map" to="/map"/>
   </node>
-  <include file="$(find x3_target_navigation)/launch/safe_move_base.launch"/>
+  <include if="$(arg start_move_base)" file="$(find x3_target_navigation)/launch/safe_move_base.launch">
+    <arg name="bypass_holonomic" value="$(arg bypass_holonomic)"/>
+  </include>
 </launch>

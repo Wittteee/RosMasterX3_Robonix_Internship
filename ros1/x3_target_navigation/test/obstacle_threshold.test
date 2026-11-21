@@ -1,0 +1,13 @@
+<launch>
+  <!-- rostest runs an isolated ROS master; no hardware driver is started. -->
+  <node pkg="x3_target_navigation" type="target_task_manager"
+        name="target_task_manager" ns="target_navigation" output="screen">
+    <param name="execute_enabled" value="true"/>
+    <param name="obstacle_stop_approach" value="true"/>
+    <param name="obstacle_stop_distance_m" value="0.05"/>
+    <param name="approach_speed_mps" value="0.04"/>
+    <param name="target_loss_timeout_sec" value="30.0"/>
+  </node>
+  <test test-name="obstacle_threshold" pkg="x3_target_navigation"
+        type="test_obstacle_threshold.py" time-limit="30"/>
+</launch>

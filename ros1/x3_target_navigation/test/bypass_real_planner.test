@@ -1,0 +1,11 @@
+<launch>
+  <!-- Real move_base/DWA, synthetic map and kinematic base; isolated master. -->
+  <arg name="scenario" default="real_right"/>
+  <include file="$(find x3_target_navigation)/launch/safe_move_base.launch">
+    <arg name="bypass_holonomic" value="true"/>
+  </include>
+  <include file="$(find x3_target_navigation)/test/bypass_behavior.test">
+    <arg name="scenario" value="$(arg scenario)"/>
+    <arg name="test_time_limit" value="130"/>
+  </include>
+</launch>

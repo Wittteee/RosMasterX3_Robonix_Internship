@@ -1,0 +1,93 @@
+# Loaded ONLY for function 2. Preserve the full real footprint and unknown cells.
+controller_frequency: 10.0
+planner_frequency: 3.0
+oscillation_distance: 0.02
+oscillation_timeout: 15.0
+recovery_behavior_enabled: false
+clearing_rotation_allowed: false
+base_global_planner: global_planner/GlobalPlanner
+NavfnROS:
+  allow_unknown: false
+GlobalPlanner:
+  allow_unknown: false
+  old_navfn_behavior: false
+  use_grid_path: false
+global_costmap:
+  track_unknown_space: true
+  footprint_padding: 0.02
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  plugins:
+    - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+  obstacle_layer:
+    observation_sources: scan
+    track_unknown_space: true
+    scan:
+      topic: /scan
+      data_type: LaserScan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      expected_update_rate: 0.3
+      observation_persistence: 0.0
+  inflation_layer:
+    inflation_radius: 0.20
+local_costmap:
+  # Resolve low-speed lateral progress within the trajectory horizon.
+  resolution: 0.02
+  track_unknown_space: true
+  footprint_padding: 0.02
+  update_frequency: 10.0
+  publish_frequency: 2.0
+  plugins:
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+  obstacle_layer:
+    observation_sources: scan
+    track_unknown_space: true
+    scan:
+      topic: /scan
+      data_type: LaserScan
+      marking: true
+      clearing: true
+      inf_is_valid: true
+      expected_update_rate: 0.3
+      observation_persistence: 0.0
+  inflation_layer:
+    inflation_radius: 0.20
+DWAPlannerROS:
+  min_vel_x: 0.0
+  max_vel_x: 0.04
+  min_vel_y: -0.03
+  max_vel_y: 0.03
+  vy_samples: 9
+  vx_samples: 8
+  vth_samples: 9
+  min_vel_trans: 0.005
+  max_vel_trans: 0.04
+  min_vel_theta: 0.0
+  max_vel_theta: 0.15
+  acc_lim_x: 0.30
+  acc_lim_y: 0.30
+  acc_lim_theta: 0.30
+  # At 1.5 cm/s startup speed a one-second/coarse rollout can score only
+  # the starting grid cell, leaving opposite velocity samples tied.
+  sim_time: 3.0
+  sim_granularity: 0.005
+  angular_sim_granularity: 0.01
+  xy_goal_tolerance: 0.02
+  yaw_goal_tolerance: 0.06
+  trans_stopped_vel: 0.003
+  theta_stopped_vel: 0.01
+  stop_time_buffer: 0.3
+  # A forward-shifted scoring point biases short holonomic side steps toward
+  # a direction unrelated to the lateral goal. Score the actual body centre.
+  forward_point_distance: 0.0
+  path_distance_bias: 32.0
+  goal_distance_bias: 32.0
+  occdist_scale: 0.02
+  twirling_scale: 2.0
+  publish_traj_pc: false
+  publish_cost_grid_pc: false

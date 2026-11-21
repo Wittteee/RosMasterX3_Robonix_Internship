@@ -1,0 +1,17 @@
+<launch>
+  <arg name="scenario" default="right"/>
+  <arg name="test_time_limit" default="45"/>
+  <node pkg="x3_target_navigation" type="target_task_manager"
+        name="target_task_manager" ns="target_navigation" output="screen">
+    <param name="execute_enabled" value="true"/>
+    <param name="obstacle_stop_approach" value="true"/>
+    <param name="obstacle_bypass_enabled" value="true"/>
+    <param name="bypass_detection_distance_m" value="0.05"/>
+    <param name="max_travel_m" value="$(eval 1.2 if arg('scenario') == 'real_far_left' else 0.8)"/>
+    <param name="target_loss_timeout_sec" value="30.0"/>
+  </node>
+  <test test-name="$(eval 'bypass_behavior_'+arg('scenario'))" pkg="x3_target_navigation"
+        type="test_bypass_behavior.py" time-limit="$(arg test_time_limit)">
+    <param name="scenario" value="$(arg scenario)"/>
+  </test>
+</launch>

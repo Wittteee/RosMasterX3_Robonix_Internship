@@ -1,0 +1,18 @@
+<launch>
+  <arg name="execute" default="false"/>
+  <arg name="map" default="final_site_20261107"/>
+  <arg name="start_bringup" default="true"/>
+  <arg name="start_astra" default="true"/>
+  <arg name="max_travel_m" default="1.20"/>
+  <include file="$(find x3_target_navigation)/launch/target_navigation.launch">
+    <arg name="execute" value="$(arg execute)"/>
+    <arg name="map" value="$(arg map)"/>
+    <arg name="target_label" value="bottle"/>
+    <arg name="start_bringup" value="$(arg start_bringup)"/>
+    <arg name="start_astra" value="$(arg start_astra)"/>
+    <arg name="start_navigation" value="true"/>
+    <arg name="obstacle_stop_approach" value="true"/>
+    <arg name="obstacle_bypass" value="true"/>
+  </include>
+  <param name="/target_navigation/target_task_manager/max_travel_m" value="$(arg max_travel_m)"/>
+</launch>

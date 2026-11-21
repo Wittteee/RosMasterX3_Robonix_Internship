@@ -23,15 +23,19 @@ def test_catkin_package_has_required_runtime_files():
     assert ET.parse(PACKAGE / "launch/target_navigation.launch").getroot().tag == "launch"
 
 
-def test_new_ros1_nodes_never_publish_velocity():
+def test_only_confirmed_task_manager_can_publish_approach_velocity():
     sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in (PACKAGE / "src").glob("*.cpp")
+        if path.name != "target_task_manager.cpp"
     )
     assert "cmd_vel" not in sources
     assert "geometry_msgs/Twist" not in sources
-    assert "MoveBaseAction" in sources
-    assert '"/move_base/make_plan"' in sources
+    manager = (PACKAGE / 'src/target_task_manager.cpp').read_text(encoding='utf-8')
+    assert "MoveBaseAction" in manager
+    assert '"/move_base/make_plan"' in manager
+    assert 'advertise<geometry_msgs::Twist>("approach_velocity", 1)' in manager
+    assert 'obstacle_stop_approach_ && state_ == "NAVIGATING"' in manager
 
 
 def test_execution_is_disabled_by_default_and_requires_service():
