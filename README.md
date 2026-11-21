@@ -11,6 +11,14 @@
 业务侧只允许发布配置的 goal/cancel，禁止 `/cmd_vel` 及其命名空间变体。
 **预览、确认和下发分离；未确认不会下发，默认不下发。**
 
+## 软件包目录
+
+按 [软件包目录发布流程](https://book.robonix.ai/integration-guide/package-catalog)
+登记为技能软件包 `robonix.skill.rgbd_target_navigation`。
+目录只读取默认分支根目录的 `package_manifest.yaml`。
+`scripts/build.sh` 跑离线自检；`scripts/start.sh` 只做不下发的 dry-run。
+实车 RGB-D 入口仍是 `ros1/x3_target_navigation` 的 launch，且默认不执行。
+
 ## 环境与安装
 
 - 业务主机：Python **3.10** + Conda，Windows/Linux。也支持 venv。
