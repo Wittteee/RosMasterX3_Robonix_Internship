@@ -1,27 +1,34 @@
 <launch>
   <arg name="config" default="$(find x3_target_navigation)/config/astra_pro.yaml"/>
   <arg name="model_path" default="$(env HOME)/models/object_detection_yolox_2022nov_opencv41.onnx"/>
+  <!-- false rejects /target_navigation/confirm. Pass execute:=true for an attended run. -->
   <arg name="execute" default="false"/>
+  <arg name="target_label" default="bottle"/>
   <arg name="start_astra" default="false"/>
   <arg name="start_bringup" default="false"/>
   <arg name="start_navigation" default="false"/>
   <arg name="map" default="my_map"/>
-  <!-- The Jetson CPU detector is slow; keep this configurable so the
-       operator can trade responsiveness for CPU load without changing code. -->
   <arg name="inference_rate" default="1.0"/>
 
-  <!-- Start the vendor chassis/TF stack without its conflicting camera. -->
+  <!-- Runs before any device is opened. A second driver or MakerControl aborts the launch. -->
+  <param name="x3_device_preflight"
+         command="python $(find x3_target_navigation)/scripts/check_exclusive_devices.py $(arg start_bringup) $(arg start_astra)"/>
+
   <group if="$(arg start_bringup)">
     <include file="$(find x3_target_navigation)/launch/safe_bringup.launch"/>
-    <include file="$(find yahboomcar_nav)/launch/library/depthimage_to_laserscan.launch"/>
-    <node pkg="tf" type="static_transform_publisher"
-          name="camera_link_to_laser"
-          args="0 0 0 0 0 0 camera_link laser 30"/>
+    <node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode"
+          output="screen" required="true">
+      <param name="serial_port" value="/dev/x3_lidar"/>
+      <param name="serial_baudrate" type="int" value="115200"/>
+      <param name="frame_id" value="laser"/>
+      <param name="inverted" type="bool" value="false"/>
+      <param name="angle_compensate" type="bool" value="true"/>
+    </node>
+    <node pkg="tf2_ros" type="static_transform_publisher"
+          name="base_link_to_laser"
+          args="0.0435 5.258E-05 0.11 3.1416 0 0 base_link laser"/>
   </group>
 
-  <!-- Sensor stacks are opt-in to avoid opening the camera twice. The vendor
-       Astra Pro libuvc node conflicts with the kernel UVC driver, so depth is
-       started separately and RGB uses usb_cam (V4L2). -->
   <group if="$(arg start_astra)">
     <include file="$(find astra_camera)/launch/astra.launch">
       <arg name="depth_registration" value="true"/>
@@ -30,7 +37,7 @@
     <group ns="camera">
       <node pkg="usb_cam" type="usb_cam_node" name="rgb" output="screen"
             required="true">
-        <param name="video_device" value="/dev/video0"/>
+        <param name="video_device" value="/dev/x3_camera_rgb"/>
         <param name="image_width" value="640"/>
         <param name="image_height" value="480"/>
         <param name="pixel_format" value="yuyv"/>
@@ -44,6 +51,7 @@
           args="messages /camera/rgb/image_raw $(arg inference_rate) /camera/rgb/image_inference"
           output="screen" required="true"/>
   </group>
+
   <include if="$(arg start_navigation)"
            file="$(find x3_target_navigation)/launch/safe_navigation.launch">
     <arg name="map" value="$(arg map)"/>
@@ -55,6 +63,7 @@
     <node pkg="x3_target_navigation" type="rgbd_target_node"
           name="rgbd_target_node" output="screen" required="true">
       <param name="model_path" value="$(arg model_path)"/>
+      <param name="target_label" value="$(arg target_label)"/>
       <remap from="raw_target" to="/target_navigation/raw_target"/>
       <remap from="visual_detection"
              to="/target_navigation/visual_detection"/>

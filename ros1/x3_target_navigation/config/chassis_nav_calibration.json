@@ -1,0 +1,7 @@
+{
+  "status": "pending_physical_measurement",
+  "velocity_mapping": "metric_identity_with_limits",
+  "max_linear_mps": 0.1,
+  "max_angular_rps": 0.2,
+  "navigation_max_linear_mps": 0.09
+}

@@ -9,6 +9,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <std_msgs/Header.h>
+#include <tf2/exceptions.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -119,9 +120,7 @@ class YoloX {
       for (int grid_y = 0; grid_y < side; ++grid_y) {
         for (int grid_x = 0; grid_x < side; ++grid_x, ++index) {
           const float* row = rows.ptr<float>(index);
-          const float bottle = row[4] * row[5 + 39];
-          const float cup = row[4] * row[5 + 41];
-          const float score = std::max(bottle, cup);
+          const float score = row[4] * row[5 + class_id_];
           if (!std::isfinite(score) || score < confidence_) {
             continue;
           }
@@ -149,17 +148,12 @@ class YoloX {
       ROS_WARN_THROTTLE(2.0, "Expected one target after NMS, found 0");
       return false;
     }
-    int best = keep.front();
-    for (const int index : keep) {
-      if (scores[static_cast<size_t>(index)] > scores[static_cast<size_t>(best)]) {
-        best = index;
-      }
-    }
     if (keep.size() != 1U) {
-      ROS_WARN_THROTTLE(
-          2.0, "Expected one target after NMS, found %zu; using the highest",
-          keep.size());
+      ROS_WARN_THROTTLE(2.0, "Rejecting ambiguous target: %zu boxes after NMS",
+                        keep.size());
+      return false;
     }
+    const int best = keep.front();
     detection->box = boxes[static_cast<size_t>(best)];
     detection->confidence = scores[static_cast<size_t>(best)];
     return true;
@@ -195,6 +189,7 @@ class RgbdTargetNode {
     private_nh_.param("min_depth_valid_ratio", min_valid_ratio_, 0.5);
     private_nh_.param("max_observation_age_sec", max_age_sec_, 0.5);
     private_nh_.param("tf_timeout_sec", tf_timeout_sec_, 0.2);
+    private_nh_.param("tf_future_tolerance_sec", tf_future_tolerance_sec_, 5.0);
     private_nh_.param("external_focus", external_focus_, true);
     if (model_path.empty()) {
       throw std::invalid_argument("~model_path is required");
@@ -269,6 +264,28 @@ class RgbdTargetNode {
                    type, const_cast<uint8_t*>(image.data.data()), image.step);
   }
 
+  geometry_msgs::PointStamped mapPoint(geometry_msgs::PointStamped source) {
+    try {
+      return tf_buffer_.transform(source, map_frame_, ros::Duration(tf_timeout_sec_));
+    } catch (const tf2::ExtrapolationException& error) {
+      geometry_msgs::TransformStamped latest;
+      try {
+        latest = tf_buffer_.lookupTransform(
+            map_frame_, source.header.frame_id, ros::Time(0), ros::Duration(0.0));
+      } catch (const tf2::TransformException&) {
+        throw error;
+      }
+      const double lead = (source.header.stamp - latest.header.stamp).toSec();
+      if (!(lead > 0.0 && lead <= tf_future_tolerance_sec_)) {
+        throw error;
+      }
+      ROS_WARN_THROTTLE(
+          2.0, "Image leads map TF by %.2f s; using the latest transform", lead);
+      source.header.stamp = latest.header.stamp;
+      return tf_buffer_.transform(source, map_frame_, ros::Duration(tf_timeout_sec_));
+    }
+  }
+
   void callback(const sensor_msgs::ImageConstPtr& rgb,
                 const sensor_msgs::ImageConstPtr& depth,
                 const sensor_msgs::CameraInfoConstPtr& info) {
@@ -311,23 +328,36 @@ class RgbdTargetNode {
       const double u = detection.box.x + detection.box.width * 0.5;
       const double v = detection.box.y + detection.box.height * 0.5;
       const cv::Point3d camera_point = deproject(u, v, sample.metres, *info);
+      if (!sample.nearest_valid || sample.nearest_count < 8) {
+        ROS_WARN_THROTTLE(2.0, "Rejecting target without enough near-surface depth");
+        return;
+      }
+      const cv::Point3d camera_surface =
+          deproject(sample.nearest_u, sample.nearest_v,
+                    sample.nearest_metres, *info);
       geometry_msgs::PointStamped source;
       source.header = depth->header;
       source.point.x = camera_point.x;
       source.point.y = camera_point.y;
       source.point.z = camera_point.z;
-      const geometry_msgs::PointStamped mapped =
-          tf_buffer_.transform(source, map_frame_, ros::Duration(tf_timeout_sec_));
+      const geometry_msgs::PointStamped mapped = mapPoint(source);
+      source.point.x = camera_surface.x;
+      source.point.y = camera_surface.y;
+      source.point.z = camera_surface.z;
+      const geometry_msgs::PointStamped mapped_surface = mapPoint(source);
 
       TargetEstimate message;
       message.header = mapped.header;
       message.label = target_label_;
       message.point = mapped.point;
+      message.surface_point = mapped_surface.point;
       message.confidence = detection.confidence;
       message.depth_m = static_cast<float>(sample.metres);
+      message.surface_depth_m = static_cast<float>(sample.nearest_metres);
       message.depth_valid_ratio = static_cast<float>(sample.valid_ratio);
       message.sample_count = 1;
       message.stable = false;
+      message.surface_valid = true;
       std::fill(message.covariance.begin(), message.covariance.end(), 0.0);
       publisher_.publish(message);
     } catch (const tf2::TransformException& error) {
@@ -360,6 +390,7 @@ class RgbdTargetNode {
   double min_valid_ratio_ = 0.5;
   double max_age_sec_ = 0.5;
   double tf_timeout_sec_ = 0.2;
+  double tf_future_tolerance_sec_ = 5.0;
   bool external_focus_ = true;
 };
 

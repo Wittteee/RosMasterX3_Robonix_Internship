@@ -57,8 +57,13 @@ bool TargetFusion::add(const TargetObservation& observation,
   if (!observations_.empty()) {
     if (observation.frame_id != observations_.back().frame_id ||
         observation.label != observations_.back().label ||
-        distance(observation.point, observations_.back().point) >
-            outlier_distance_m_) {
+        ((!observation.surface_valid || !observations_.back().surface_valid) &&
+         distance(observation.point, observations_.back().point) >
+             outlier_distance_m_) ||
+        (observation.surface_valid && observations_.back().surface_valid &&
+         distance(observation.surface_point,
+                  observations_.back().surface_point) >
+             outlier_distance_m_)) {
       return false;
     }
   }
@@ -89,27 +94,39 @@ FusedTarget TargetFusion::estimate(const ros::Time& now) const {
   result.frame_id = active.back()->frame_id;
   result.label = active.back()->label;
   result.sample_count = active.size();
+  result.surface_valid = true;
   for (const auto* item : active) {
+    result.surface_valid = result.surface_valid && item->surface_valid;
     result.point.x += item->point.x;
     result.point.y += item->point.y;
     result.point.z += item->point.z;
+    result.surface_point.x += item->surface_point.x;
+    result.surface_point.y += item->surface_point.y;
+    result.surface_point.z += item->surface_point.z;
     result.confidence += item->confidence;
     result.depth_m += item->depth_m;
+    result.surface_depth_m += item->surface_depth_m;
     result.valid_ratio += item->valid_ratio;
   }
   const double count = static_cast<double>(active.size());
   result.point.x /= count;
   result.point.y /= count;
   result.point.z /= count;
+  result.surface_point.x /= count;
+  result.surface_point.y /= count;
+  result.surface_point.z /= count;
   result.confidence /= count;
   result.depth_m /= count;
+  result.surface_depth_m /= count;
   result.valid_ratio /= count;
 
   for (const auto* item : active) {
-    const double delta[3] = {
-        item->point.x - result.point.x,
-        item->point.y - result.point.y,
-        item->point.z - result.point.z};
+    const geometry_msgs::Point& reference =
+        result.surface_valid ? item->surface_point : item->point;
+    const geometry_msgs::Point& mean =
+        result.surface_valid ? result.surface_point : result.point;
+    const double delta[3] = {reference.x - mean.x, reference.y - mean.y,
+                             reference.z - mean.z};
     for (int row = 0; row < 3; ++row) {
       for (int col = 0; col < 3; ++col) {
         result.covariance[row * 3 + col] += delta[row] * delta[col] / count;

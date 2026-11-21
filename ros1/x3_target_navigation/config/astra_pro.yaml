@@ -3,7 +3,7 @@ rgbd_target_node:
   depth_topic: /camera/depth_registered/image_raw
   camera_info_topic: /camera/rgb/camera_info
   map_frame: map
-  # The white cylinder alternates between bottle and cup scores around 0.05-0.17.
+  # Override from the launch argument target_label without editing this file.
   target_label: bottle
   confidence_threshold: 0.08
   nms_threshold: 0.45
@@ -15,14 +15,18 @@ rgbd_target_node:
   # Jetson OpenCV 4.1 CPU inference is about 2.3-3.2 s per frame.
   max_observation_age_sec: 4.00
   tf_timeout_sec: 0.20
+  # AMCL can lag the image stamp by a few seconds while the pose itself is still valid.
+  tf_future_tolerance_sec: 5.0
 
 target_fusion_node:
-  min_samples: 5
+  # Partial occlusion can produce intermittent valid frames. Three samples
+  # are enough when the obstacle-facing surface remains consistent.
+  min_samples: 3
   max_samples: 12
   # Five throttled static-target samples need about 20-25 s on this Jetson.
   max_age_sec: 30.00
-  outlier_distance_m: 0.15
-  max_stddev_m: 0.04
+  outlier_distance_m: 0.22
+  max_stddev_m: 0.08
 
 target_task_manager:
   map_frame: map
@@ -34,13 +38,25 @@ target_task_manager:
   # for several frames while RGB still sees it. Keep the goal while either a
   # fresh fused target or a fresh RGB detection is arriving.
   target_loss_timeout_sec: 15.00
+  parking_clearance_m: 0.12
+  clearance_min_m: 0.10
+  clearance_max_m: 0.20
+  footprint_front_m: 0.117
+  depth_error_m: 0.03
+  braking_distance_m: 0.03
+  obstacle_margin_m: 0.10
+  obstacle_bearing_half_angle_rad: 0.35
+  trans_stopped_vel: 0.02
+  theta_stopped_vel: 0.05
+  stop_confirmation_timeout_sec: 2.00
   # RGB-only arrival evidence may finish after slow Jetson CPU inference.
   # Navigation goal generation still always requires stable RGB-D depth.
   visual_max_age_sec: 10.00
   # Distance from the bottle to base_footprint. The front edge is 0.117 m
   # ahead of that point, so 0.167 m leaves a 5 cm gap in front of the bumper.
   # The goal tolerance must stay inside that gap or the body can reach the bottle.
-  standoff_m: 0.167
+  # Legacy compatibility field; parking uses the surface-clearance sum.
+  standoff_m: 0.30
   standoff_tolerance_m: 0.04
   min_travel_m: 0.10
   max_travel_m: 0.80
@@ -48,3 +64,15 @@ target_task_manager:
   target_drift_tolerance_m: 0.15
   navigation_timeout_sec: 120.0
   verification_timeout_sec: 15.0
+  # Confirm stays closed until the chassis, lidar, cameras, TF and AMCL pass.
+  voltage_topic: /voltage
+  edition_topic: /edition
+  scan_topic: /scan
+  rgb_topic: /camera/rgb/image_raw
+  depth_topic: /camera/depth_registered/image_raw
+  camera_frame: camera_rgb_optical_frame
+  min_voltage_v: 10.0
+  max_voltage_v: 13.5
+  min_edition: 1.0
+  min_scan_hz: 5.0
+  sensor_timeout_sec: 1.0

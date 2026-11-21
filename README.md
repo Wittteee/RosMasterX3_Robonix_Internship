@@ -60,7 +60,9 @@ python scripts/run_object_detection.py --image logs/demo_20261028/camera_current
 将唯一 YOLOX 目标按图像时间戳转换到 `map`，经多帧融合后生成安全停车点。
 默认仅预览；执行模式仍需调用 `/target_navigation/confirm`，运动完全交给现有
 `move_base`，新增节点不发布 `/cmd_vel`。首版只支持静态目标，并在到达后重新
-识别核验。旧 Provider/二维码入口保持不变。
+识别核验。当前版本按目标最近表面计算车体外轮廓间隙；障碍前会保守截断
+停车点，并在确认零速后报告 `FAILED: BLOCKED_NO_SAFE_PATH`。旧 Provider/二维码
+入口保持不变。真实间隙、制动滑行、侧向绕障和封死通道仍需现场验收。
 
 ## 无实车完整演练
 

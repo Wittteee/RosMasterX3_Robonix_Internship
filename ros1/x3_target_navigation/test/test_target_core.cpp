@@ -26,6 +26,36 @@ TEST(DepthGeometry, UsesMedianAndRejectsSparseDepth) {
                           0.2, 2.0, 0.5, 0.5).valid);
 }
 
+TEST(DepthGeometry, ReportsNearSurfaceCluster) {
+  cv::Mat depth(20, 20, CV_16UC1, cv::Scalar(1000));
+  for (int row = 6; row < 14; ++row) {
+    for (int col = 6; col < 14; ++col) {
+      depth.at<uint16_t>(row, col) = 400;
+    }
+  }
+  const DepthSample sample =
+      robustDepth(depth, cv::Rect(4, 4, 12, 12), 0.2, 2.0, 0.5, 0.5);
+  EXPECT_TRUE(sample.valid);
+  EXPECT_TRUE(sample.nearest_valid);
+  EXPECT_NEAR(sample.nearest_metres, 0.4, 1e-9);
+  EXPECT_GE(sample.nearest_count, 8U);
+}
+
+TEST(DepthGeometry, KeepsObjectDepthWhenSmallForegroundOccluderAppears) {
+  cv::Mat depth(20, 20, CV_16UC1, cv::Scalar(1000));
+  for (int row = 5; row < 8; ++row) {
+    for (int col = 5; col < 9; ++col) {
+      depth.at<uint16_t>(row, col) = 400;
+    }
+  }
+  const DepthSample sample =
+      robustDepth(depth, cv::Rect(4, 4, 12, 12), 0.2, 2.0, 0.5, 0.5);
+  EXPECT_TRUE(sample.valid);
+  EXPECT_TRUE(sample.nearest_valid);
+  EXPECT_NEAR(sample.metres, 1.0, 1e-9);
+  EXPECT_NEAR(sample.nearest_metres, 0.4, 1e-9);
+}
+
 TEST(DepthGeometry, SupportsFloatAndDeprojectsPinhole) {
   cv::Mat depth(10, 10, CV_32FC1, cv::Scalar(1.5F));
   EXPECT_NEAR(robustDepth(depth, cv::Rect(0, 0, 10, 10),
@@ -53,9 +83,12 @@ TargetObservation observation(double stamp, double x, double y) {
   item.point.x = x;
   item.point.y = y;
   item.point.z = 0.5;
+  item.surface_point = item.point;
   item.confidence = 0.9;
   item.depth_m = 1.0;
+  item.surface_depth_m = 0.9;
   item.valid_ratio = 0.8;
+  item.surface_valid = true;
   return item;
 }
 
@@ -78,6 +111,20 @@ TEST(TargetFusion, ExpiresOldSamples) {
   EXPECT_TRUE(fusion.add(observation(1.1, 1.0, 2.0), ros::Time(1.1)));
   EXPECT_TRUE(fusion.estimate(ros::Time(1.1)).stable);
   EXPECT_FALSE(fusion.estimate(ros::Time(2.0)).stable);
+}
+
+TEST(TargetFusion, UsesStableOccluderSurfaceWhenBottlePointJitters) {
+  TargetFusion fusion(3, 5, 1.0, 0.22, 0.08);
+  TargetObservation first = observation(1.0, 1.0, 2.0);
+  TargetObservation second = observation(1.1, 1.2, 2.1);
+  TargetObservation third = observation(1.2, 0.8, 1.9);
+  first.surface_point.x = second.surface_point.x = third.surface_point.x = 0.6;
+  first.surface_point.y = second.surface_point.y = third.surface_point.y = 2.0;
+  first.surface_point.z = second.surface_point.z = third.surface_point.z = 0.4;
+  EXPECT_TRUE(fusion.add(first, ros::Time(1.0)));
+  EXPECT_TRUE(fusion.add(second, ros::Time(1.1)));
+  EXPECT_TRUE(fusion.add(third, ros::Time(1.2)));
+  EXPECT_TRUE(fusion.estimate(ros::Time(1.2)).stable);
 }
 
 TEST(ParkingGeometry, StopsAtStandoffFacingTarget) {

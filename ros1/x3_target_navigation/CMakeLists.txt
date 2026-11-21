@@ -44,6 +44,13 @@ install(TARGETS x3_target_core rgbd_target_node target_fusion_node target_task_m
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
+catkin_install_python(PROGRAMS
+  scripts/x3_base_driver.py
+  scripts/check_exclusive_devices.py
+  scripts/odom_tf_relay.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 install(DIRECTORY config launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

@@ -46,21 +46,31 @@ The Astra Pro profile is limited to one static target. OpenCV 4.1 CPU inference
 on the current Jetson takes about 2.3--3.2 seconds per frame, so the configured
 multi-frame window is not intended for dynamic following.
 
-Run preview-only mode:
+Real-car entry:
 
 ```bash
+source /opt/ros/melodic/setup.bash
+source ~/software/library_ws/devel/setup.bash
+source ~/yahboomcar_ws/devel/setup.bash
+export ROBOT_TYPE=X3
 roslaunch x3_target_navigation target_navigation.launch \
-  model_path:=/absolute/path/object_detection_yolox_2022nov_opencv41.onnx \
   start_bringup:=true \
   start_astra:=true \
   start_navigation:=true \
   map:=final_site_20261107 \
-  execute:=false
+  target_label:=bottle \
+  execute:=true
 ```
 
-On the validated vehicle this single launch starts the vendor chassis/TF stack,
-depth-to-scan, Astra depth, `usb_cam` RGB, the November 7 demo map and the
-existing ROS1 navigation stack. It keeps RViz disabled for headless SSH use.
+`target_label` is any COCO class the model knows (`bottle` by default, or `cup`).
+`execute` stays false unless this argument is true. Devices are `/dev/x3_base`,
+`/dev/x3_lidar` and `/dev/x3_camera_rgb`. Close MakerControl first; a second
+chassis driver aborts the launch. `/target_navigation/confirm` accepts one goal
+only after chassis version, voltage, lidar, RGB, depth, TF and AMCL all pass.
+
+This launch starts the corrected chassis driver on `/dev/x3_base`, the RPLIDAR
+on `/dev/x3_lidar`, Astra depth, RGB on `/dev/x3_camera_rgb`, the November 7
+demo map and the existing ROS1 navigation stack. RViz stays off for SSH use.
 
 Inspect:
 
@@ -84,5 +94,36 @@ rosservice call /target_navigation/cancel
 ```
 
 `move_base` success is not enough: the node waits for a new fused target and
-checks target drift and final standoff distance. Failure to re-observe is a
-task failure. This first version intentionally does not follow moving targets.
+checks a fresh nearest-surface depth and the measured clearance from the robot
+footprint. RGB-only recognition cannot finish the task. `parking_clearance_m`
+is the gap from the physical front footprint to the nearest target/obstacle
+surface; it is not the target-centre distance. The required base-footprint
+standoff also includes the measured footprint front, depth error and braking
+distance. The default safety interval is 0.10--0.20 m.
+
+If the forward laser sees an obstacle between the robot and the target, the
+candidate is conservatively clipped before the obstacle. A reachable clipped
+goal finishes as `FAILED: BLOCKED_NO_SAFE_PATH` after action termination and
+zero-velocity confirmation; it is never reported as `SUCCEEDED`. If a cancel
+or timeout cannot be followed by a terminal action state and zero velocity in
+the configured window, the task is locked as `FAILED: STOP_UNCONFIRMED` and a
+new confirmation is rejected.
+
+The launch keeps `execute:=false` by default. Use `target_label:=bottle` for
+the current experiment. Before an attended run, measure the bottle/obstacle
+surface with a ruler, initialize AMCL, and verify RGB-D/TF, laser and
+`make_plan`. The first physical acceptance must record three terminal cases:
+measured clearance, braking slip and heading error. The following scripts are
+read-only or attended test helpers:
+
+```bash
+python scripts/ros1/capture_rgbd_calibration.py --expected-distance 0.8
+python scripts/ros1/record_navigation_metrics.py --output trial.json
+python scripts/ros1/run_target_trials.py --trials 3 --execute
+python scripts/ros1/test_target_faults.py --cancel-after 2 --execute
+```
+
+Offline coverage is limited to geometry, depth, fusion and preview safety;
+real clearance, braking slip, side bypass and a sealed corridor still require
+separate attended experiments. The target is static and unique; multiple
+same-class boxes are rejected.

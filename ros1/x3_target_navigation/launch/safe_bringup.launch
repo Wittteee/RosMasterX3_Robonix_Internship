@@ -8,11 +8,11 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher"
         type="robot_state_publisher"/>
 
-  <node pkg="yahboomcar_bringup" type="Mcnamu_driver.py"
+  <node pkg="x3_target_navigation" type="x3_base_driver.py"
         name="driver_node" required="true" output="screen">
-    <param name="xlinear_speed_limit" type="double" value="1.0"/>
-    <param name="ylinear_speed_limit" type="double" value="1.0"/>
-    <param name="angular_speed_limit" type="double" value="5.0"/>
+    <param name="port" value="/dev/x3_base"/>
+    <param name="calibration_profile"
+           value="$(find x3_target_navigation)/config/chassis_nav_calibration.json"/>
     <param name="imu_link" type="string" value="imu_link"/>
     <remap from="/pub_vel" to="/vel_raw"/>
     <remap from="/pub_imu" to="/imu/imu_raw"/>
@@ -54,5 +54,13 @@
     <param name="base_link_frame" value="/base_footprint"/>
     <rosparam command="load"
               file="$(find yahboomcar_bringup)/param/robot_localization.yaml"/>
+    <!-- Stamp odom at the current clock so a late chassis sample cannot sit
+         behind the lidar stamp and make AMCL drop every scan. -->
+    <param name="predict_to_current_time" value="true"/>
+    <!-- This node republishes that pose with a current stamp. Two publishers
+         for the same frames make AMCL keep an old stamp. -->
+    <param name="publish_tf" value="false"/>
   </node>
+  <node pkg="x3_target_navigation" type="odom_tf_relay.py" name="odom_tf_relay"
+        output="screen"/>
 </launch>

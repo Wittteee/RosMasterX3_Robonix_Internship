@@ -25,7 +25,13 @@
     <param name="DWAPlannerROS/min_vel_y" value="0.0"/>
     <param name="DWAPlannerROS/max_vel_y" value="0.0"/>
     <param name="DWAPlannerROS/max_vel_trans" value="0.10"/>
-    <param name="DWAPlannerROS/min_vel_theta" value="0.05"/>
+    <param name="DWAPlannerROS/min_vel_theta" value="0.0"/>
+    <!-- Use the measured rectangular X3 footprint. Do not replace it with a
+         fake small robot_radius just to make a blocked goal plan. -->
+    <rosparam param="local_costmap/footprint">[[-0.117, -0.100], [-0.117, 0.100], [0.117, 0.100], [0.117, -0.100]]</rosparam>
+    <rosparam param="global_costmap/footprint">[[-0.117, -0.100], [-0.117, 0.100], [0.117, 0.100], [0.117, -0.100]]</rosparam>
+    <param name="local_costmap/inflation_layer/inflation_radius" value="0.15"/>
+    <param name="global_costmap/inflation_layer/inflation_radius" value="0.15"/>
     <param name="DWAPlannerROS/max_vel_theta" value="0.30"/>
     <param name="DWAPlannerROS/xy_goal_tolerance" value="0.03"/>
     <param name="DWAPlannerROS/yaw_goal_tolerance" value="0.08"/>

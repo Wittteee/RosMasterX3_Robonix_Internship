@@ -1,0 +1,10 @@
+# Stable names for this RosMaster X3. The two CH340 adapters share
+# 1a86:7523 and have no serial number, so the base is the hub port that
+# answered firmware 2.3 / 11.8 V: platform-3530000.xhci-usb-0:2.3.2:1.0.
+SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ENV{ID_PATH}=="platform-3530000.xhci-usb-0:2.3.2:1.0", MODE="0666", GROUP="dialout", SYMLINK+="x3_base", SYMLINK+="myserial"
+
+# RPLIDAR A1, CP2102 serial 0001.
+SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ENV{ID_SERIAL_SHORT}=="0001", MODE="0666", GROUP="dialout", SYMLINK+="x3_lidar"
+
+# Astra Pro RGB (UVC 2bc5:0501). Depth stays on the OpenNI node.
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="2bc5", ATTRS{idProduct}=="0501", MODE="0666", GROUP="video", SYMLINK+="x3_camera_rgb"

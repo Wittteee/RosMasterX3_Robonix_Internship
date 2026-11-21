@@ -44,9 +44,12 @@ class TargetFusionNode {
     observation.frame_id = message->header.frame_id;
     observation.label = message->label;
     observation.point = message->point;
+    observation.surface_point = message->surface_point;
     observation.confidence = message->confidence;
     observation.depth_m = message->depth_m;
+    observation.surface_depth_m = message->surface_depth_m;
     observation.valid_ratio = message->depth_valid_ratio;
+    observation.surface_valid = message->surface_valid;
     if (!fusion_->add(observation, ros::Time::now())) {
       ROS_WARN_THROTTLE(2.0, "Rejected inconsistent target observation");
     }
@@ -62,13 +65,16 @@ class TargetFusionNode {
     message.header.frame_id = estimate.frame_id;
     message.label = estimate.label;
     message.point = estimate.point;
+    message.surface_point = estimate.surface_point;
     message.confidence = estimate.confidence;
     message.depth_m = estimate.depth_m;
+    message.surface_depth_m = estimate.surface_depth_m;
     message.depth_valid_ratio = estimate.valid_ratio;
     message.sample_count = static_cast<uint32_t>(estimate.sample_count);
     std::copy(std::begin(estimate.covariance), std::end(estimate.covariance),
               message.covariance.begin());
     message.stable = true;
+    message.surface_valid = estimate.surface_valid;
     publisher_.publish(message);
   }
 

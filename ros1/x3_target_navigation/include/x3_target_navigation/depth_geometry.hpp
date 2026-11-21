@@ -4,13 +4,19 @@
 #include <sensor_msgs/CameraInfo.h>
 
 #include <string>
+#include <cstddef>
 
 namespace x3_target_navigation {
 
 struct DepthSample {
   double metres = 0.0;
+  double nearest_metres = 0.0;
+  double nearest_u = 0.0;
+  double nearest_v = 0.0;
+  std::size_t nearest_count = 0;
   double valid_ratio = 0.0;
   bool valid = false;
+  bool nearest_valid = false;
 };
 
 DepthSample robustDepth(const cv::Mat& depth, const cv::Rect& detection,

@@ -14,9 +14,12 @@ struct TargetObservation {
   std::string frame_id;
   std::string label;
   geometry_msgs::Point point;
+  geometry_msgs::Point surface_point;
   double confidence = 0.0;
   double depth_m = 0.0;
+  double surface_depth_m = 0.0;
   double valid_ratio = 0.0;
+  bool surface_valid = false;
 };
 
 struct FusedTarget {
@@ -24,12 +27,15 @@ struct FusedTarget {
   std::string frame_id;
   std::string label;
   geometry_msgs::Point point;
+  geometry_msgs::Point surface_point;
   double covariance[9] = {0.0};
   double confidence = 0.0;
   double depth_m = 0.0;
+  double surface_depth_m = 0.0;
   double valid_ratio = 0.0;
   std::size_t sample_count = 0;
   bool stable = false;
+  bool surface_valid = false;
 };
 
 class TargetFusion {
