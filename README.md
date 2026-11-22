@@ -103,12 +103,15 @@ python scripts/run_object_detection.py --image logs/demo_20261028/camera_current
 
 | 模式 | 选择方式 | 控制与遇障行为 |
 |---|---|---|
-| 功能 1：直线接近 | `target_navigation.launch` 默认 `obstacle_stop_approach:=true` | 自有低速接近控制器；路径内障碍实测前向间隙 ≤ 5 cm 时发零速并锁止，确认停止后报告 `FAILED: BLOCKED_NO_SAFE_PATH` |
-| 功能 2：局部遮挡绕行 | `bottle_bypass.launch` | 同一 5 cm 触发后先停车；经停止确认和路径校验后，借助 move_base 分段绕过，仍朝向原先冻结的瓶子目标 |
+| 功能 1：直线接近 | `target_navigation.launch` 默认 `obstacle_stop_approach:=true` | 对准目标后由自有低速控制器接近；路径内障碍实测前向间隙 ≤ 5 cm 时发零速并锁止，确认停止后报告 `FAILED: BLOCKED_NO_SAFE_PATH` |
+| 功能 2：局部遮挡绕行 | `bottle_bypass.launch` | 路径内障碍实测前向间隙 ≤ 30 cm 时先停车；经停止确认和路径校验后，借助 move_base 分段绕过，仍朝向原先冻结的瓶子目标 |
 | 普通导航 | `target_navigation.launch obstacle_stop_approach:=false` | 使用 move_base；障碍可能使停车候选保守截断，受阻任务不报告成功 |
 
-功能 1 不启动 move_base；功能 2 将其速度输出先交给任务管理器检查，再转发到接近控制话题。
-5 cm 是**发出停车指令的测量阈值**，不保证最终静止间隙；采样、制动滑行和激光盲区仍需实测。
+功能 1 的短距直线接近由自有控制器执行；当前 `start_navigation:=true` 会加载地图、AMCL
+并启动 move_base，供确认阶段检查 action 服务。功能 2 将 move_base 的速度输出
+先交给任务管理器检查，再转发到接近控制话题。
+5 cm（功能 1）和 30 cm（功能 2）都是**发出停车指令的测量阈值**，不保证最终静止间隙；
+采样、制动滑行和激光盲区仍需实测。
 功能 1 的遇障锁止不会因障碍移走自动恢复。功能 2 对全宽封堵、方向不明确或无安全路径保持停止。
 
 先按 [ROS1 包说明](ros1/x3_target_navigation/README.md) 构建、准备兼容模型及设备配置，

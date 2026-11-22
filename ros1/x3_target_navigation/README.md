@@ -5,7 +5,7 @@ ROS Melodic C++ package for a static, unique RGB-D target:
 ```text
 Astra registered RGB-D → YOLOX → depth deprojection → timestamped TF to map
 → multi-frame fusion → bottle preview → explicit ROS service confirmation
-→ straight approach → 5 cm front-gap obstacle stop (latched)
+→ align heading if needed → straight approach → 5 cm front-gap obstacle stop (function 1)
 ```
 
 Function 1 publishes `/target_navigation/approach_velocity` to the corrected
@@ -15,7 +15,8 @@ Ordinary `move_base` navigation remains available with
 
 ## Build on Jetson
 
-Copy this directory to `~/yahboomcar_ws/src/x3_target_navigation`, then:
+From the repository root, copy this directory to
+`~/yahboomcar_ws/src/x3_target_navigation`, then build on the Jetson:
 
 ```bash
 source /opt/ros/melodic/setup.bash
@@ -25,7 +26,9 @@ source devel/setup.bash
 ```
 
 Jetson's OpenCV 4.1 needs the compatibility copy produced from the verified
-OpenCV Zoo model (the original remains unchanged):
+OpenCV Zoo model (the original remains unchanged). Run this from the repository
+root in an environment with `requirements-model-tools.txt` installed, and copy
+the output to `~/models/` on the Jetson (or pass its path as `model_path:=...`):
 
 ```bash
 python scripts/convert_yolox_opencv41.py \
@@ -39,8 +42,8 @@ classes.
 
 ## Start safely
 
-First start the base and navigation stacks for the current map. Do not start a
-second camera or chassis driver. `start_astra:=true` starts Astra depth through
+Prepare a map valid for the current site and ensure no other camera or chassis
+driver is running. `start_astra:=true` starts Astra depth through
 OpenNI and RGB through `usb_cam`; it intentionally does not use the vendor
 libuvc RGB node, which conflicts with Jetson's kernel UVC driver.
 
@@ -48,7 +51,8 @@ The Astra Pro profile is limited to one static target. OpenCV 4.1 CPU inference
 on the current Jetson takes about 2.3--3.2 seconds per frame, so the configured
 multi-frame window is not intended for dynamic following.
 
-Real-car entry:
+Start in preview mode. Replace the historical demo map with a map valid for the
+current site:
 
 ```bash
 source /opt/ros/melodic/setup.bash
@@ -61,7 +65,7 @@ roslaunch x3_target_navigation target_navigation.launch \
   start_navigation:=true \
   map:=final_site_20261107 \
   target_label:=bottle \
-  execute:=true
+  execute:=false
 ```
 
 `target_label` is any COCO class the model knows (`bottle` by default, or `cup`).
@@ -70,10 +74,11 @@ roslaunch x3_target_navigation target_navigation.launch \
 chassis driver aborts the launch. `/target_navigation/confirm` accepts one goal
 only after chassis version, voltage, lidar, RGB, depth, TF and AMCL all pass.
 
-This launch starts the corrected chassis driver on `/dev/x3_base`, the RPLIDAR
-on `/dev/x3_lidar`, Astra depth, RGB on `/dev/x3_camera_rgb`, the November 7
-demo map and AMCL. Function 1 supplies straight approach commands; ordinary
-mode additionally starts `move_base`. RViz stays off for SSH use.
+With the three `start_*` arguments above, this launch starts the corrected
+chassis driver on `/dev/x3_base`, the RPLIDAR on `/dev/x3_lidar`, Astra depth,
+RGB on `/dev/x3_camera_rgb`, the selected map, AMCL and `move_base`.
+Function 1 uses its own controller for the short straight approach; it does not
+send that parking goal to `move_base`. RViz stays off for SSH use.
 
 Inspect:
 
@@ -83,8 +88,8 @@ rostopic echo /target_navigation/preview_goal
 ```
 
 Only after camera calibration, TF, localization, depth and planning have been
-validated in the current environment, restart with `execute:=true`. A fresh
-preview is consumed exactly once by:
+validated in the current environment, restart the same launch with
+`execute:=true`. Check the new preview; it is consumed exactly once by:
 
 ```bash
 rosservice call /target_navigation/confirm
@@ -116,9 +121,10 @@ new confirmation is rejected.
 ### Obstacle stop during bottle approach (function 1)
 
 The real-car entry defaults to `obstacle_stop_approach:=true`. After a stable
-bottle preview and one `/target_navigation/confirm`, the manager follows the
-confirmed straight line at up to 0.04 m/s. Heading corrections stay within
-±0.05 rad/s, so a few centimetres of cross-track cannot swing the nose off the
+bottle preview and one `/target_navigation/confirm`, the manager first aligns
+the robot heading if the error exceeds `alignment_tolerance_rad` (0.12 rad),
+then follows the confirmed straight line at up to 0.04 m/s. Heading corrections
+stay within ±0.05 rad/s, so a few centimetres of cross-track cannot swing the nose off the
 bottle or stop the forward motion. There is no lateral bypass. The preview goal
 is only the acceptance check; the approach continues until the nose is
 `obstacle_stop_distance_m` (0.05 m) from the frozen bottle surface, and slows
@@ -141,10 +147,12 @@ an estimate of whether an alternative route exists.
 
 To prevent `move_base` goal clipping, inflation, no-path failures or replanning
 from stopping this experiment early, function 1 uses its own approach
-controller. The launch retains AMCL but does not start `move_base`, and remaps
-the base input exclusively to `/target_navigation/approach_velocity`. It does
-not weaken the ordinary navigation costmaps or shrink the footprint. With
-`obstacle_stop_approach:=false`, ordinary move_base navigation remains available.
+controller for the short straight leg. The launch above starts `move_base` for
+its action service and navigation stack, but its velocity output is remapped to
+`/target_navigation/align_velocity`, not the base input. The base input is
+`/target_navigation/approach_velocity`. Function 1 does not weaken the ordinary
+navigation costmaps or shrink the footprint. With `obstacle_stop_approach:=false`,
+ordinary move_base navigation remains available.
 
 On the 5 cm trigger, state becomes `STOPPING: BLOCKED_NO_SAFE_PATH`, then
 `FAILED: BLOCKED_NO_SAFE_PATH` once fresh odometry confirms a stop. It stays
@@ -192,7 +200,8 @@ same-class boxes are rejected.
 ## Partial obstruction bypass (function 2)
 
 Function 1 remains the default. `bottle_bypass.launch` opts into function 2;
-it defaults to preview-only and still consumes exactly one explicit confirm:
+it defaults to preview-only. Pass the same validated map and device settings as
+the preview, then restart with `execute:=true`, check its new preview and confirm once:
 
 ```bash
 roslaunch x3_target_navigation bottle_bypass.launch execute:=true
