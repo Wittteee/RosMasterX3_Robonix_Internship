@@ -1,0 +1,17 @@
+<launch>
+  <!-- Same IMU override as the 2026-11-21 trial; not IMU calibration. -->
+  <arg name="execute" default="false"/>
+  <arg name="initial_pose_x"/>
+  <arg name="initial_pose_y"/>
+  <arg name="initial_pose_a"/>
+  <include file="$(find x3_target_navigation)/launch/bottle_bypass.launch">
+    <arg name="execute" value="$(arg execute)"/>
+  </include>
+  <param name="/amcl/initial_pose_x" value="$(arg initial_pose_x)"/>
+  <param name="/amcl/initial_pose_y" value="$(arg initial_pose_y)"/>
+  <param name="/amcl/initial_pose_a" value="$(arg initial_pose_a)"/>
+  <param name="/amcl/initial_cov_xx" value="0.0025"/>
+  <param name="/amcl/initial_cov_yy" value="0.0025"/>
+  <param name="/amcl/initial_cov_aa" value="0.01"/>
+  <rosparam param="/ekf_localization/imu0_config">[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]</rosparam>
+</launch>
