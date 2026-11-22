@@ -35,9 +35,10 @@ target_task_manager:
   approach_speed_mps: 0.04
   # Function 2 is opt-in through obstacle_bypass:=true.
   bypass_clearance_m: 0.05
-  # Function 2: approach the frozen bottle goal; stop at front gap <= 5 cm,
-  # then select and validate a side route after stopped odometry is confirmed.
-  bypass_detection_distance_m: 0.05
+  # Function 2: stop at front gap <= 30 cm, then shift aside and reapproach.
+  # The side step is at least 20 cm and the nose can yaw while it starts.
+  # A 10 cm gap left no room for that turn, so the body swept into the obstacle.
+  bypass_detection_distance_m: 0.30
   bypass_max_shift_m: 0.45
   map_frame: map
   # Refuse short-range execution while AMCL position uncertainty is larger
@@ -75,6 +76,11 @@ target_task_manager:
   target_drift_tolerance_m: 0.15
   navigation_timeout_sec: 120.0
   verification_timeout_sec: 15.0
+  # Turn in place through move_base before short navigation when the target
+  # is not already within this heading tolerance of the robot nose.
+  align_before_navigation: true
+  alignment_tolerance_rad: 0.12
+  alignment_timeout_sec: 40.0
   # Confirm stays closed until the chassis, lidar, cameras, TF and AMCL pass.
   voltage_topic: /voltage
   edition_topic: /edition

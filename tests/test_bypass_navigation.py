@@ -65,12 +65,13 @@ def test_ros_behavior_test_syntax():
     ast.parse((PACKAGE/'test/test_bypass_behavior.py').read_text(encoding='utf-8'))
 
 
-def test_live_bypass_uses_five_cm_front_gap():
+def test_live_bypass_uses_thirty_cm_front_gap():
     config = yaml.safe_load((PACKAGE/'config/astra_pro.yaml').read_text())
-    assert config['target_task_manager']['bypass_detection_distance_m'] == .05
+    assert config['target_task_manager']['bypass_detection_distance_m'] == .30
+    assert config['target_task_manager']['obstacle_stop_distance_m'] == .05
     launch = ET.parse(PACKAGE/'test/bypass_behavior.test').getroot()
     param = next(p for p in launch.iter('param') if p.get('name') == 'bypass_detection_distance_m')
-    assert float(param.get('value')) == .05
+    assert float(param.get('value')) == .30
 
 
 def test_legacy_explicit_params_cannot_override_bypass_profile():

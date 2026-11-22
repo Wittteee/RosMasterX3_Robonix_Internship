@@ -1,6 +1,7 @@
 <launch>
   <arg name="robot_type" value="$(env ROBOT_TYPE)"/>
   <arg name="bypass_holonomic" default="false"/>
+  <arg name="move_base_cmd_vel" default="/cmd_vel"/>
 
   <node pkg="move_base" type="move_base" name="move_base"
         respawn="false" output="screen">
@@ -43,7 +44,7 @@
          manager's stopped/replan/side/footprint gates before the base driver. -->
     <rosparam if="$(arg bypass_holonomic)" command="load"
               file="$(find x3_target_navigation)/config/bypass_move_base.yaml"/>
-    <remap from="cmd_vel" to="$(eval '/target_navigation/bypass_nav_velocity' if arg('bypass_holonomic') else '/cmd_vel')"/>
+    <remap from="cmd_vel" to="$(arg move_base_cmd_vel)"/>
     <remap from="odom" to="odom"/>
   </node>
 </launch>

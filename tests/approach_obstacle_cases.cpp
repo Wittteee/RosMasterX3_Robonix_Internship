@@ -61,6 +61,24 @@ int main() {
   assert(approachVelocity(0., 0., 0., inf, threshold, .04).arrived);
   assert(approachVelocity(.3, .11, 0., inf, threshold, .04).off_route);
   assert(approachVelocity(.3, 0., .4, inf, threshold, .04).off_route);
+  // A few centimetres of heading error nudges, and never freezes the approach.
+  const double cross_yaw = std::atan2(.03, .30);
+  const auto yawing = approachVelocity(.6, -.03, cross_yaw, .40, threshold, .04);
+  assert(std::abs(yawing.angular - .05) < 1e-12 && yawing.linear == .04);
+  const auto nudge = approachVelocity(.6, 0., .02, .40, threshold, .04);
+  assert(std::abs(nudge.angular - .012) < 1e-12 && nudge.linear == .04);
+  const auto saturated = approachVelocity(.6, 0., .20, .40, threshold, .04);
+  assert(std::abs(saturated.angular - .05) < 1e-12 && saturated.linear == .04);
+  // Function 2's straight leg holds heading until the 10 cm bypass trigger.
+  using x3_target_navigation::bypassStraightVelocity;
+  const auto held = bypassStraightVelocity(.6, -.03, cross_yaw, .40, .10, .04);
+  assert(held.angular == 0. && held.linear == .04 && !held.off_route);
+  const auto near_trigger = bypassStraightVelocity(.6, 0., 0., .20, .10, .04);
+  assert(near_trigger.linear == .015 && near_trigger.angular == 0.);
+  const auto at_trigger = bypassStraightVelocity(.6, 0., .10, .10, .10, .04);
+  assert(at_trigger.linear == 0. && at_trigger.angular == 0.);
+  assert(bypassStraightVelocity(.6, .11, 0., .40, .10, .04).off_route);
+  assert(bypassStraightVelocity(.6, 0., .36, .40, .10, .04).off_route);
 
   // Simulate a wall appearing after the robot starts. On every sample above
   // 5 cm it keeps advancing; the first sample at/below 5 cm commands zero.

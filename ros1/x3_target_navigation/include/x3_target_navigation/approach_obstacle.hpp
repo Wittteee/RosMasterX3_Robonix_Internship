@@ -40,12 +40,33 @@ inline ApproachVelocity approachVelocity(double remaining, double cross_track,
     result.arrived = true;
     return result;
   }
-  result.angular = std::fmax(-0.15, std::fmin(0.15, 1.5 * heading_error));
-  if (std::abs(heading_error) <= 0.12) {
-    // Creep for the last 15 cm; never stop early solely for a distant blocker.
-    const double distance = std::isfinite(gap) ? gap - stop_distance : remaining;
-    result.linear = distance < 0.15 ? std::fmin(speed, 0.015) : speed;
+  // A few centimetres of cross-track must not swing the nose. Keep driving
+  // while the correction stays inside the off-route heading limit.
+  result.angular = std::fmax(-0.05, std::fmin(0.05, 0.6 * heading_error));
+  const double distance = std::isfinite(gap) ? gap - stop_distance : remaining;
+  result.linear = distance < 0.15 ? std::fmin(speed, 0.015) : speed;
+  return result;
+}
+
+// Function 2's straight leg, before the bypass trigger. Hold the confirmed
+// heading. Lateral motion belongs to the bypass itself.
+inline ApproachVelocity bypassStraightVelocity(double remaining, double cross_track,
+                                               double heading_error, double gap,
+                                               double trigger_distance, double speed) {
+  ApproachVelocity result;
+  if (!std::isfinite(remaining) || !std::isfinite(cross_track) ||
+      !std::isfinite(heading_error) || std::abs(cross_track) > 0.10 ||
+      std::abs(heading_error) > 0.35 || std::isnan(gap)) {
+    result.off_route = true;
+    return result;
   }
+  if (std::isfinite(gap) && gap <= trigger_distance + kStopComparisonToleranceM) return result;
+  if (remaining <= 0.0 && !std::isfinite(gap)) {
+    result.arrived = true;
+    return result;
+  }
+  const double distance = std::isfinite(gap) ? gap - trigger_distance : remaining;
+  result.linear = distance < 0.15 ? std::fmin(speed, 0.015) : speed;
   return result;
 }
 

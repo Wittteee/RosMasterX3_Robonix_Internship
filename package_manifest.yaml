@@ -1,0 +1,13 @@
+manifestVersion: 1
+
+package:
+  name: robonix.skill.rgbd_target_navigation
+  version: 0.1.0
+  description: Static RGB-D target detection and confirmed short-range parking for the Yahboom ROSMASTER X3.
+  tags: [skill, navigation, rgbd, yahboom, rosmaster_x3, ros1, yolox]
+  maintainers:
+    - WIttteee <shen4159@gmail.com>
+  license: Apache-2.0
+
+build: bash scripts/build.sh
+start: bash scripts/start.sh

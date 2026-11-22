@@ -1,15 +1,42 @@
-# ROSMaster X3 短距安全导航与视觉候选
+# ROSMaster X3 短距安全导航与 RGB-D 目标导航
 
-业务主机通过 rosbridge 与车载 ROS Melodic 通信。一次任务遵循：
+面向 Yahboom ROSMASTER X3 的导航实验项目，包含业务主机侧 Python 授权流程、
+YOLOX/二维码视觉候选，以及 Jetson 上的 ROS1 RGB-D 静态目标导航。
+Python 业务主机通过 rosbridge 与车载 ROS Melodic 通信，一次任务遵循：
 
 ```text
 候选 → 预览距离校验 → 短窗口健康检查 → 一次性令牌
      → 人工确认 → 单次下发 → 到达 / 取消 / 失败 → JSON 日志
 ```
 
-本项目不实现速度控制器，不重写 bringup、地图、AMCL 或 move_base。
-业务侧只允许发布配置的 goal/cancel，禁止 `/cmd_vel` 及其命名空间变体。
+Python 业务侧只允许发布配置的 goal/cancel，禁止 `/cmd_vel` 及其命名空间变体。
+ROS1 包另有直线接近控制器，经 `/target_navigation/approach_velocity` 和带运动许可
+心跳的底盘驱动执行；绕行模式结合 move_base 规划。仓库也包含车载启动配置和底盘修正脚本，
+因此业务侧的发布限制不能理解为整个仓库都不产生速度指令。
 **预览、确认和下发分离；未确认不会下发，默认不下发。**
+
+## 功能与入口
+
+| 使用场景 | 入口 | 默认行为 / 执行条件 |
+|---|---|---|
+| 无机器人演练授权流程 | `scripts/run_mission.py --dry-run` | 内存模拟；`--confirm --dispatch` 也不连接实车 |
+| rosbridge 手工短距导航 | `scripts/run_mission.py` | 仅准备；实际下发需 `--confirm --dispatch` |
+| 检测框启发式候选 | `scripts/run_detect_nav.py` | 默认离线；实车需显式 `--live` 及确认、下发参数 |
+| 照片 / 摄像头目标检测 | `scripts/run_object_detection.py` | 输出标注和 JSON，不驱动车辆 |
+| 二维码 / YOLOX 官方候选 | `scripts/run_visual_nav.py` | 依赖官方 Provider；执行需 `--execute` 和交互确认 |
+| RGB-D 直线接近、遇障停车（功能 1） | `target_navigation.launch` | 默认预览；`execute:=true` 后还需确认服务 |
+| RGB-D 局部遮挡绕行（功能 2） | `bottle_bypass.launch` | 默认预览；停车后规划侧移、通过和接近路径 |
+
+Python 命令均从仓库根目录运行；ROS launch 需先在车载 Catkin 工作空间构建并 source。
+RGB-D 路径使用 ROS 服务确认，不使用 Python CLI 的 `--confirm` / `--dispatch` 参数。
+
+## 软件包目录
+
+按 [软件包目录发布流程](https://book.robonix.ai/integration-guide/package-catalog)
+登记为技能软件包 `robonix.skill.rgbd_target_navigation`。
+目录只读取默认分支根目录的 `package_manifest.yaml`。
+`scripts/build.sh` 跑离线自检；`scripts/start.sh` 只做不下发的 dry-run。
+实车 RGB-D 入口仍是 `ros1/x3_target_navigation` 的 launch，且默认不执行。
 
 ## 环境与安装
 
@@ -28,6 +55,19 @@ python -X utf8 -m pytest -q
 python -X utf8 scripts/self_check.py
 ```
 
+也可以在 Windows PowerShell 中创建独立 venv，无需激活脚本：
+
+```powershell
+py -3.10 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -X utf8 scripts\run_mission.py --dry-run --distance 0.30
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q
+.\.venv\Scripts\python.exe -X utf8 scripts\self_check.py
+```
+
+上述命令要求已安装 Python 3.10。Linux 的 venv 可用 `python3.10 -m venv .venv`，
+随后使用 `.venv/bin/python` 执行同样的命令。CLI 会自行加载仓库内的 `src`，无需 `pip install -e .`。
+
 `requirements.txt` 是基础导航依赖；`requirements-vision.txt` 增加 OpenCV/NumPy；
 `requirements-dev.txt` 再增加 pytest；`requirements-model-tools.txt` 仅用于生成
 Jetson OpenCV 4.1 兼容的 ONNX 副本。只运行基础导航不必安装视觉依赖。
@@ -39,8 +79,9 @@ Jetson OpenCV 4.1 兼容的 ONNX 副本。只运行基础导航不必安装视�
 .\.venv\Scripts\python.exe -X utf8 scripts\self_check.py
 ```
 
-当前开发验证环境是 Windows/Python 3.12。Python 3.10 的运行测试由 CI 配置覆盖，
-只有 CI 实际执行通过后才能认定该环境已验证；本轮未在 Jetson 上运行。
+CI 配置见 [offline-tests](.github/workflows/tests.yml)，在 Ubuntu 上覆盖 Python 3.10 和 3.12，
+执行 pytest 与离线自检。配置存在不代表当前提交已通过 CI；历史验证结果见对应日期的文档。
+Python 离线测试不替代 Jetson Catkin 构建、ROS 集成测试或实车验收。
 
 ## 真实目标检测（YOLOX）
 
@@ -55,14 +96,49 @@ python scripts/run_object_detection.py --image logs/demo_20261028/camera_current
 
 ## ROS1 RGB-D 静态目标导航
 
-新增 [`ros1/x3_target_navigation`](ros1/x3_target_navigation/README.md) Catkin 包，
+[`ros1/x3_target_navigation`](ros1/x3_target_navigation/README.md) 是 C++ Catkin 包，
 面向 Jetson ROS Melodic 与 Astra Pro。它同步 RGB、注册深度和相机内参，
 将唯一 YOLOX 目标按图像时间戳转换到 `map`，经多帧融合后生成安全停车点。
-默认仅预览；执行模式仍需调用 `/target_navigation/confirm`，运动完全交给现有
-`move_base`，新增节点不发布 `/cmd_vel`。首版只支持静态目标，并在到达后重新
-识别核验。当前版本按目标最近表面计算车体外轮廓间隙；障碍前会保守截断
-停车点，并在确认零速后报告 `FAILED: BLOCKED_NO_SAFE_PATH`。旧 Provider/二维码
-入口保持不变。真实间隙、制动滑行、侧向绕障和封死通道仍需现场验收。
+只支持静态、唯一的同类目标；到达后需要新鲜 RGB-D 观测复核。
+
+| 模式 | 选择方式 | 控制与遇障行为 |
+|---|---|---|
+| 功能 1：直线接近 | `target_navigation.launch` 默认 `obstacle_stop_approach:=true` | 对准目标后由自有低速控制器接近；路径内障碍实测前向间隙 ≤ 5 cm 时发零速并锁止，确认停止后报告 `FAILED: BLOCKED_NO_SAFE_PATH` |
+| 功能 2：局部遮挡绕行 | `bottle_bypass.launch` | 路径内障碍实测前向间隙 ≤ 30 cm 时先停车；经停止确认和路径校验后，借助 move_base 分段绕过，仍朝向原先冻结的瓶子目标 |
+| 普通导航 | `target_navigation.launch obstacle_stop_approach:=false` | 使用 move_base；障碍可能使停车候选保守截断，受阻任务不报告成功 |
+
+功能 1 的短距直线接近由自有控制器执行；当前 `start_navigation:=true` 会加载地图、AMCL
+并启动 move_base，供确认阶段检查 action 服务。功能 2 将 move_base 的速度输出
+先交给任务管理器检查，再转发到接近控制话题。
+5 cm（功能 1）和 30 cm（功能 2）都是**发出停车指令的测量阈值**，不保证最终静止间隙；
+采样、制动滑行和激光盲区仍需实测。
+功能 1 的遇障锁止不会因障碍移走自动恢复。功能 2 对全宽封堵、方向不明确或无安全路径保持停止。
+
+先按 [ROS1 包说明](ros1/x3_target_navigation/README.md) 构建、准备兼容模型及设备配置，
+再在 Jetson 上启动预览。下面的地图名为历史演示地图，使用前须替换为现场有效地图；
+三个 `start_*` 参数会启动相应设备或导航节点，应确保没有重复驱动：
+
+```bash
+source /opt/ros/melodic/setup.bash
+source ~/software/library_ws/devel/setup.bash
+source ~/yahboomcar_ws/devel/setup.bash
+export ROBOT_TYPE=X3
+roslaunch x3_target_navigation target_navigation.launch \
+  start_bringup:=true start_astra:=true start_navigation:=true \
+  map:=final_site_20261107 target_label:=bottle execute:=false
+```
+
+另一个已加载 ROS 环境的终端可查看：
+
+```bash
+rostopic echo /target_navigation/state
+rostopic echo /target_navigation/preview_goal
+```
+
+预览模式拒绝确认服务。完成现场校验后，以 `execute:=true` 重新启动，审阅新预览，
+再调用 `rosservice call /target_navigation/confirm`；取消使用
+`rosservice call /target_navigation/cancel`。模型路径、内参、设备别名和 TF 等部署要求
+见包内说明。旧 Provider/二维码入口保持可用。
 
 ## 无实车完整演练
 
@@ -94,7 +170,9 @@ python scripts/run_cancel.py --dry-run
 
 ## 配置
 
-默认 `configs/robot.yaml`，支持入口参数 `--config path/to/robot.yaml`。
+Python 业务流程默认使用 `configs/robot.yaml`，支持入口参数 `--config path/to/robot.yaml`。
+ROS1 RGB-D 使用独立的 [`astra_pro.yaml`](ros1/x3_target_navigation/config/astra_pro.yaml)，
+由 launch 的 `config` 参数加载；下表不适用于 ROS1 的接近或绕行控制器。
 
 | 字段 | 默认 | 单位 / 作用 |
 |---|---|---|
@@ -162,7 +240,8 @@ python scripts/run_cancel.py
 
 **A：检测框提出短步候选。** `Detection` 经过标签、置信度、有限值检查；
 图像右方映射 ROS 负偏航；相对大小映射启发式步长，再由公共 MissionRunner 复核距离。
-只计算候选，不宣称二维码/物体的世界坐标。没有 YOLO 模型下载或实时检测话题订阅。
+此入口只计算候选，不宣称二维码/物体的世界坐标，也不自动加载 YOLO 或订阅实时检测话题。
+独立的 YOLOX 检测入口及模型下载工具见上文“真实目标检测”。
 CLI 注入的现场观察可显式执行：
 
 ```bash
@@ -183,13 +262,17 @@ Mock 与 live 是互斥模式，不自动把模拟检测换成真实下发。
 不支持的改名会明确拒绝，不静默忽略。执行前复查目标；运动中由官方 Provider 监控导航，
 不是连续视觉跟随器。
 
-合并远程主分支后，也保留 `--observation-file path/to/observation.json` 入口：
+二维码流程也支持 `--observation-file path/to/observation.json` 入口：
 读取真实相机观测文件，只把唯一、居中的新鲜二维码作为前方候选触发条件；每次复查重新读取文件。
 此模式仍需 `--provider-dir`，不把居中判定当成标定测距；过期观测明确拒绝。
-远程新增的停车候选、底盘映射脚本及 `logs/demo_20261028/` 实车记录保持保留，
-本次合并未运行这些车载运动脚本。
+停车候选、底盘映射与车载诊断脚本位于 `scripts/jetson/`；
+`logs/demo_20261028/` 保存历史实车记录。该目录包含可实际驱动车辆的实验脚本，
+使用时应阅读各脚本参数和对应实验记录，不能将其视为离线自检入口。
 
 ## 结果、日志与能力边界
+
+以下状态与 JSON 字段描述 Python 业务流程；ROS1 状态通过 `/target_navigation/state`
+发布，还包含 `NAVIGATING`、`STOPPING` 等阶段，详见包内说明。
 
 - `PREPARE`：健康检查通过并签发令牌；`CONFIRM`：进入人工确认阶段，可已确认但未下发。
 - `SUCCEEDED`：观察到关联任务的导航成功；不等于独立尺量或物理停止验证。
@@ -212,7 +295,7 @@ PoseStamped 不携带客户端 action goal_id：本程序绑定 dispatch 后出�
 - **串口被占用**：MakerControl、厂商驱动与调试脚本不能同时占用控制板。
 - **Python 版本分裂**：ROS Melodic 保留系统 Python；本业务和官方绑定使用独立 3.10 环境，
   不将 ROS 系统包或二进制 OpenCV 复制进 Conda。
-- **多源抢速度/任务**：停用手柄或其他导航客户端，明确唯一导航控制源；本项目不会发布零速度抢控制。
+- **多源抢速度/任务**：停用手柄或其他导航客户端，明确唯一导航控制源；Python 业务侧不会发布零速度抢控制，ROS1 接近模式则要求底盘输入和运动许可按 launch 配套配置。
 - **rosbridge 连接失败**：检查 SSH 转发、端口、车上节点；连接等待限时约 10 s。
 - **目标未到就结束**：查看新日志中的目标 id、原始失败状态 `status_before_cancel`、取消确认。
 - **官方 Provider 导入失败**：检查独立环境和生成绑定 PYTHONPATH；不自动安装或执行车上脚本。
@@ -228,12 +311,37 @@ src/x3_nav/
   validation/     短窗口话题统计
   mission/        手工、检测与二维码任务编排
   vision/         检测/二维码、方向与候选筛选，不执行运动
-scripts/          参数解析与调用
- tests/           pytest 与兼容 unittest 用例
+ros1/x3_target_navigation/  C++ RGB-D、融合、任务管理、launch 与 ROS 测试
+scripts/          Python CLI、模型下载、转换与离线自检
+  jetson/         车载部署、底盘诊断、标定与运动实验
+  ros1/           RGB-D 标定、指标采集与验收辅助脚本
+configs/          Python 业务配置、SSH 配置示例与底盘标定
+tests/            pytest、unittest 与 C++ 几何回归用例
 examples/         模拟日志与自检文本
+docs/             设计说明、部署指南及按日期保存的实验记录
+logs/             历史实验记录与运行生成日志
+validation_artifacts/  验证产物
+package_manifest.yaml  Robonix 软件包登记与构建 / 启动入口
 ```
 
-[设计逐条对照](docs/08_完整授权链设计对照.md) · [本轮验证记录](docs/09_完整授权链验证记录.md)
+## 文档与验证
 
-`docs/00`–`07` 是早期阶段记录；以本 README 与 08/09 为当前实现说明。
-实车位置精度、停止距离、底盘恢复、地图、实际相机和重复实验仍需现场验收。
+| 文档 | 内容 |
+|---|---|
+| [完整授权链设计](docs/08_完整授权链设计对照.md) | Python 业务侧的预览、授权、下发与取消约束 |
+| [授权链验证记录](docs/09_完整授权链验证记录.md) | 对应阶段的离线验证证据 |
+| [YOLOX 目标检测](docs/object_detection.md) | 权重下载、图片检测、相机标定与官方候选接入 |
+| [官方视觉导航](docs/06_视觉导航运行与验收.md) | Provider、生成绑定及二维码运行流程 |
+| [ROS1 包说明](ros1/x3_target_navigation/README.md) | 当前 RGB-D 模式、控制话题、绕行和 ROS 集成测试 |
+| [2026-11-15 部署记录](docs/17_20261115_ROS1_RGBD目标导航部署与验收.md) | 当日 Jetson、相机、地图和只读验收记录 |
+| [模拟样例](examples/README.md) | 不连接实车的运行输出 |
+
+历史文档中的“本轮”、测试数量、IP、地图和设备参数仅对应其记录时点。
+当前入口与默认值应结合本 README、ROS1 包说明及实际配置阅读。
+实车位置精度、停止距离、底盘恢复、相机标定及左右绕行能力仍需现场重复验收，
+不能由离线测试通过推断。
+
+## 许可证
+
+本项目采用 [Apache License 2.0](LICENSE)。YOLOX 权重来源与校验方式见
+[目标检测说明](docs/object_detection.md)，模型需单独下载。
