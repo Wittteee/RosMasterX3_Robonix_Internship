@@ -117,10 +117,13 @@ new confirmation is rejected.
 
 The real-car entry defaults to `obstacle_stop_approach:=true`. After a stable
 bottle preview and one `/target_navigation/confirm`, the manager follows the
-confirmed straight line at up to 0.04 m/s, with small heading corrections and
-no lateral bypass. It slows to 0.015 m/s for the last 15 cm before the obstacle
-stop threshold. The nominal bottle point is frozen for this attempt, so an
-occluding obstacle cannot redirect the task to a new detection.
+confirmed straight line at up to 0.04 m/s. Heading corrections stay within
+±0.05 rad/s, so a few centimetres of cross-track cannot swing the nose off the
+bottle or stop the forward motion. There is no lateral bypass. The preview goal
+is only the acceptance check; the approach continues until the nose is
+`obstacle_stop_distance_m` (0.05 m) from the frozen bottle surface, and slows
+to 0.015 m/s for the last 15 cm. An occluding obstacle cannot redirect the
+task to a new detection.
 
 Every `/scan` and the 20 Hz task timer check the route corridor. Laser points
 are transformed into `base_footprint` using their acquisition timestamp. For a
@@ -198,16 +201,16 @@ rosservice call /target_navigation/confirm
 
 The scan is checked against the full body width plus a 5 cm clearance, rather
 than just a centre ray. When an obstruction intrudes into the route within
-5 cm of the front, the manager first sends zero velocity and inhibits the
+30 cm of the front, the manager first sends zero velocity and inhibits the
 base. It requires three fresh stopped odometry samples before making a plan.
 The car approaches the confirmed bottle goal, not an obstacle waypoint. The
-trigger is the first valid measured front gap at or below 0.05 m; a gap
-above 0.05 m does not initiate a bypass. Sensor/localization failures can still
-stop earlier. Sampling and braking can make the physical resting gap smaller.
+trigger is the first valid measured front gap at or below 0.30 m; a gap
+above 0.30 m does not initiate a bypass. Function 1 still stops at 0.05 m.
+Sensor/localization failures can still stop earlier. Sampling and braking can make the physical resting gap smaller.
 Once braking has started, a 3 cm release band prevents tiny brake recoil or
 measurement noise from resuming forward motion. A changed bypass side is
 rejected instead of silently switching direction while stopped. The first
-trigger remains 5 cm. Nearby points on the obstacle face are used to classify
+trigger remains 30 cm. Nearby points on the obstacle face are used to classify
 its side even when only its leading edge has crossed the trigger boundary.
 An intrusion on the right selects a left bypass; an intrusion on the left
 selects a right bypass. A wall spanning the body width, or an ambiguous central

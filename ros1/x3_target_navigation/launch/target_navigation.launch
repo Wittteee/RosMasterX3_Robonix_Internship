@@ -60,8 +60,9 @@
   <include if="$(arg start_navigation)"
            file="$(find x3_target_navigation)/launch/safe_navigation.launch">
     <arg name="map" value="$(arg map)"/>
-    <arg name="start_move_base" value="$(eval not arg('obstacle_stop_approach') or arg('obstacle_bypass'))"/>
+    <arg name="start_move_base" value="true"/>
     <arg name="bypass_holonomic" value="$(arg obstacle_bypass)"/>
+    <arg name="move_base_cmd_vel" value="$(eval '/target_navigation/bypass_nav_velocity' if arg('obstacle_bypass') == 'true' else ('/target_navigation/align_velocity' if arg('obstacle_stop_approach') == 'true' else '/cmd_vel'))"/>
   </include>
 
   <group ns="target_navigation">

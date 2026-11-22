@@ -12,6 +12,7 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Header.h>
 #include <std_msgs/String.h>
+#include <std_srvs/Empty.h>
 #include <std_srvs/Trigger.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/utils.h>
@@ -48,7 +49,7 @@ class TargetTaskManager {
     private_nh_.param("obstacle_stop_approach", obstacle_stop_approach_, false);
     private_nh_.param("obstacle_bypass_enabled", obstacle_bypass_enabled_, false);
     private_nh_.param("bypass_clearance_m", bypass_clearance_m_, 0.05);
-    private_nh_.param("bypass_detection_distance_m", bypass_detection_distance_m_, 0.05);
+    private_nh_.param("bypass_detection_distance_m", bypass_detection_distance_m_, 0.30);
     private_nh_.param("bypass_max_shift_m", bypass_max_shift_m_, 0.45);
     private_nh_.param("obstacle_stop_distance_m", obstacle_stop_distance_m_, 0.05);
     private_nh_.param("approach_speed_mps", approach_speed_mps_, 0.04);
@@ -83,6 +84,9 @@ class TargetTaskManager {
     private_nh_.param("navigation_timeout_sec", navigation_timeout_sec_, 120.0);
     private_nh_.param("verification_timeout_sec", verification_timeout_sec_,
                       5.0);
+    private_nh_.param("align_before_navigation", align_before_navigation_, true);
+    private_nh_.param("alignment_tolerance_rad", alignment_tolerance_rad_, 0.12);
+    private_nh_.param("alignment_timeout_sec", alignment_timeout_sec_, 15.0);
     private_nh_.param("min_voltage_v", min_voltage_v_, 10.0);
     private_nh_.param("max_voltage_v", max_voltage_v_, 13.5);
     private_nh_.param("min_edition", min_edition_, 1.0);
@@ -122,6 +126,8 @@ class TargetTaskManager {
         "/odom", 20, &TargetTaskManager::odomCallback, this);
     bypass_velocity_subscriber_ = nh_.subscribe(
         "bypass_nav_velocity", 1, &TargetTaskManager::bypassVelocityCallback, this);
+    align_velocity_subscriber_ = nh_.subscribe(
+        "align_velocity", 1, &TargetTaskManager::alignVelocityCallback, this);
     preview_publisher_ =
         nh_.advertise<geometry_msgs::PoseStamped>("preview_goal", 1, true);
     state_publisher_ =
@@ -135,6 +141,7 @@ class TargetTaskManager {
     cancel_service_ = nh_.advertiseService(
         "cancel", &TargetTaskManager::cancel, this);
     make_plan_client_ = nh_.serviceClient<nav_msgs::GetPlan>("/move_base/make_plan");
+    nomotion_client_ = nh_.serviceClient<std_srvs::Empty>("/request_nomotion_update");
     timer_ = private_nh_.createTimer(
         ros::Duration(0.05), &TargetTaskManager::timerCallback, this);
     setState("IDLE", "waiting for stable RGB-D target");
@@ -166,6 +173,8 @@ class TargetTaskManager {
         max_travel_m_ <= (obstacle_bypass_enabled_ ? 1.20 : 0.80) &&
         plan_tolerance_m_ > 0.0 && target_drift_tolerance_m_ > 0.0 &&
         navigation_timeout_sec_ > 0.0 && verification_timeout_sec_ > 0.0 &&
+        alignment_tolerance_rad_ > 0.0 && alignment_tolerance_rad_ < M_PI &&
+        alignment_timeout_sec_ > 0.0 &&
         min_voltage_v_ > 0.0 && max_voltage_v_ > min_voltage_v_ &&
         min_edition_ > 0.0 && min_scan_hz_ > 0.0 && sensor_timeout_sec_ > 0.0;
     if (!valid) {
@@ -222,7 +231,7 @@ class TargetTaskManager {
     if (task_locked_ || stop_waiting_) {
       return;
     }
-    if (state_ == "NAVIGATING") {
+    if (state_ == "NAVIGATING" || state_ == "ALIGNING") {
       latest_target_ = *message;
       have_target_ = true;
       return;  // Do not let a sensor callback overwrite an active task state.
@@ -405,6 +414,58 @@ class TargetTaskManager {
     return true;
   }
 
+  static double wrapAngle(double angle) {
+    return std::atan2(std::sin(angle), std::cos(angle));
+  }
+
+  // Use move_base for the alignment turn so the same footprint, planner and
+  // safety pipeline are used. No second cmd_vel publisher is introduced.
+  bool startAlignedNavigation(const geometry_msgs::PoseStamped& parking_goal,
+                              bool straight_approach, const ros::Time& now,
+                              std::string* message) {
+    if (!move_base_.waitForServer(ros::Duration(2.0))) {
+      *message = "move_base action unavailable";
+      return false;
+    }
+    const double dx = parking_goal.pose.position.x - robot_pose_.pose.position.x;
+    const double dy = parking_goal.pose.position.y - robot_pose_.pose.position.y;
+    const double target_yaw = std::atan2(dy, dx);
+    const double current_yaw = tf2::getYaw(robot_pose_.pose.orientation);
+    const double yaw_error = wrapAngle(target_yaw - current_yaw);
+    if (align_before_navigation_ &&
+        std::abs(yaw_error) > alignment_tolerance_rad_) {
+      pending_navigation_goal_ = parking_goal;
+      pending_navigation_goal_.header.stamp = now;
+      alignment_active_ = true;
+      alignment_for_straight_ = straight_approach;
+      alignment_target_yaw_ = target_yaw;
+      alignment_started_ = now;
+      setState("ALIGNING", "turning to face target before short navigation");
+      *message = "alignment turn accepted; navigation will start after turn";
+      return true;
+    }
+
+    if (straight_approach) {
+      approach_start_ = robot_pose_.pose.position;
+      approach_yaw_ = target_yaw;
+      navigation_started_ = now;
+      setState("NAVIGATING", "aligned target; starting short approach");
+      *message = "aligned target; short approach accepted";
+      return true;
+    }
+
+    move_base_msgs::MoveBaseGoal goal;
+    goal.target_pose = parking_goal;
+    goal.target_pose.header.stamp = now;
+    navigation_started_ = now;
+    move_base_.sendGoal(
+        goal,
+        boost::bind(&TargetTaskManager::moveDone, this, _1, _2));
+    setState("NAVIGATING", "aligned target; parking goal sent");
+    *message = "aligned target; parking goal accepted";
+    return true;
+  }
+
   bool confirm(std_srvs::Trigger::Request&,
                std_srvs::Trigger::Response& response) {
     std::lock_guard<std::mutex> guard(mutex_);
@@ -457,22 +518,18 @@ class TargetTaskManager {
       approach_start_ = robot_pose_.pose.position;
       approach_yaw_ = std::atan2(preview_goal_.pose.position.y - approach_start_.y,
                                  preview_goal_.pose.position.x - approach_start_.x);
-      double error = approach_yaw_ - tf2::getYaw(robot_pose_.pose.orientation);
-      error = std::atan2(std::sin(error), std::cos(error));
-      if (std::abs(error) > 0.35) {
-        response.success = false;
-        response.message = "bottle must be in front for straight approach";
-        return true;
-      }
-      navigation_started_ = now;
       have_preview_ = false;
       bypass_phase_ = "NONE";
       bypass_stage_ = -1;
-      setState("NAVIGATING", obstacle_bypass_enabled_ ?
-          "confirmed bottle goal; approach bottle, brake at 5 cm then validate bypass" :
-          "one-shot confirmed straight approach; stop at 5 cm front gap");
+      std::string alignment_message;
+      if (!startAlignedNavigation(preview_goal_, true, now,
+                                  &alignment_message)) {
+        response.success = false;
+        response.message = alignment_message;
+        return true;
+      }
       response.success = true;
-      response.message = "straight approach accepted; confirmation consumed";
+      response.message = alignment_message;
       return true;
     }
     if (!planAvailable(preview_goal_, &reason)) {
@@ -481,33 +538,29 @@ class TargetTaskManager {
       response.message = reason;
       return true;
     }
-    if (!move_base_.waitForServer(ros::Duration(2.0))) {
-      setState("FAILED", "move_base action unavailable");
+    std::string alignment_message;
+    if (!startAlignedNavigation(preview_goal_, false, now,
+                                &alignment_message)) {
+      setState("FAILED", alignment_message);
       response.success = false;
-      response.message = "move_base action unavailable";
+      response.message = alignment_message;
       return true;
     }
-    move_base_msgs::MoveBaseGoal goal;
-    goal.target_pose = preview_goal_;
-    goal.target_pose.header.stamp = now;
-    navigation_started_ = now;
-    move_base_.sendGoal(
-        goal,
-        boost::bind(&TargetTaskManager::moveDone, this, _1, _2));
     have_preview_ = false;  // one service call consumes this preview
-    setState("NAVIGATING", "one-shot confirmed goal sent");
     response.success = true;
-    response.message = "goal accepted; confirmation consumed";
+    response.message = alignment_message + "; confirmation consumed";
     return true;
   }
 
   bool cancel(std_srvs::Trigger::Request&,
               std_srvs::Trigger::Response& response) {
     std::lock_guard<std::mutex> guard(mutex_);
-    if (state_ == "NAVIGATING") {
-      if (!obstacle_stop_approach_ || bypassActionActive()) move_base_.cancelGoal();
+    if (state_ == "NAVIGATING" || state_ == "ALIGNING") {
+      if (alignment_active_ || !obstacle_stop_approach_ || bypassActionActive()) {
+        move_base_.cancelGoal();
+      }
       stop_waiting_ = true;
-      stop_terminal_ = obstacle_stop_approach_ && !bypassActionActive();
+      stop_terminal_ = true;
       stop_reason_ = "CANCELLED_BY_OPERATOR";
       stop_started_ = ros::Time::now();
       setState("STOPPING", "cancel requested; waiting for terminal and zero velocity");
@@ -528,6 +581,31 @@ class TargetTaskManager {
       return;
     }
     if (task_locked_) return;  // A late result cannot clear STOP_UNCONFIRMED.
+    if (alignment_active_) {
+      alignment_active_ = false;
+      approach_velocity_publisher_.publish(geometry_msgs::Twist());
+      if (state != actionlib::SimpleClientGoalState::SUCCEEDED) {
+        setState("FAILED", "alignment turn ended: " + state.toString());
+        return;
+      }
+      const ros::Time now = ros::Time::now();
+      if (alignment_for_straight_) {
+        approach_start_ = robot_pose_.pose.position;
+        approach_yaw_ = alignment_target_yaw_;
+        navigation_started_ = now;
+        setState("NAVIGATING", "aligned target; starting short approach");
+      } else {
+        move_base_msgs::MoveBaseGoal goal;
+        goal.target_pose = pending_navigation_goal_;
+        goal.target_pose.header.stamp = now;
+        navigation_started_ = now;
+        move_base_.sendGoal(
+            goal,
+            boost::bind(&TargetTaskManager::moveDone, this, _1, _2));
+        setState("NAVIGATING", "aligned target; parking goal sent");
+      }
+      return;
+    }
     if (obstacle_bypass_enabled_ && bypassActionActive()) {
       approach_velocity_publisher_.publish(geometry_msgs::Twist());
       if (state == actionlib::SimpleClientGoalState::SUCCEEDED) {
@@ -601,13 +679,52 @@ class TargetTaskManager {
   }
 
   void timerCallback(const ros::TimerEvent&) {
+    if (nomotion_refresh_due_) {
+      nomotion_refresh_due_ = false;
+      std_srvs::Empty request;
+      nomotion_client_.call(request);
+    }
     std::lock_guard<std::mutex> guard(mutex_);
     const ros::Time now = ros::Time::now();
-    if (state_ == "NAVIGATING") {
+    if (state_ == "NAVIGATING" || state_ == "ALIGNING") {
+      const bool waiting_to_move =
+          linear_speed_mps_ <= trans_stopped_vel_ &&
+          angular_speed_rps_ <= theta_stopped_vel_;
+      const double pose_age = (now - robot_pose_.header.stamp).toSec();
+      if (waiting_to_move && have_pose_ && pose_age > 1.0 &&
+          (last_nomotion_refresh_.isZero() ||
+           (now - last_nomotion_refresh_).toSec() > 2.0)) {
+        nomotion_refresh_due_ = true;
+        last_nomotion_refresh_ = now;
+      }
       const std::string obstacle = approachBlockReason(now);
-      const std::string sensors = precheckReason(now);
+      // AMCL often publishes once and then waits. A stationary turn must not
+      // be aborted while that pose is still the one just confirmed.
+      const std::string sensors = precheckReason(now, waiting_to_move ? 20.0 : 5.0);
       if (!obstacle.empty() || !sensors.empty()) {
         requestSafetyStop(obstacle.empty() ? sensors : obstacle);
+      }
+    }
+    if (state_ == "ALIGNING" && alignment_active_ && !stop_waiting_) {
+      const double yaw_error = wrapAngle(
+          alignment_target_yaw_ - tf2::getYaw(robot_pose_.pose.orientation));
+      if (std::abs(yaw_error) <= alignment_tolerance_rad_) {
+        alignment_active_ = false;
+        approach_velocity_publisher_.publish(geometry_msgs::Twist());
+        if (alignment_for_straight_) {
+          approach_start_ = robot_pose_.pose.position;
+          approach_yaw_ = alignment_target_yaw_;
+          navigation_started_ = now;
+          setState("NAVIGATING", "aligned target; starting short approach");
+        }
+      } else if ((now - alignment_started_).toSec() > alignment_timeout_sec_) {
+        alignment_active_ = false;
+        approach_velocity_publisher_.publish(geometry_msgs::Twist());
+        setState("FAILED", "ALIGNMENT_TIMEOUT");
+      } else {
+        geometry_msgs::Twist turn;
+        turn.angular.z = std::max(-0.10, std::min(0.10, 0.8 * yaw_error));
+        approach_velocity_publisher_.publish(turn);
       }
     }
     publishMotionPermission(now);
@@ -718,7 +835,9 @@ class TargetTaskManager {
     stop_started_ = ros::Time::now();
     setState("STOPPING", reason);
     publishMotionPermission(stop_started_);
-    if (!obstacle_stop_approach_ || cancel_bypass) move_base_.cancelGoal();
+    if (!obstacle_stop_approach_ || cancel_bypass || alignment_active_) {
+      move_base_.cancelGoal();
+    }
   }
 
   void runStraightApproach(const ros::Time& now) {
@@ -730,14 +849,44 @@ class TargetTaskManager {
     const double ux = std::cos(approach_yaw_), uy = std::sin(approach_yaw_);
     const double dx = robot_pose_.pose.position.x - approach_start_.x;
     const double dy = robot_pose_.pose.position.y - approach_start_.y;
-    if (std::hypot(dx, dy) > max_travel_m_) {
+    const double closer_than_parking = obstacle_bypass_enabled_ ? 0.0 : std::max(
+        0.0, parking_clearance_m_ + depth_error_m_ + braking_distance_m_ -
+                 obstacle_stop_distance_m_);
+    if (std::hypot(dx, dy) > max_travel_m_ + closer_than_parking) {
       requestSafetyStop("MAX_APPROACH_TRAVEL_REACHED");
       return;
     }
     const double cross = -dx * uy + dy * ux;
-    const double remaining = (preview_goal_.pose.position.x - robot_pose_.pose.position.x) * ux +
+    const auto& bottle = target_at_preview_.surface_valid
+        ? target_at_preview_.surface_point : target_at_preview_.point;
+    const double along_bottle =
+        (bottle.x - robot_pose_.pose.position.x) * ux +
+        (bottle.y - robot_pose_.pose.position.y) * uy;
+    // The preview goal parks about 18 cm before the bottle. Function 1 keeps
+    // going until the nose is obstacle_stop_distance_m from that surface.
+    const double parking_remaining =
+        (preview_goal_.pose.position.x - robot_pose_.pose.position.x) * ux +
         (preview_goal_.pose.position.y - robot_pose_.pose.position.y) * uy;
-    const double desired_yaw = approach_yaw_ + std::atan2(-cross, 0.30);
+    const double remaining = obstacle_bypass_enabled_ ? parking_remaining :
+        along_bottle - footprint_front_m_ - obstacle_stop_distance_m_;
+    if (obstacle_bypass_enabled_) {
+      const double yaw_delta = approach_yaw_ - tf2::getYaw(robot_pose_.pose.orientation);
+      const auto command = bypassStraightVelocity(
+          remaining, cross, std::atan2(std::sin(yaw_delta), std::cos(yaw_delta)),
+          front_obstacle_gap_m_, bypass_detection_distance_m_, approach_speed_mps_);
+      if (command.off_route) { requestSafetyStop("APPROACH_OFF_ROUTE"); return; }
+      if (command.arrived) {
+        verification_started_ = now;
+        saw_post_arrival_visual_ = false;
+        setState("VERIFYING", "straight approach reached bottle parking point");
+        return;
+      }
+      geometry_msgs::Twist velocity;
+      velocity.linear.x = command.linear;
+      approach_velocity_publisher_.publish(velocity);
+      return;
+    }
+    const double desired_yaw = approach_yaw_ + std::atan2(-cross, 1.20);
     const double delta = desired_yaw - tf2::getYaw(robot_pose_.pose.orientation);
     const auto command = approachVelocity(remaining, cross,
         std::atan2(std::sin(delta), std::cos(delta)),
@@ -926,6 +1075,21 @@ class TargetTaskManager {
     return true;
   }
 
+  void alignVelocityCallback(const geometry_msgs::Twist::ConstPtr& message) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (!execute_enabled_ || !alignment_active_ || state_ != "ALIGNING" ||
+        task_locked_ || stop_waiting_) return;
+    if (!std::isfinite(message->linear.x) || !std::isfinite(message->linear.y) ||
+        !std::isfinite(message->angular.z)) {
+      requestSafetyStop("ALIGNMENT_INVALID_VELOCITY");
+      return;
+    }
+    geometry_msgs::Twist command;
+    command.linear.x = std::max(-0.04, std::min(0.04, message->linear.x));
+    command.angular.z = std::max(-0.4, std::min(0.4, message->angular.z));
+    approach_velocity_publisher_.publish(command);
+  }
+
   void bypassVelocityCallback(const geometry_msgs::Twist::ConstPtr& message) {
     std::lock_guard<std::mutex> guard(mutex_);
     const ros::Time now = ros::Time::now();
@@ -978,8 +1142,8 @@ class TargetTaskManager {
   void publishMotionPermission(const ros::Time& now) {
     std_msgs::Header permission;
     permission.stamp = now;
-    permission.frame_id = state_ == "NAVIGATING" && !stop_waiting_ &&
-        !task_locked_ && bypass_phase_ != "BRAKING" &&
+    permission.frame_id = (state_ == "NAVIGATING" || state_ == "ALIGNING") &&
+        !stop_waiting_ && !task_locked_ && bypass_phase_ != "BRAKING" &&
         bypass_phase_ != "LEG_STOP" ? "ALLOW" : "STOP";
     motion_permission_publisher_.publish(permission);
   }
@@ -1107,7 +1271,7 @@ class TargetTaskManager {
   }
 
   // Caller holds mutex_.
-  std::string precheckReason(const ros::Time& now) const {
+  std::string precheckReason(const ros::Time& now, double max_pose_age_sec = 5.0) const {
     if (!recent(edition_stamp_, now) || edition_ < min_edition_) {
       return "precheck failed: chassis version unavailable";
     }
@@ -1132,7 +1296,7 @@ class TargetTaskManager {
     }
     const double pose_age = (now - robot_pose_.header.stamp).toSec();
     if (!have_pose_ || robot_pose_.header.stamp.isZero() || pose_age < 0.0 ||
-        pose_age > 5.0) {
+        pose_age > max_pose_age_sec) {
       return "precheck failed: AMCL pose is not initialized";
     }
     return "";
@@ -1166,6 +1330,7 @@ class TargetTaskManager {
   ros::Subscriber depth_subscriber_;
   ros::Subscriber odom_subscriber_;
   ros::Subscriber bypass_velocity_subscriber_;
+  ros::Subscriber align_velocity_subscriber_;
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
   ros::Publisher preview_publisher_;
@@ -1175,6 +1340,9 @@ class TargetTaskManager {
   ros::ServiceServer confirm_service_;
   ros::ServiceServer cancel_service_;
   ros::ServiceClient make_plan_client_;
+  ros::ServiceClient nomotion_client_;
+  ros::Time last_nomotion_refresh_;
+  bool nomotion_refresh_due_ = false;
   ros::Timer timer_;
   MoveBaseClient move_base_;
   std::mutex mutex_;
@@ -1183,9 +1351,12 @@ class TargetTaskManager {
   std::string detail_;
   bool execute_enabled_ = false;
   bool obstacle_stop_approach_ = false;
+  bool align_before_navigation_ = true;
+  bool alignment_active_ = false;
+  bool alignment_for_straight_ = false;
   bool obstacle_bypass_enabled_ = false;
   double bypass_clearance_m_ = 0.05;
-  double bypass_detection_distance_m_ = 0.05;
+  double bypass_detection_distance_m_ = 0.30;
   double bypass_max_shift_m_ = 0.45;
   BypassDecision bypass_decision_;
   std::vector<BypassPoint> bypass_points_base_, bypass_points_map_;
@@ -1235,6 +1406,11 @@ class TargetTaskManager {
   double target_drift_tolerance_m_ = 0.15;
   double navigation_timeout_sec_ = 120.0;
   double verification_timeout_sec_ = 5.0;
+  double alignment_tolerance_rad_ = 0.12;
+  double alignment_timeout_sec_ = 15.0;
+  double alignment_target_yaw_ = 0.0;
+  ros::Time alignment_started_;
+  geometry_msgs::PoseStamped pending_navigation_goal_;
   double min_voltage_v_ = 10.0;
   double max_voltage_v_ = 13.5;
   double min_edition_ = 1.0;
